@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Spira Core
+Bundle-SymbolicName: com.inflectra.spira.mylyn.core; singleton:=true
+Bundle-Version: 2.3.1.qualifier
+Bundle-Activator: com.inflectra.spira.mylyn.core.internal.SpiraCorePlugin
+Bundle-Vendor: Inflectra Corporation
+Require-Bundle: org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Eclipse-AutoStart: true

@@ -1,4 +1,4 @@
-package com.inflectra.spira.mylyn.core.internal;
+package com.inflectra.spirateam.mylyn.core.internal;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;

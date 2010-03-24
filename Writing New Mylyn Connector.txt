@@ -1,0 +1,104 @@
+Basic framework and add a new repository to view
+------------------------------------------------
+
+* Create com.cisco.mytracker.mylyn.core plug-in.
+**	Dependency: org.eclipse.core.runtime
+**	Dependency: org.eclipse.mylyn.tasks.core
+**	Don't forget to export your packages in runtime tab (for tests
+plug-in).
+
+* Create com.cisco.mytracker.mylyn.ui plug-in.
+**	Dependency: org.eclipse.ui
+**	Dependency: org.eclipse.core.runtime
+**	Dependency: org.eclipse.mylyn.tasks.core
+**	Dependency: org.eclipse.mylyn.tasks.ui
+**	Dependency: com.cisco.mytracker.mylyn.core
+
+* Create com.cisco.mytracker.mylyn.tests plug-in.
+**	Dependency: org.junit
+**	Dependency: org.eclipse.core.runtime
+**	Dependency: org.eclipse.mylyn.tasks.core
+**	Dependency: com.cisco.mytracker.mylyn.core
+
+* In com.cisco.mytracker.mylyn.core plug-in,
+**	Create
+com.cisco.mytracker.mylyn.core.internal.MytrackerCorePlugin (the
+activator for this plug-in).
+***		Define a constant string for the PLUGIN_ID.
+***		Define a constant string for the REPOSITORY_KIND.
+**	Create com.cisco.mytracker.mylyn.core.internal.MytrackerTask.
+***		Implement a constructor.
+***		Return MytrackerCorePlugin.REPOSITORY_KIND from
+getConnectorKind().
+***		Return false from isLocal().
+**	Create
+com.cisco.mytracker.mylyn.core.internal.MytrackerRepositoryConnector.
+***		Return MytrackerCorePlugin.REPOSITORY_KIND from
+getConnectorKind().
+***		Return a summary description String for the connector
+itself.
+***		For a read only connector, canCreateNewTask() should
+return false.
+***		canCreateTaskFromKey() should return true (create a task
+for an existing ID?), and implement createTaskFromExistingId (to just
+return a Task instance, or fetch/populate it from repository?).
+***		Implement createTask()?  Or is that just for read write
+connectors?
+***		You can implement getRepositoryUrlFromTaskUrl(String),
+getTaskIdFromTaskUrl(String), and getTaskUrl(String,String) if you're
+integrating to a bug system with a web-app as a primary front-end.
+***		Do not implement getTaskDataHandler() or
+updateTaskFromTaskData,  yet.
+***		Do not implement performQuery, yet.
+***		Do not implement updateTaskFromRepository or
+markStaleTasks, yet.
+***		Do not implement updateAttributes, yet.
+		
+
+* In com.cisco.mytracker.mylyn.ui plug-in,
+**	Create com.cisco.mytracker.mylyn.ui.internal.MytrackerUiPlugin
+(the activator for this plug-in).
+***		Nothing to do here?
+**	Create
+com.cisco.mytracker.mylyn.ui.internal.MytrackerTaskListFactory.
+***		Create constants for keys for the XML that will be
+written.  
+			For example, KEYS_MYTRACKER,
+KEYS_MYTRACKER_TASK, and KEYS_MYTRACKER_QUERY.
+***		Implement canCreate(AbstractTask).
+***		Implement createTask.  Duplicate from
+MytrackerRepositoryConnector?
+***		Implement getTaskElementName() to return
+KEY_MYTRACKER_TASK.
+**	Create
+com.cisco.mytracker.mylyn.ui.internal.MytrackerConnectorUi.
+***		Return MytrackerCorePlugin.REPOSITORY_KIND from
+getConnectorKind().
+***		No need for getNewTaskWizard for a read only connector.
+***		Do not implement getQueryWizard, yet.
+***		Return false from hasSearchPage().
+***		Implement getSettingsPage() to return a new
+MytrackerRepositorySettingsPage.
+**	Create
+com.cisco.mytracker.mylyn.ui.internal.MytrackerRepositorySettingsPage.
+***		Do nothing in createAdditionalControls.
+***		Return null from getValidator.
+***		Implement isValidUrl as desired.  It needs to return
+true to be able to add a newrepository of this type.
+***		Implement a constructorthat setsNeedsValidation(false).
+**	Implement org.eclipse.mylyn.tasks.ui.repositories:
+***		Point connectorCore to
+com.cisco.mytracker.mylyn.core.internal.MytrackerRepositoryConnector.
+***		Point taskListFactor to
+com.cisco.mytracker.mylyn.ui.internal.MytrackerTaskListFactory.
+***		Point connectorUi to
+com.cisco.mytracker.mylyn.ui.internal.MytrackerConnectorUi.
+**	Implement org.eclipse.mylyn.tasks.core.templates:
+***		If you have a set or public URL for an instance of your
+bug repository, you can make it 
+			easier for users to add it to their Repositories
+View in Mylyn.  You can even add 
+			it automatically when they install your
+connector (not generally recommended).
+***		Add a sample repository template for Mytracker, if
+desired.

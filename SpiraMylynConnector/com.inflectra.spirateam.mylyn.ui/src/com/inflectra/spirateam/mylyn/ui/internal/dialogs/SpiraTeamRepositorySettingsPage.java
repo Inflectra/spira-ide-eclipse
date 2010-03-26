@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.inflectra.spirateam.mylyn.ui.internal;
+package com.inflectra.spirateam.mylyn.ui.internal.dialogs;
 
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;

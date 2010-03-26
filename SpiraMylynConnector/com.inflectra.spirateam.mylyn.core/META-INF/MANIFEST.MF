@@ -1,10 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Spira Core
+Bundle-Name: SpiraTeam Mylyn Connector Core
 Bundle-SymbolicName: com.inflectra.spirateam.mylyn.core;singleton:=true
 Bundle-Version: 2.3.1.qualifier
 Bundle-Activator: com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin
 Bundle-Vendor: Inflectra Corporation
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.mylyn.tasks.core;bundle-version="3.3.2"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Eclipse-AutoStart: true
+Export-Package: com.inflectra.spirateam.mylyn.core.internal

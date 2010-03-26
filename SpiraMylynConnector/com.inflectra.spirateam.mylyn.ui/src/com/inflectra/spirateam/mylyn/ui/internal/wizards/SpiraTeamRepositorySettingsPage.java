@@ -1,15 +1,20 @@
 /**
  * 
  */
-package com.inflectra.spirateam.mylyn.ui.internal.dialogs;
+package com.inflectra.spirateam.mylyn.ui.internal.wizards;
 
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
 import org.eclipse.swt.widgets.Composite;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 
 /**
+ * Dialog used to specify a Spira repository address, username, and password.
+ * 
  * @author Inflectra Corporation
- *
  */
 public class SpiraTeamRepositorySettingsPage extends
 		AbstractRepositorySettingsPage
@@ -20,9 +25,13 @@ public class SpiraTeamRepositorySettingsPage extends
 	public SpiraTeamRepositorySettingsPage(TaskRepository taskRepository)
 	{
 		super(TITLE, DESCRIPTION, taskRepository);
-		setNeedsAnonymousLogin(true);
+		//TODO: Add validator to check SpiraTeam version/API
+		setNeedsValidation(false);
+		setNeedsHttpAuth(false);
+		setNeedsAnonymousLogin(false);
 		setNeedsEncoding(false);
 		setNeedsTimeZone(false);
+		setNeedsAdvanced(false);
 	}
 	
 	/* (non-Javadoc)
@@ -41,8 +50,8 @@ public class SpiraTeamRepositorySettingsPage extends
 	@Override
 	public String getConnectorKind()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		// Return the connector kind string
+		return SpiraTeamCorePlugin.CONNECTOR_KIND;
 	}
 
 	/* (non-Javadoc)
@@ -55,13 +64,23 @@ public class SpiraTeamRepositorySettingsPage extends
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage#isValidUrl(java.lang.String)
+	/**
+	 * Validates the URL
 	 */
 	@Override
-	protected boolean isValidUrl(String url)
+	protected boolean isValidUrl(String name)
 	{
-		// TODO Auto-generated method stub
+		if ((name.startsWith(URL_PREFIX_HTTPS) || name.startsWith(URL_PREFIX_HTTP)) && !name.endsWith("/"))
+		{
+			try
+			{
+				new URL(name);
+				return true;
+			}
+			catch (MalformedURLException exception)
+			{
+			}
+		}
 		return false;
 	}
 

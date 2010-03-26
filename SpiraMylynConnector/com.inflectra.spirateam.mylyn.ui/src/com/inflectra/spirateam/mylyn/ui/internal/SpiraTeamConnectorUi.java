@@ -8,7 +8,7 @@ import org.eclipse.mylyn.tasks.ui.AbstractRepositoryConnectorUi;
 import org.eclipse.mylyn.tasks.ui.wizards.ITaskRepositoryPage;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
-import com.inflectra.spirateam.mylyn.ui.internal.dialogs.SpiraTeamRepositorySettingsPage;
+import com.inflectra.spirateam.mylyn.ui.internal.wizards.SpiraTeamRepositorySettingsPage;
 
 public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 {

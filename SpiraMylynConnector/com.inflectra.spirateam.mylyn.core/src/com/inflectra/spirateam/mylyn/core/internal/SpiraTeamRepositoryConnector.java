@@ -15,23 +15,25 @@ import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 {
 
+	/**
+	 * Constructor
+	 */
 	public SpiraTeamRepositoryConnector()
 	{
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public boolean canCreateNewTask(TaskRepository repository)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		//We can create new Incidents (not other artifacts currently)
+		return true;
 	}
 
 	@Override
 	public boolean canCreateTaskFromKey(TaskRepository repository)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		// We can create a task from its Spira ID 
+		return true;
 	}
 
 	@Override

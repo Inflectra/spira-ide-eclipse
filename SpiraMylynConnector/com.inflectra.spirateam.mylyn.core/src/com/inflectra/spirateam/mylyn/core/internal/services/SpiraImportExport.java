@@ -19,9 +19,9 @@ import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionExcep
  */
 public class SpiraImportExport
 {
-	private static final String WEB_SERVICE_SUFFIX = "/Services/v2_2/ImportExport.asmx";
-	private static final String WEB_SERVICE_NAMESPACE = "{http://www.inflectra.com/SpiraTest/Services/v2.2/}ImportExport";
-	private static final String SPIRA_PLUG_IN_NAME = "Eclipse-IDE";
+	private static final String WEB_SERVICE_SUFFIX = "/Services/v2_2/ImportExport.asmx";	//$NON-NLS-1$
+	private static final String WEB_SERVICE_NAMESPACE = "{http://www.inflectra.com/SpiraTest/Services/v2.2/}ImportExport";	//$NON-NLS-1$
+	private static final String SPIRA_PLUG_IN_NAME = "Eclipse-IDE";	//$NON-NLS-1$
 	
 	private URL serviceUrl = null;
 	private String userName = "";
@@ -42,12 +42,12 @@ public class SpiraImportExport
 		//Instantiate the SOAP proxy
 		try
 		{
-		this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
-		this.soap = this.service.getImportExportSoap();
+			this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
+			this.soap = this.service.getImportExportSoap();
 		}
 		catch (WebServiceException ex)
 		{
-			throw new SpiraConnectionException("Unable to connect to SpiraTeam repository, please check the URL and try again.");
+			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
 		}
 	}
 	
@@ -70,7 +70,7 @@ public class SpiraImportExport
 		}
 		catch (WebServiceException ex)
 		{
-			throw new SpiraConnectionException("Unable to connect to SpiraTeam repository, please check the URL and try again.");
+			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
 		}
 	}
 
@@ -125,7 +125,7 @@ public class SpiraImportExport
 		}
 		catch (WebServiceException ex)
 		{
-			throw new SpiraConnectionException("Unable to connect to SpiraTeam repository, please check the URL and try again.");
+			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
 		}
 	}
 }

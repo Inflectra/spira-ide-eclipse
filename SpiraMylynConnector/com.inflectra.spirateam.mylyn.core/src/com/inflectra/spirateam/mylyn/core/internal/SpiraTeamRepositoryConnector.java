@@ -25,8 +25,8 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	@Override
 	public boolean canCreateNewTask(TaskRepository repository)
 	{
-		//We can create new Incidents (not other artifacts currently)
-		return true;
+		//The SpiraTeam connector doesn't currently allow the creation of new tasks
+		return false;
 	}
 
 	@Override

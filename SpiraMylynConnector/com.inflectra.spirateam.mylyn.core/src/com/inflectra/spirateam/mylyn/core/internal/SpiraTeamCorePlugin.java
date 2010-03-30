@@ -8,6 +8,7 @@ package com.inflectra.spirateam.mylyn.core.internal;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
+import org.eclipse.osgi.util.NLS;
 
 /**
  * The headless Spira plug-in class.
@@ -18,11 +19,11 @@ public class SpiraTeamCorePlugin extends Plugin
 {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "com.inflectra.spira.mylyn.core";
+	public static final String PLUGIN_ID = "com.inflectra.spira.mylyn.core";	//$NON-NLS-1$
 	
 	//The connector name and description
 	public final static String CONNECTOR_KIND = "spira";
-	public final static String LABEL = "Spira (supports v2.3.1 and later)";	//TODO: Externalize in resource file
+	public final static String LABEL = NLS.bind(Messages.SpiraTeamCorePlugin_SpiraTeam_description, "v2.3.1");	//$NON-NLS-1$
 
 	// The shared instance
 	private static SpiraTeamCorePlugin plugin;

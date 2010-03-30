@@ -48,8 +48,7 @@ public class SpiraTeamRepositorySettingsPage extends
 	@Override
 	protected void createAdditionalControls(Composite parent)
 	{
-		// TODO Auto-generated method stub
-
+		//No additional controls are needed
 	}
 
 	/* (non-Javadoc)

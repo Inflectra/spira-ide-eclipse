@@ -6,8 +6,10 @@ import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.AbstractRepositoryConnectorUi;
 import org.eclipse.mylyn.tasks.ui.wizards.ITaskRepositoryPage;
+import org.eclipse.mylyn.tasks.ui.wizards.RepositoryQueryWizard;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
+import com.inflectra.spirateam.mylyn.ui.internal.wizards.SpiraTeamNamedFilterPage;
 import com.inflectra.spirateam.mylyn.ui.internal.wizards.SpiraTeamRepositorySettingsPage;
 
 public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
@@ -38,9 +40,19 @@ public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 	@Override
 	public IWizard getQueryWizard(TaskRepository taskRepository,
 			IRepositoryQuery queryToEdit)
-	{
+	{		
+		RepositoryQueryWizard wizard = new RepositoryQueryWizard(taskRepository);
 		//The SpiraTeam connector doesn't currently allow ad-hoc querying
-		return null;
+		//so for now we only allow the display of pre-defined queries
+		if (queryToEdit == null)
+		{
+			wizard.addPage(new SpiraTeamNamedFilterPage(taskRepository));
+		}
+		else
+		{		
+			wizard.addPage(new SpiraTeamNamedFilterPage(taskRepository, queryToEdit));
+		}
+		return wizard;
 	}
 
 	@Override

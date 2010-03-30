@@ -13,9 +13,11 @@ import com.inflectra.spirateam.mylyn.ui.internal.wizards.SpiraTeamRepositorySett
 public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 {
 
+	/**
+	 * Constructor
+	 */
 	public SpiraTeamConnectorUi()
 	{
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -29,7 +31,7 @@ public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 	public IWizard getNewTaskWizard(TaskRepository taskRepository,
 			ITaskMapping selection)
 	{
-		// TODO Auto-generated method stub
+		//The SpiraTeam connector doesn't currently allow addition of new tasks
 		return null;
 	}
 
@@ -37,7 +39,7 @@ public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 	public IWizard getQueryWizard(TaskRepository taskRepository,
 			IRepositoryQuery queryToEdit)
 	{
-		// TODO Auto-generated method stub
+		//The SpiraTeam connector doesn't currently allow ad-hoc querying
 		return null;
 	}
 
@@ -51,7 +53,7 @@ public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 	@Override
 	public boolean hasSearchPage()
 	{
-		// TODO Auto-generated method stub
+		// The SpiraTeam connector doesn't currently allow ad-hoc searching
 		return false;
 	}
 

@@ -7,18 +7,16 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.mylyn.commons.net.AbstractWebLocation;
+import org.eclipse.mylyn.commons.net.AuthenticationCredentials;
+import org.eclipse.mylyn.commons.net.AuthenticationType;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
-import org.eclipse.mylyn.tasks.core.TaskRepositoryLocationFactory;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
-import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage.Validator;
 import org.eclipse.swt.widgets.Composite;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.inflectra.spirateam.mylyn.core.internal.*;
 import com.inflectra.spirateam.mylyn.core.internal.services.*;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.*;
 import com.inflectra.spirateam.mylyn.ui.internal.*;
 
 /**
@@ -29,8 +27,8 @@ import com.inflectra.spirateam.mylyn.ui.internal.*;
 public class SpiraTeamRepositorySettingsPage extends
 		AbstractRepositorySettingsPage
 {
-	private static final String TITLE = "SpiraTeam Repository Settings";
-	private static final String DESCRIPTION = "Example: http://www.mycompany.com/SpiraTeam";
+	private static final String TITLE = Messages.SpiraTeamRepositorySettingsPage_Title;
+	private static final String DESCRIPTION = Messages.SpiraTeamRepositorySettingsPage_Description;
 
 	public SpiraTeamRepositorySettingsPage(TaskRepository taskRepository)
 	{
@@ -114,21 +112,38 @@ public class SpiraTeamRepositorySettingsPage extends
 		@Override
 		public void run(IProgressMonitor monitor) throws CoreException
 		{
-			//First make sure the URL is valid
 			try
 			{
-				new URL(repository.getRepositoryUrl());
+				//Instantiating the proxy class will automatically verify the URL
+				String url = this.repository.getRepositoryUrl();
+				AuthenticationCredentials credentials = this.repository.getCredentials(AuthenticationType.REPOSITORY);
+				if (credentials == null)
+				{
+					throw new CoreException(new Status(IStatus.ERROR, SpiraTeamUiPlugin.PLUGIN_ID, IStatus.OK,
+							Messages.SpiraTeamRepositorySettingsPage_MissingCredentials, null));	
+				}
+				String userName = credentials.getUserName();
+				String password = credentials.getPassword();			
+				SpiraImportExport spiraImportExport = new SpiraImportExport(url, userName, password);
+			
+				//Authenticate
+				boolean success = spiraImportExport.connectionAuthenticate2();
+				if (!success)
+				{
+					throw new CoreException(new Status(IStatus.ERROR, SpiraTeamUiPlugin.PLUGIN_ID, IStatus.OK,
+							Messages.SpiraTeamRepositorySettingsPage_UnableToAuthenticate, null));	
+				}
 			}
 			catch (MalformedURLException ex)
 			{
 				throw new CoreException(new Status(IStatus.ERROR, SpiraTeamUiPlugin.PLUGIN_ID, IStatus.OK,
-						"The URL to the repository is not valid URL", null));
+						Messages.MalformedURLException_Message, null));
 			}
-
-			//Now lets try and connect
-			AbstractWebLocation location = new TaskRepositoryLocationFactory().createWebLocation(repository);
-		
-			SpiraImportExport spiraImportExport = new SpiraImportExport("http://localhost/SpiraTeam");
+			catch (SpiraConnectionException ex)
+			{
+				throw new CoreException(new Status(IStatus.ERROR, SpiraTeamUiPlugin.PLUGIN_ID, IStatus.OK,
+						ex.getMessage(), null));
+			}	
 		}
 	}
 }

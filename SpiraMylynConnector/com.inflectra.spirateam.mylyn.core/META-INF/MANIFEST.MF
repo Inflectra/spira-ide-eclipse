@@ -15,6 +15,7 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-AutoStart: true
 Export-Package: com.inflectra.spirateam.mylyn.core.internal,
+ com.inflectra.spirateam.mylyn.core.internal.model,
  com.inflectra.spirateam.mylyn.core.internal.services,
  com.inflectra.spirateam.mylyn.core.internal.services.soap
 Import-Package: javax.xml.bind.annotation

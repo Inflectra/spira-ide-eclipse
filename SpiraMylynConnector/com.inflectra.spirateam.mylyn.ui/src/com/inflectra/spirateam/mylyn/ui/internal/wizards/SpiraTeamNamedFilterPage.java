@@ -23,6 +23,7 @@ public class SpiraTeamNamedFilterPage extends AbstractRepositoryQueryPage
 	private List filterList;
 	
 	private PredefinedFilter[] filters = null;
+	private final PredefinedFilter workingCopy;
 	
 	/**
 	 * Constructor method
@@ -31,6 +32,7 @@ public class SpiraTeamNamedFilterPage extends AbstractRepositoryQueryPage
 	public SpiraTeamNamedFilterPage(TaskRepository repository)
 	{
 		super(Messages.SpiraTeamNamedFilterPage_New_Named_Query, repository);
+		this.workingCopy = null;
 		setTitle(Messages.SpiraTeamNamedFilterPage_New_Named_Query);
 		setDescription(Messages.SpiraTeamNamedFilterPage_Please_select_named_queries);
 		setPageComplete(false);
@@ -43,11 +45,28 @@ public class SpiraTeamNamedFilterPage extends AbstractRepositoryQueryPage
 	public SpiraTeamNamedFilterPage(TaskRepository repository, IRepositoryQuery query)
 	{
 		super(Messages.SpiraTeamNamedFilterPage_New_Named_Query, repository, query);
+		this.workingCopy = getFilter(query);
 		setTitle(Messages.SpiraTeamNamedFilterPage_New_Named_Query);
 		setDescription(Messages.SpiraTeamNamedFilterPage_Please_select_named_queries);
 		setPageComplete(false);
 	}
 		
+
+	private PredefinedFilter getFilter(IRepositoryQuery query)
+	{
+		PredefinedFilter filter = null;
+		if (query != null)
+		{
+			filter = SpiraTeamUtil.getPredefinedFilter(query);
+		}
+		if (filter == null)
+		{
+			filter = new PredefinedFilter();
+		}
+		return filter;
+	}
+
+	
 	/**
 	 * Applies the specified filter
 	 */
@@ -88,29 +107,31 @@ public class SpiraTeamNamedFilterPage extends AbstractRepositoryQueryPage
 		gl.numColumns = 1;
 		innerComposite.setLayout(gl);
 		
-		filterList = new List(innerComposite, SWT.V_SCROLL | SWT.BORDER);
+		filterList = new List(innerComposite, SWT.V_SCROLL | SWT.BORDER | SWT.SINGLE);
 		filterList.deselectAll();
 		GridData data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		data.horizontalIndent = 15;
 		filterList.setLayoutData(data);
 		filterList.setEnabled(true);
 	
-		int n = 0;
 		this.filters = SpiraTeamUtil.createPredefinedFilters(); 
+		int n = 0;
 		for (int i = 0; i < filters.length; i++)
 		{
 			filterList.add(filters[i].getName());
-			/*if (filters[i].getId().equals(workingCopy.getId()))
+			if (workingCopy != null)
 			{
-				n = i;
-			}*/
+				if (filters[i].getId().equals(workingCopy.getId()))
+				{
+					n = i;
+				}
+			}
 		}
-
-		/*filterList.select(n);*/
+		filterList.select(n);
 		filterList.showSelection();
 		
 		Dialog.applyDialogFont(innerComposite);
 		setControl(innerComposite);
-		//setPageComplete(true);
+		setPageComplete(true);
 	}
 }

@@ -42,10 +42,24 @@ public class SpiraTeamUtil
 		//My Assigned Requirements
 		//My Assigned Incidents
 		//My Assigned Tasks
-		filters[0] = new PredefinedFilter("1", "My Assigned Requirements");
-		filters[1] = new PredefinedFilter("2", "My Assigned Incidents");
-		filters[2] = new PredefinedFilter("3", "My Assigned Tasks");
+		filters[0] = new PredefinedFilter("1", Messages.SpiraTeam_PredefinedFilter_MyRequirements);
+		filters[1] = new PredefinedFilter("2", Messages.SpiraTeam_PredefinedFilter_MyIncidents);
+		filters[2] = new PredefinedFilter("3", Messages.SpiraTeam_PredefinedFilter_MyTasks);
 
 		return filters;
+	}
+	
+
+	public static PredefinedFilter getPredefinedFilter(IRepositoryQuery query)
+	{
+		String id = query.getAttribute(KEY_FILTER_ID);
+		if (id != null)
+		{
+			PredefinedFilter namedFilter = new PredefinedFilter();
+			namedFilter.setId(id);
+			namedFilter.setName(query.getAttribute(KEY_FILTER_NAME));
+			return namedFilter;
+		}
+		return null;
 	}
 }

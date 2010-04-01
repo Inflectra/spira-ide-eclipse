@@ -7,6 +7,8 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 
@@ -81,7 +83,7 @@ public class SpiraTeamNamedFilterPage extends AbstractRepositoryQueryPage
 	@Override
 	public String getQueryTitle()
 	{
-		return Messages.SpiraTeamNamedFilterPage_Please_select_named_queries;
+		return getSelectedFilter() != null ? getSelectedFilter().getName() : Messages.SpiraTeamNamedFilterPage_Please_select_named_queries;
 	}
 	
 
@@ -113,6 +115,14 @@ public class SpiraTeamNamedFilterPage extends AbstractRepositoryQueryPage
 		data.horizontalIndent = 15;
 		filterList.setLayoutData(data);
 		filterList.setEnabled(true);
+		filterList.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				getContainer().updateButtons();
+			}
+		});
 	
 		this.filters = SpiraTeamUtil.createPredefinedFilters(); 
 		int n = 0;

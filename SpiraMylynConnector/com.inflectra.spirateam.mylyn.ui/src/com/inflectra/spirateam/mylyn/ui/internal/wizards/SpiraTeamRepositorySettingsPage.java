@@ -9,13 +9,16 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.mylyn.commons.net.AuthenticationCredentials;
 import org.eclipse.mylyn.commons.net.AuthenticationType;
+import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
+import org.eclipse.mylyn.tasks.ui.TasksUi;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
 import org.eclipse.swt.widgets.Composite;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.inflectra.spirateam.mylyn.core.internal.*;
+import com.inflectra.spirateam.mylyn.core.internal.model.PredefinedFilter;
 import com.inflectra.spirateam.mylyn.core.internal.services.*;
 import com.inflectra.spirateam.mylyn.ui.internal.*;
 
@@ -50,6 +53,27 @@ public class SpiraTeamRepositorySettingsPage extends
 	{
 		//No additional controls are needed
 	}
+	
+	
+
+	/*	OLD CODE - was an attempt to pre-load certain queries
+	@Override
+	public void applyTo(TaskRepository repository)
+	{
+		// First call super functionality
+		super.applyTo(repository);
+		
+		//Next add the three predefined queries to the task repository
+		PredefinedFilter[] filters = SpiraTeamUtil.createPredefinedFilters();
+		for (PredefinedFilter filter : filters)
+		{
+			IRepositoryQuery query = TasksUi.getRepositoryModel().createRepositoryQuery(repository);
+			query.setSummary(filter.getName());
+			SpiraTeamUtil.setQuery(repository, query, filter);
+		}
+		
+		//repository.
+	}*/
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage#getConnectorKind()
@@ -104,6 +128,8 @@ public class SpiraTeamRepositorySettingsPage extends
 		{
 			this.repository = repository;
 		}
+		
+		
 		
 		/* (non-Javadoc)
 		 * @see org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage.Validator#run(org.eclipse.core.runtime.IProgressMonitor)

@@ -18,8 +18,11 @@ public class Messages extends NLS
 	}
 	
 	public static String SpiraTeamCorePlugin_SpiraTeam_description;
+	public static String SpiraTeamCorePlugin_UnexpectedError;
 
 	public static String SpiraTeam_PredefinedFilter_MyRequirements;
 	public static String SpiraTeam_PredefinedFilter_MyIncidents;
 	public static String SpiraTeam_PredefinedFilter_MyTasks;
+	public static String SpiraTeamRepositoryConnector_Query_Repository;
+	public static String SpiraTeamRepositoryConnector_The_SpiraTeam_query_is_invalid;
 }

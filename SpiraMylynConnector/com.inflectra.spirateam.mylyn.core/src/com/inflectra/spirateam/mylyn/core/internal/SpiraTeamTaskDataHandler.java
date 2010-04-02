@@ -3,6 +3,7 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,8 @@ import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 
 /**
@@ -43,8 +46,21 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	@Override
 	public TaskAttributeMapper getAttributeMapper(TaskRepository taskRepository)
 	{
-		SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(taskRepository);
-		return new SpiraTeamAttributeMapper(taskRepository, client);
+		try
+		{
+			SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(taskRepository);
+			return new SpiraTeamAttributeMapper(taskRepository, client);
+		}
+		catch (MalformedURLException ex)
+		{
+			//If we don't have a valid URL, don't return a client reference
+			return null;
+		}
+		catch (SpiraException ex)
+		{
+			//If we can't connect/authenticate, don't return a reference
+			return null;
+		}
 	}
 
 	/* (non-Javadoc)
@@ -73,6 +89,55 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 	}
 
+	public static void createDefaultAttributes(TaskData data, SpiraImportExport client, boolean existingTask)
+	{
+		data.setVersion(TASK_DATA_VERSION);
+
+		createAttribute(data, client, RequirementAttribute.NAME);
+		createAttribute(data, client, RequirementAttribute.DESCRIPTION);
+		/*
+		if (existingTask)
+		{
+			createAttribute(data, client, TracAttribute.TIME);
+			createAttribute(data, client, TracAttribute.CHANGE_TIME);
+			createAttribute(data, client, TracAttribute.STATUS);
+			TaskAttribute attribute = createAttribute(data, client, TracAttribute.RESOLUTION);
+			// reset default value to avoid "fixed" resolution on tasks created through web 
+			attribute.setValue(""); //$NON-NLS-1$
+		}
+		createAttribute(data, client, TracAttribute.COMPONENT);
+		createAttribute(data, client, TracAttribute.VERSION);
+		createAttribute(data, client, TracAttribute.PRIORITY);
+		createAttribute(data, client, TracAttribute.SEVERITY);
+		createAttribute(data, client, TracAttribute.MILESTONE);
+		createAttribute(data, client, TracAttribute.TYPE);
+		createAttribute(data, client, TracAttribute.KEYWORDS);
+		// custom fields
+		TracTicketField[] fields = client.getTicketFields();
+		if (fields != null) {
+			for (TracTicketField field : fields) {
+				if (field.isCustom()) {
+					createAttribute(data, field);
+				}
+			}
+		}
+		// people
+		createAttribute(data, client, TracAttribute.OWNER);
+		if (existingTask) {
+			createAttribute(data, client, TracAttribute.REPORTER);
+		}
+		createAttribute(data, client, TracAttribute.CC);
+		if (existingTask) {
+			data.getRoot().createAttribute(TracAttributeMapper.NEW_CC).getMetaData().setType(
+					TaskAttribute.TYPE_SHORT_TEXT).setReadOnly(false);
+			data.getRoot().createAttribute(TracAttributeMapper.REMOVE_CC);
+			data.getRoot().createAttribute(TaskAttribute.COMMENT_NEW).getMetaData().setType(
+					TaskAttribute.TYPE_LONG_RICH_TEXT).setReadOnly(false);
+		}
+		// operations
+		data.getRoot().createAttribute(TaskAttribute.OPERATION).getMetaData().setType(TaskAttribute.TYPE_OPERATION);*/
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler#postTaskData(org.eclipse.mylyn.tasks.core.TaskRepository, org.eclipse.mylyn.tasks.core.data.TaskData, java.util.Set, org.eclipse.core.runtime.IProgressMonitor)
 	 */

@@ -26,6 +26,41 @@ public class Requirement
     protected boolean summary;
     protected Integer plannedEffort;
 
+    public enum Key
+    {
+		REQUIREMENT_ID("requirementId"), NAME("name"), DESCRIPTION("description");	//$NON-NLS-1$
+
+		public static Key fromKey(String name)
+		{
+			for (Key key : Key.values())
+			{
+				if (key.getKey().equals(name))
+				{
+					return key;
+				}
+			}
+			return null;
+		}
+
+		private String key;
+
+		Key(String key)
+		{
+			this.key = key;
+		}
+
+		@Override
+		public String toString()
+		{
+			return key;
+		}
+
+		public String getKey()
+		{
+			return key;
+		}
+	}
+    
     /**
      * Creates an empty requirement
      */

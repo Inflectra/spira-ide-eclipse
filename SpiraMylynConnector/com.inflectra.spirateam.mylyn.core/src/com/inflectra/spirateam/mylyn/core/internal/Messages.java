@@ -25,4 +25,8 @@ public class Messages extends NLS
 	public static String SpiraTeam_PredefinedFilter_MyTasks;
 	public static String SpiraTeamRepositoryConnector_Query_Repository;
 	public static String SpiraTeamRepositoryConnector_The_SpiraTeam_query_is_invalid;
+	
+	public static String SpiraTeamClientManager_CacheNotReadable;
+	public static String SpiraTeamClientManager_CacheNotWritable;
+	public static String SpiraTeamClientManager_UnableToAuthenticate;
 }

@@ -8,6 +8,7 @@ import javax.xml.ws.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.*;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
 
@@ -28,7 +29,8 @@ public class SpiraImportExport
 	private String password = "";
 	private ImportExport service = null;
 	private ImportExportSoap soap = null;
-	
+
+	protected SpiraTeamClientData data;
 	
 	/**
 	 * The constructor
@@ -106,6 +108,12 @@ public class SpiraImportExport
 	public ImportExportSoap getSoap()
 	{
 		return this.soap;
+	}
+	
+
+	public void setData(SpiraTeamClientData data)
+	{
+		this.data = data;
 	}
 	
 	/**

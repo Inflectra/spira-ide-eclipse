@@ -18,4 +18,6 @@ Export-Package: com.inflectra.spirateam.mylyn.core.internal,
  com.inflectra.spirateam.mylyn.core.internal.model,
  com.inflectra.spirateam.mylyn.core.internal.services,
  com.inflectra.spirateam.mylyn.core.internal.services.soap
-Import-Package: javax.xml.bind.annotation
+Import-Package: javax.xml.bind.annotation,
+ org.eclipse.mylyn.commons.core,
+ org.eclipse.mylyn.commons.net

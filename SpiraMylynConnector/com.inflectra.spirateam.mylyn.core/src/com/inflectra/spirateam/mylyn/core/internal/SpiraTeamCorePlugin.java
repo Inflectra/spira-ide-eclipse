@@ -31,6 +31,16 @@ public class SpiraTeamCorePlugin extends Plugin
 	// The shared instance
 	private static SpiraTeamCorePlugin plugin;
 	
+	//The predefined queries/filters
+	public static String MY_ASSIGNED_REQUIREMENTS = "1";
+	public static String MY_ASSIGNED_INCIDENTS = "2";
+	public static String MY_ASSIGNED_TASKS = "3";
+	
+	//The different artifact type prefixes
+	public static String ARTIFACT_PREFIX_REQUIREMENT = "RQ";
+	public static String ARTIFACT_PREFIX_INCIDENT = "IN";
+	public static String ARTIFACT_PREFIX_TASK = "TK";
+	
 	/**
 	 * The constructor
 	 */

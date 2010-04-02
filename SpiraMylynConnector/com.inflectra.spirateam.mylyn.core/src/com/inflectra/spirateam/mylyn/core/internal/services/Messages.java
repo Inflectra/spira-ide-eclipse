@@ -18,4 +18,5 @@ public class Messages extends NLS
 	}
 	
 	public static String SpiraConnectionException_Message;
+	public static String SpiraImportExport_UnableToAuthenticate;
 }

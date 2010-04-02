@@ -1,6 +1,9 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
 import java.util.Date;
+
+import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
+import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteRequirement;
 /**
  * Represents a single requirement in SpiraTeam
  *
@@ -23,6 +26,35 @@ public class Requirement
     protected boolean summary;
     protected Integer plannedEffort;
 
+    /**
+     * Creates an empty requirement
+     */
+    public Requirement()
+    {
+    }
+    
+    /**
+     * Creates a requirement based on its equivalent SOAP object
+     * @param remoteRequirement The SOAP requirement
+     */
+    public Requirement(RemoteRequirement remoteRequirement)
+    {
+    	//Set the various member variables
+        this.requirementId = remoteRequirement.getRequirementId();
+        this.projectId = remoteRequirement.getProjectId();
+        this.statusId = remoteRequirement.getStatusId();
+        this.authorId = remoteRequirement.getAuthorId();
+        this.ownerId = remoteRequirement.getOwnerId();
+        this.importanceId = remoteRequirement.getImportanceId();
+        this.releaseId = remoteRequirement.getReleaseId();
+        this.name = remoteRequirement.getName();
+        this.description = remoteRequirement.getDescription();
+        this.creationDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteRequirement.getCreationDate());
+        this.lastUpdateDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteRequirement.getLastUpdateDate());
+        this.summary = remoteRequirement.isSummary();
+        this.plannedEffort = remoteRequirement.getPlannedEffort();
+    }
+    
     /**
      * Gets the value of the requirementId property.
      * 

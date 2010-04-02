@@ -5,10 +5,16 @@ package com.inflectra.spirateam.mylyn.core.internal.services;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
+
+import org.eclipse.core.runtime.IProgressMonitor;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
+import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.*;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
 
@@ -135,5 +141,41 @@ public class SpiraImportExport
 		{
 			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
 		}
+	}
+	
+	/**
+	 * Gets the list of requirements assigned to the current user
+	 * @return
+	 * @throws SpiraException
+	 */
+	public List<Requirement> requirementRetrieveAssigned(IProgressMonitor monitor)
+		throws SpiraException
+	{
+		try
+		{	
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+				
+			//Call the appropriate method
+			List<RemoteRequirement> remoteRequirements = soap.requirementRetrieveForOwner().getRemoteRequirement();
+			
+			//Convert the SOAP requirements into the local versions
+			List<Requirement> requirements = new ArrayList<Requirement>();
+			for (RemoteRequirement remoteRequirement : remoteRequirements)
+			{
+				Requirement requirement = new Requirement(remoteRequirement);
+				requirements.add(requirement);
+			}
+	        return requirements;
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+
 	}
 }

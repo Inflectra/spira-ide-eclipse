@@ -2,6 +2,9 @@ package com.inflectra.spirateam.mylyn.core.internal;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -21,6 +24,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
 import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.PredefinedFilter;
+import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 
@@ -30,7 +34,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 
 	private SpiraTeamClientManager clientManager;
 	private File repositoryConfigurationCacheFile;
-	//private final TracTaskDataHandler taskDataHandler = new TracTaskDataHandler(this);
+	private final SpiraTeamTaskDataHandler taskDataHandler = new SpiraTeamTaskDataHandler(this);
 	private TaskRepositoryLocationFactory taskRepositoryLocationFactory = new TaskRepositoryLocationFactory();
 	
 	/**
@@ -119,20 +123,44 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 			monitor.beginTask(Messages.SpiraTeamRepositoryConnector_Query_Repository, IProgressMonitor.UNKNOWN);
 			try
 			{
+				Map<String, ITask> taskById = null;
 				SpiraImportExport client = getClientManager().getSpiraTeamClient(repository);
-				PredefinedFilter filter;
-				/*if (!client.getCache().hasDetails())
-				{
-					client.getCache().refreshDetails(monitor);
-				}
-				filter = SpiraTeamUtil.getQuery(repository, client, repositoryQuery, true, monitor);
+				PredefinedFilter filter = SpiraTeamUtil.getPredefinedFilter(repositoryQuery);
 				if (filter == null)
 				{
 					return RepositoryStatus.createStatus(repository, IStatus.ERROR, SpiraTeamCorePlugin.PLUGIN_ID,
 							Messages.SpiraTeamRepositoryConnector_The_SpiraTeam_query_is_invalid);
-				}*/
-				//client.search(filter, collector, monitor);
-				//resultCollector.accept(taskData);
+				}
+				
+				//See which types of artifact we have and get appropriate data
+				if (filter.getId() == SpiraTeamCorePlugin.MY_ASSIGNED_REQUIREMENTS)
+				{
+					List<Requirement> requirements = client.requirementRetrieveAssigned(monitor);
+
+					for (Requirement requirement : requirements)
+					{
+						TaskData taskData = taskDataHandler.createTaskDataFromRequirement(client, repository, requirement, monitor);
+						taskData.setPartial(true);
+						if (session != null && !session.isFullSynchronization() && hasRichEditor(repository))
+						{
+							if (taskById == null)
+							{
+								taskById = new HashMap<String, ITask>();
+								for (ITask task : session.getTasks())
+								{
+									taskById.put(task.getTaskId(), task);
+								}
+							}
+							// preSyncronization() only handles full synchronizations
+							ITask task = taskById.get(SpiraTeamCorePlugin.ARTIFACT_PREFIX_REQUIREMENT + requirement.getRequirementId()); //$NON-NLS-1$
+							if (task != null && hasTaskChanged(repository, task, taskData))
+							{
+								session.markStale(task);
+							}
+						}
+						collector.accept(taskData);
+					}
+				}
 			}
 			catch (MalformedURLException e)
 			{
@@ -150,6 +178,12 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 		}
 	}
 
+	@Override
+	public SpiraTeamTaskDataHandler getTaskDataHandler()
+	{
+		return taskDataHandler;
+	}
+	
 	@Override
 	public void updateRepositoryConfiguration(TaskRepository taskRepository,
 			IProgressMonitor monitor) throws CoreException
@@ -172,6 +206,25 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	{
 		// TODO Auto-generated method stub
 
+	}
+	
+
+	@Override
+	public boolean canSynchronizeTask(TaskRepository taskRepository, ITask task)
+	{
+		return hasRichEditor(taskRepository, task);
+	}
+	
+	public static boolean hasRichEditor(TaskRepository repository)
+	{
+		//TODO: Determine if the current version can display a rich editor for this artifact type
+		//return Version.XML_RPC.name().equals(repository.getVersion());
+		return true;
+	}
+
+	public static boolean hasRichEditor(TaskRepository repository, ITask task)
+	{
+		return hasRichEditor(repository);
 	}
 	
 	public synchronized SpiraTeamClientManager getClientManager()

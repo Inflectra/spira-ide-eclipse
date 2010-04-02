@@ -3,11 +3,18 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.Filter;
-import com.inflectra.spirateam.mylyn.core.internal.model.PredefinedFilter;;
+import com.inflectra.spirateam.mylyn.core.internal.model.PredefinedFilter;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 
 /**
  * @author Inflectra Corporation
@@ -42,14 +49,13 @@ public class SpiraTeamUtil
 		//My Assigned Requirements
 		//My Assigned Incidents
 		//My Assigned Tasks
-		filters[0] = new PredefinedFilter("1", Messages.SpiraTeam_PredefinedFilter_MyRequirements);
-		filters[1] = new PredefinedFilter("2", Messages.SpiraTeam_PredefinedFilter_MyIncidents);
-		filters[2] = new PredefinedFilter("3", Messages.SpiraTeam_PredefinedFilter_MyTasks);
+		filters[0] = new PredefinedFilter(SpiraTeamCorePlugin.MY_ASSIGNED_REQUIREMENTS, Messages.SpiraTeam_PredefinedFilter_MyRequirements);
+		filters[1] = new PredefinedFilter(SpiraTeamCorePlugin.MY_ASSIGNED_INCIDENTS, Messages.SpiraTeam_PredefinedFilter_MyIncidents);
+		filters[2] = new PredefinedFilter(SpiraTeamCorePlugin.MY_ASSIGNED_TASKS, Messages.SpiraTeam_PredefinedFilter_MyTasks);
 
 		return filters;
 	}
 	
-
 	public static PredefinedFilter getPredefinedFilter(IRepositoryQuery query)
 	{
 		String id = query.getAttribute(KEY_FILTER_ID);
@@ -61,5 +67,16 @@ public class SpiraTeamUtil
 			return namedFilter;
 		}
 		return null;
+	}
+	
+	public static Date ConvertDatesXml2Java(XMLGregorianCalendar xmlCal)
+	{
+		if (xmlCal == null)
+		{
+			return null;
+		}
+		GregorianCalendar calendar = xmlCal.toGregorianCalendar();
+		Date date = calendar.getTime();
+		return date;
 	}
 }

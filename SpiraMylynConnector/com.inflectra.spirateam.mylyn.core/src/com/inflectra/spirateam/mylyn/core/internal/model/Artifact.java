@@ -1,5 +1,7 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -9,6 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class Artifact
 {
+    	protected Date lastUpdateDate;
 	    protected String text01;
 	    protected String text02;
 	    protected String text03;
@@ -508,5 +511,31 @@ public class Artifact
 	     */
 	    public void setList10(Integer value) {
 	        this.list10 = value;
+	    }
+	    
+	    /**
+	     * Gets the value of the lastUpdateDate property.
+	     * 
+	     * @return
+	     *     possible object is
+	     *     {@link Date }
+	     *     
+	     */
+	    public Date getLastUpdateDate()
+	    {
+	        return lastUpdateDate;
+	    }
+
+	    /**
+	     * Sets the value of the lastUpdateDate property.
+	     * 
+	     * @param value
+	     *     allowed object is
+	     *     {@link Date }
+	     *     
+	     */
+	    public void setLastUpdateDate(Date value)
+	    {
+	        this.lastUpdateDate = value;
 	    }
 }

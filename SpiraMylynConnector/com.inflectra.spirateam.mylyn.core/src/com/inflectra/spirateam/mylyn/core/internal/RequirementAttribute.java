@@ -18,6 +18,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
  * @author Inflectra Corporation
  */
 public enum RequirementAttribute
+	implements ArtifactAttribute
 {
 	REQUIREMENT_ID(Requirement.Key.REQUIREMENT_ID, Messages.RequirementAttribute_RequirementID, TaskAttribute.TASK_KEY, TaskAttribute.TYPE_SHORT_TEXT, Flag.PEOPLE),
 	NAME(Requirement.Key.NAME, Messages.RequirementAttribute_Name, TaskAttribute.SUMMARY, TaskAttribute.TYPE_SHORT_RICH_TEXT),
@@ -37,7 +38,7 @@ public enum RequirementAttribute
 
 	private EnumSet<Flag> flags;
 
-	public static RequirementAttribute getByTaskKey(String taskKey)
+	public RequirementAttribute getByTaskKey(String taskKey)
 	{
 		for (RequirementAttribute attribute : values())
 		{
@@ -49,11 +50,11 @@ public enum RequirementAttribute
 		return null;
 	}
 
-	public static RequirementAttribute getByTracKey(String tracKey)
+	public RequirementAttribute getByArtifactKey(String artifactKey)
 	{
 		for (RequirementAttribute attribute : values())
 		{
-			if (tracKey.equals(attribute.getArtifactKey()))
+			if (artifactKey.equals(attribute.getArtifactKey()))
 			{
 				return attribute;
 			}

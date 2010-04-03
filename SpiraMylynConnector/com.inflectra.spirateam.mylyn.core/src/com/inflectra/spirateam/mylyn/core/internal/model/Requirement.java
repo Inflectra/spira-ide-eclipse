@@ -22,7 +22,6 @@ public class Requirement
     protected String name;
     protected String description;
     protected Date creationDate;
-    protected Date lastUpdateDate;
     protected boolean summary;
     protected Integer plannedEffort;
 
@@ -88,6 +87,28 @@ public class Requirement
         this.lastUpdateDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteRequirement.getLastUpdateDate());
         this.summary = remoteRequirement.isSummary();
         this.plannedEffort = remoteRequirement.getPlannedEffort();
+        
+        //Now the custom properties
+        this.text01 = remoteRequirement.getText01();
+        this.text02 = remoteRequirement.getText02();
+        this.text03 = remoteRequirement.getText03();
+        this.text04 = remoteRequirement.getText04();
+        this.text05 = remoteRequirement.getText05();
+        this.text06 = remoteRequirement.getText06();
+        this.text07 = remoteRequirement.getText07();
+        this.text08 = remoteRequirement.getText08();
+        this.text09 = remoteRequirement.getText09();
+        this.text10 = remoteRequirement.getText10();
+        this.list01 = remoteRequirement.getList01();
+        this.list02 = remoteRequirement.getList02();
+        this.list03 = remoteRequirement.getList03();
+        this.list04 = remoteRequirement.getList04();
+        this.list05 = remoteRequirement.getList05();
+        this.list06 = remoteRequirement.getList06();
+        this.list07 = remoteRequirement.getList07();
+        this.list08 = remoteRequirement.getList08();
+        this.list09 = remoteRequirement.getList09();
+        this.list10 = remoteRequirement.getList10();
     }
     
     /**
@@ -304,30 +325,6 @@ public class Requirement
      */
     public void setCreationDate(Date value) {
         this.creationDate = value;
-    }
-
-    /**
-     * Gets the value of the lastUpdateDate property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Date }
-     *     
-     */
-    public Date getLastUpdateDate() {
-        return lastUpdateDate;
-    }
-
-    /**
-     * Sets the value of the lastUpdateDate property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Date }
-     *     
-     */
-    public void setLastUpdateDate(Date value) {
-        this.lastUpdateDate = value;
     }
 
     /**

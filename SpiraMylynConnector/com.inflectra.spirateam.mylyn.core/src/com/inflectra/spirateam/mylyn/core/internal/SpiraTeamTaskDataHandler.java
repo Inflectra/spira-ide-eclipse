@@ -26,6 +26,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskAttributeMetaData;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
@@ -98,7 +99,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 	}
 
-	private static TaskAttribute createAttribute(TaskData data, TracTicketField field)
+	private static TaskAttribute createAttribute(TaskData data, ArtifactField field)
 	{
 		TaskAttribute attr = data.getRoot().createAttribute(field.getName());
 		TaskAttributeMetaData metaData = attr.getMetaData();
@@ -107,7 +108,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		metaData.setKind(TaskAttribute.KIND_DEFAULT);
 		metaData.setReadOnly(false);
 		metaData.putValue(ARTIFACT_KEY, field.getName());
-		if (field.getType() == TracTicketField.Type.CHECKBOX)
+		if (field.getType() == ArtifactField.Type.CHECKBOX)
 		{
 			// attr.addOption("True", "1");
 			// attr.addOption("False", "0");
@@ -119,7 +120,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				attr.setValue(field.getDefaultValue());
 			}
 		}
-		else if (field.getType() == TracTicketField.Type.SELECT || field.getType() == TracTicketField.Type.RADIO)
+		else if (field.getType() == ArtifactField.Type.SELECT || field.getType() == ArtifactField.Type.RADIO)
 		{
 			metaData.setType(TaskAttribute.TYPE_SINGLE_SELECT);
 			String[] values = field.getOptions();
@@ -157,7 +158,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				}
 			}
 		}
-		else if (field.getType() == TracTicketField.Type.TEXTAREA)
+		else if (field.getType() == ArtifactField.Type.TEXTAREA)
 		{
 			metaData.setType(TaskAttribute.TYPE_LONG_TEXT);
 			if (field.getDefaultValue() != null)
@@ -192,7 +193,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		metaData.putValue(ARTIFACT_KEY, artifactAttribute.getArtifactKey());
 		if (client != null)
 		{
-			TracTicketField field = client.getTicketFieldByName(artifactAttribute.getArtifactKey());
+			ArtifactField field = client.getArtifactFieldByName(artifactAttribute.getArtifactKey());
 			//TODO: Implement repository field options (workflows, etc.)
 			/*
 			Map<String, String> values = SpiraTeamAttributeMapper.getRepositoryOptions(client, attr.getId());

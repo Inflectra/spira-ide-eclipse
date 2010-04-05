@@ -115,7 +115,6 @@ public class SpiraImportExport
 	{
 		return this.soap;
 	}
-	
 
 	public void setData(SpiraTeamClientData data)
 	{

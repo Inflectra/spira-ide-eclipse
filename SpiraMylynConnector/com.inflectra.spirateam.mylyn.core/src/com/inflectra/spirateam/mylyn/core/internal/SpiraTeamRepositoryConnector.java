@@ -170,6 +170,10 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 			{
 				return SpiraTeamCorePlugin.toStatus(repository, e);
 			}
+			catch (CoreException e)
+			{
+				return SpiraTeamCorePlugin.toStatus(repository, e);			
+			}
 			return Status.OK_STATUS;
 		}
 		finally

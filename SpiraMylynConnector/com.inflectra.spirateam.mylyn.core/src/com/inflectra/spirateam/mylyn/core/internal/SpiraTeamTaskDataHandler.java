@@ -193,7 +193,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		metaData.putValue(ARTIFACT_KEY, artifactAttribute.getArtifactKey());
 		if (client != null)
 		{
-			ArtifactField field = client.getArtifactFieldByName(artifactAttribute.getArtifactKey());
+			//ArtifactField field = client.getArtifactFieldByName(artifactAttribute.getArtifactKey());
 			//TODO: Implement repository field options (workflows, etc.)
 			/*
 			Map<String, String> values = SpiraTeamAttributeMapper.getRepositoryOptions(client, attr.getId());
@@ -215,6 +215,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			{
 				attr.getMetaData().setReadOnly(true);
 			}
+			/*
 			if (field != null)
 			{
 				String defaultValue = field.getDefaultValue();
@@ -222,7 +223,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				{
 					attr.setValue(defaultValue);
 				}
-			}
+			}*/
 		}
 		return attr;
 	}

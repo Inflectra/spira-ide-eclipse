@@ -13,6 +13,10 @@ import org.eclipse.mylyn.tasks.core.RepositoryStatus;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.osgi.util.NLS;
 
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraAuthenticationException;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
+
 /**
  * The headless Spira plug-in class.
  * 
@@ -81,28 +85,22 @@ public class SpiraTeamCorePlugin extends Plugin
 	public static IStatus toStatus(TaskRepository repository, Throwable e)
 	{
 		String url = repository.getRepositoryUrl();
-		/*
-		if (e instanceof JiraAuthenticationException)
+		if (e instanceof SpiraAuthenticationException)
 		{
 			return RepositoryStatus.createLoginError(url, PLUGIN_ID);
 		}
-		else if (e instanceof JiraServiceUnavailableException)
+		else if (e instanceof SpiraConnectionException)
 		{
 			return new RepositoryStatus(url, IStatus.ERROR, PLUGIN_ID, RepositoryStatus.ERROR_IO, e.getMessage(), e);
 		}
-		else if (e instanceof JiraRemoteMessageException)
-		{
-			return RepositoryStatus.createHtmlStatus(url, IStatus.ERROR, PLUGIN_ID, RepositoryStatus.ERROR_REPOSITORY,
-					e.getMessage(), ((JiraRemoteMessageException) e).getHtmlMessage());
-		}
-		else if (e instanceof JiraException)
+		else if (e instanceof SpiraException)
 		{
 			return new RepositoryStatus(url, IStatus.ERROR, PLUGIN_ID, RepositoryStatus.ERROR_REPOSITORY,
 					e.getMessage(), e);
 		}
 		else
-		{*/
+		{
 			return RepositoryStatus.createInternalError(PLUGIN_ID, Messages.SpiraTeamCorePlugin_UnexpectedError, e); //$NON-NLS-1$
-		/*}*/
+		}
 	}
 }

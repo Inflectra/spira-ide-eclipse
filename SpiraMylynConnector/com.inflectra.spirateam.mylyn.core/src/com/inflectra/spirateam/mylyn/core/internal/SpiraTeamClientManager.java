@@ -193,10 +193,10 @@ public class SpiraTeamClientManager implements IRepositoryListener
 			AuthenticationCredentials credentials = taskRepository.getCredentials(AuthenticationType.REPOSITORY);
 			if (credentials == null)
 			{
-				throw new SpiraAuthenticationException(Messages.SpiraTeamClientManager_UnableToAuthenticate);
+				throw new SpiraAuthenticationException(Messages.SpiraTeamClientManager_MissingCredentials);
 			}
 			String userName = credentials.getUserName();
-			String password = credentials.getPassword();	
+			String password = credentials.getPassword();
 			client = new SpiraImportExport(url, userName, password);
 			clientByUrl.put(taskRepository.getRepositoryUrl(), client);
 
@@ -207,6 +207,16 @@ public class SpiraTeamClientManager implements IRepositoryListener
 				clientDataByUrl.put(taskRepository.getRepositoryUrl(), data);
 			}
 			client.setData(data);
+		}
+		else
+		{
+			//Update the credentials in case they have been changed
+			AuthenticationCredentials credentials = taskRepository.getCredentials(AuthenticationType.REPOSITORY);
+			if (credentials != null)
+			{
+				client.setUserName(credentials.getUserName());
+				client.setPassword(credentials.getPassword());
+			}
 		}
 		return client;
 	}

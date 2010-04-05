@@ -29,6 +29,7 @@ public class Messages extends NLS
 	public static String SpiraTeamClientManager_CacheNotReadable;
 	public static String SpiraTeamClientManager_CacheNotWritable;
 	public static String SpiraTeamClientManager_UnableToAuthenticate;
+	public static String SpiraTeamClientManager_MissingCredentials;
 	
 	public static String RequirementAttribute_RequirementID;
 	public static String RequirementAttribute_Name;

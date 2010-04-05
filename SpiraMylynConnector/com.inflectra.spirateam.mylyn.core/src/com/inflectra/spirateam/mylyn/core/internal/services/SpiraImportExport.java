@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
@@ -52,6 +53,10 @@ public class SpiraImportExport
 		{
 			this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
 			this.soap = this.service.getImportExportSoap();
+			
+			//Make sure that session is maintained
+			Map<String, Object> requestContext = ((BindingProvider)this.soap).getRequestContext();
+			requestContext.put(BindingProvider.SESSION_MAINTAIN_PROPERTY,true);
 		}
 		catch (WebServiceException ex)
 		{
@@ -75,6 +80,11 @@ public class SpiraImportExport
 		{
 			this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
 			this.soap = this.service.getImportExportSoap();
+			
+			//Make sure that session is maintained
+			Map<String, Object> requestContext = ((BindingProvider)this.soap).getRequestContext();
+			requestContext.put(BindingProvider.SESSION_MAINTAIN_PROPERTY,true);
+
 		}
 		catch (WebServiceException ex)
 		{
@@ -89,6 +99,14 @@ public class SpiraImportExport
 	{
 		return this.userName;
 	}
+	
+	/**
+	 * The user name
+	 */
+	public void setUserName(String userName)
+	{
+		this.userName = userName;
+	}
 
 	/**
 	 * The password
@@ -96,6 +114,14 @@ public class SpiraImportExport
 	public String getPassword()
 	{
 		return this.password;
+	}
+	
+	/**
+	 * The password
+	 */
+	public void setPassword(String password)
+	{
+		this.password = password;
 	}
 	
 	/**
@@ -156,6 +182,7 @@ public class SpiraImportExport
 			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
 			if (!success)
 			{
+				//throw new SpiraException (this.userName + "/" + this.password);
 				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
 			}
 				

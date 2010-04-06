@@ -191,14 +191,14 @@ public class SpiraImportExport
 			{
 				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
 			}
-			if (artifactKey.substring(0, 2) != SpiraTeamCorePlugin.ARTIFACT_PREFIX_REQUIREMENT)
+			if (!artifactKey.substring(0, 2).equals(SpiraTeamCorePlugin.ARTIFACT_PREFIX_REQUIREMENT))
 			{
 				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
 			}
 			int requirementId;
 			try
 			{
-				requirementId = Integer.parseInt(artifactKey.substring(0));
+				requirementId = Integer.parseInt(artifactKey.substring(2));
 			}
 			catch (NumberFormatException e)
 			{
@@ -211,6 +211,16 @@ public class SpiraImportExport
 			{
 				//throw new SpiraException (this.userName + "/" + this.password);
 				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+			
+			//Next we need to connect to the appropriate project
+			//TODO: Replace hard-coded project ID with real project id
+			int projectId = 1;
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
 			}
 				
 			//Call the appropriate method

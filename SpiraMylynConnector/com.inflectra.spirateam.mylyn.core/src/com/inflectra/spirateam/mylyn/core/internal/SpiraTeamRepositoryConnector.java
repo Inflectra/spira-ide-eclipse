@@ -21,6 +21,7 @@ import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.TaskRepositoryLocationFactory;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
+import org.eclipse.mylyn.tasks.core.data.TaskMapper;
 import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.PredefinedFilter;
@@ -208,10 +209,54 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	public void updateTaskFromTaskData(TaskRepository taskRepository,
 			ITask task, TaskData taskData)
 	{
-		// TODO Auto-generated method stub
-
+		TaskMapper mapper = getTaskMapping(taskData);
+		mapper.applyTo(task);
+		String status = mapper.getStatus();
+		/*
+		if (status != null)
+		{
+			if (isCompleted(mapper.getStatus()))
+			{
+				Date modificationDate = mapper.getModificationDate();
+				if (modificationDate == null)
+				{
+					// web mode does not set a date
+					modificationDate = DEFAULT_COMPLETION_DATE;
+				}
+				task.setCompletionDate(modificationDate);
+			}
+			else
+			{
+				task.setCompletionDate(null);
+			}
+		}
+		task.setUrl(taskRepository.getRepositoryUrl() + ITracClient.TICKET_URL + taskData.getTaskId());
+		if (!taskData.isPartial())
+		{
+			task.setAttribute(TASK_KEY_SUPPORTS_SUBTASKS, Boolean.toString(taskDataHandler.supportsSubtasks(taskData)));
+			Date date = task.getModificationDate();
+			task.setAttribute(TASK_KEY_UPDATE_DATE, (date != null) ? TracUtil.toTracTime(date) + "" : null); //$NON-NLS-1$
+		}*/
 	}
 	
+	@Override
+	public SpiraTeamTaskMapper getTaskMapping(TaskData taskData)
+	{
+		try
+		{
+			TaskRepository taskRepository = taskData.getAttributeMapper().getTaskRepository();
+			SpiraImportExport client = (taskRepository != null) ? getClientManager().getSpiraTeamClient(taskRepository) : null;
+			return new SpiraTeamTaskMapper(taskData, client);
+		}
+		catch (MalformedURLException e)
+		{
+			return null;
+		}
+		catch (SpiraException e)
+		{
+			return null;
+		}
+	}
 
 	@Override
 	public boolean canSynchronizeTask(TaskRepository taskRepository, ITask task)

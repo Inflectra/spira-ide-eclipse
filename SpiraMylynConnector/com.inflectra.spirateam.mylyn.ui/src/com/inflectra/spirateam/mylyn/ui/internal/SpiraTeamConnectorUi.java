@@ -30,6 +30,12 @@ public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 		// Return the connector kind string
 		return SpiraTeamCorePlugin.CONNECTOR_KIND;
 	}
+	
+	@Override
+	public String getTaskKindLabel(ITask repositoryTask)
+	{
+		return "Requirement";
+	}
 
 	@Override
 	public IWizard getNewTaskWizard(TaskRepository taskRepository,

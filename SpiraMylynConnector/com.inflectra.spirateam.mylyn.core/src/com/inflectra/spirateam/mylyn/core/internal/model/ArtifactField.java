@@ -12,6 +12,11 @@ import java.io.Serializable;
 public class ArtifactField implements Serializable
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2795833229954123352L;
+
 	public enum Type
 	{
 		TEXT, CHECKBOX, SELECT, RADIO, TEXTAREA;

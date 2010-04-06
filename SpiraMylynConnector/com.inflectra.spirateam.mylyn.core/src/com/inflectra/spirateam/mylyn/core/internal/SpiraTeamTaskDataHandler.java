@@ -284,8 +284,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	{
 		data.setVersion(TASK_DATA_VERSION);
 
-		createAttribute(data, client, RequirementAttribute.NAME);
-		createAttribute(data, client, RequirementAttribute.DESCRIPTION);
+		createAttribute(data, client, ArtifactAttribute.NAME);
+		createAttribute(data, client, ArtifactAttribute.DESCRIPTION);
 		/*
 		if (existingTask)
 		{
@@ -409,13 +409,13 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		
 		if (requirement.getName() != null)
 		{
-			TaskAttribute taskAttribute = data.getRoot().getAttribute(RequirementAttribute.NAME.getArtifactKey());
+			TaskAttribute taskAttribute = data.getRoot().getAttribute(ArtifactAttribute.NAME.getArtifactKey());
 			taskAttribute.setValue(requirement.getName());
 			changedAttributes.add(taskAttribute);
 		}
 		if (requirement.getDescription() != null)
 		{
-			TaskAttribute taskAttribute = data.getRoot().getAttribute(RequirementAttribute.DESCRIPTION.getArtifactKey());
+			TaskAttribute taskAttribute = data.getRoot().getAttribute(ArtifactAttribute.DESCRIPTION.getArtifactKey());
 			taskAttribute.setValue(requirement.getDescription());
 			changedAttributes.add(taskAttribute);
 		}

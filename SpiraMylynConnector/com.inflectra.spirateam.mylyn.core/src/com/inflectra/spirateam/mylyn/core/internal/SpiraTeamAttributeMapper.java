@@ -46,4 +46,12 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 		String id = attribute.getId();
 		return TaskAttribute.COMMENT_NEW.equals(id) || TaskAttribute.ADD_SELF_CC.equals(id);
 	}
+	
+
+	@Override
+	public String mapToRepositoryKey(TaskAttribute parent, String taskKey)
+	{
+		ArtifactAttribute attribute = ArtifactAttribute.getByTaskKey(taskKey);
+		return (attribute != null) ? attribute.getArtifactKey() : taskKey;
+	}
 }

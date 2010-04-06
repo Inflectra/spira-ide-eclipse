@@ -81,11 +81,10 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	}
 
 	@Override
-	public TaskData getTaskData(TaskRepository taskRepository, String taskId,
+	public TaskData getTaskData(TaskRepository taskRepository, String taskKey,
 			IProgressMonitor monitor) throws CoreException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return taskDataHandler.getTaskData(taskRepository, taskKey, monitor);
 	}
 
 	@Override
@@ -153,7 +152,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 								}
 							}
 							// preSyncronization() only handles full synchronizations
-							ITask task = taskById.get(SpiraTeamCorePlugin.ARTIFACT_PREFIX_REQUIREMENT + requirement.getRequirementId()); //$NON-NLS-1$
+							ITask task = taskById.get(requirement.getArtifactKey()); //$NON-NLS-1$
 							if (task != null && hasTaskChanged(repository, task, taskData))
 							{
 								session.markStale(task);

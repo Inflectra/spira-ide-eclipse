@@ -2,6 +2,7 @@ package com.inflectra.spirateam.mylyn.core.internal.model;
 
 import java.util.Date;
 
+import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteRequirement;
 /**
@@ -27,7 +28,7 @@ public class Requirement
 
     public enum Key
     {
-		REQUIREMENT_ID("requirementId"), NAME("name"), DESCRIPTION("description");	//$NON-NLS-1$
+		ARTIFACT_KEY("artifactKey"), NAME("name"), DESCRIPTION("description");	//$NON-NLS-1$
 
 		public static Key fromKey(String name)
 		{
@@ -112,6 +113,15 @@ public class Requirement
     }
     
     /**
+     * Gets the value of the artifact key (format is RQ<requirement-id>)
+     * @return The prefixed requirement ID
+     */
+    public String getArtifactKey()
+    {
+    	return SpiraTeamCorePlugin.ARTIFACT_PREFIX_REQUIREMENT + this.requirementId;
+    }
+    
+    /**
      * Gets the value of the requirementId property.
      * 
      * @return
@@ -119,7 +129,8 @@ public class Requirement
      *     {@link Integer }
      *     
      */
-    public Integer getRequirementId() {
+    public Integer getRequirementId()
+    {
         return requirementId;
     }
 

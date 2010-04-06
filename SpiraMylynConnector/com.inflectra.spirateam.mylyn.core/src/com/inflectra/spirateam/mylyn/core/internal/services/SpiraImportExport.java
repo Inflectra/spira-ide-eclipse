@@ -7,6 +7,7 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.*;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.osgi.util.NLS;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
+import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.*;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
@@ -169,8 +171,64 @@ public class SpiraImportExport
 	}
 	
 	/**
+	 * Gets a single requirement by its key (RQ prefix + requirement id)
+	 * @param artifactKey The key for the requirement (RQ prefix + requirement id)
+	 * @param monitor
+	 * @return Single requirement object
+	 * @throws SpiraException
+	 */
+	public Requirement requirementRetrieveByKey(String artifactKey, IProgressMonitor monitor)
+		throws SpiraException
+	{
+		try
+		{	
+			//First make sure that the artifact key is in the correct format
+			if (artifactKey == null)
+			{
+				throw new SpiraInvalidArtifactKeyException(Messages.SpiraImportExport_ArtifactKeyNull);
+			}
+			if (artifactKey.length() < 3)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
+			}
+			if (artifactKey.substring(0, 2) != SpiraTeamCorePlugin.ARTIFACT_PREFIX_REQUIREMENT)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
+			}
+			int requirementId;
+			try
+			{
+				requirementId = Integer.parseInt(artifactKey.substring(0));
+			}
+			catch (NumberFormatException e)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
+			}
+			
+			//Next we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+				
+			//Call the appropriate method
+			RemoteRequirement remoteRequirement = soap.requirementRetrieveById(requirementId);
+			
+			//Convert the SOAP requirement into the local version
+			Requirement requirement = new Requirement(remoteRequirement);
+	        return requirement;
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+	
+	/**
 	 * Gets the list of requirements assigned to the current user
-	 * @return
+	 * @return List of requirements
 	 * @throws SpiraException
 	 */
 	public List<Requirement> requirementRetrieveAssigned(IProgressMonitor monitor)
@@ -202,6 +260,5 @@ public class SpiraImportExport
 		{
 			throw new SpiraException(ex.getMessage());
 		}
-
 	}
 }

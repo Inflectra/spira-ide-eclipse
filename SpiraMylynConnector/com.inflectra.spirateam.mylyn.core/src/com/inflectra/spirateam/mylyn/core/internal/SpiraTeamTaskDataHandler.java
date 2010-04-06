@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.mylyn.commons.net.Policy;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
@@ -72,6 +73,43 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 	}
 
+	public TaskData getTaskData(TaskRepository repository, String artifactKey, IProgressMonitor monitor)
+			throws CoreException
+	{
+		monitor = Policy.monitorFor(monitor);
+		try
+		{
+			monitor.beginTask("Task Download", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
+			return downloadTaskData(repository, artifactKey, monitor);
+		}
+		finally
+		{
+			monitor.done();
+		}
+	}
+
+	public TaskData downloadTaskData(TaskRepository repository, String artifactKey, IProgressMonitor monitor)
+			throws CoreException
+	{
+		try
+		{
+			SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(repository);
+			//client.updateAttributes(monitor, false);
+			Requirement requirement = client.requirementRetrieveByKey(artifactKey, monitor);
+			
+			return createTaskDataFromRequirement(client, repository, requirement, monitor);
+		}
+		catch (OperationCanceledException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			// TODO catch TracException
+			throw new CoreException(SpiraTeamCorePlugin.toStatus(repository, e));
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler#initializeTaskData(org.eclipse.mylyn.tasks.core.TaskRepository, org.eclipse.mylyn.tasks.core.data.TaskData, org.eclipse.mylyn.tasks.core.ITaskMapping, org.eclipse.core.runtime.IProgressMonitor)
 	 */
@@ -307,7 +345,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			IProgressMonitor monitor) throws CoreException
 	{
 		TaskData taskData = new TaskData(getAttributeMapper(repository), SpiraTeamCorePlugin.CONNECTOR_KIND,
-				repository.getRepositoryUrl(), SpiraTeamCorePlugin.ARTIFACT_PREFIX_REQUIREMENT + requirement.getRequirementId());
+				repository.getRepositoryUrl(), requirement.getArtifactKey());
 		taskData.setVersion(TASK_DATA_VERSION);
 		try
 		{

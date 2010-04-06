@@ -28,7 +28,8 @@ public class Requirement
 
     public enum Key
     {
-		ARTIFACT_KEY("artifactKey"), NAME("name"), DESCRIPTION("description");	//$NON-NLS-1$
+		ARTIFACT_KEY("artifactKey"), NAME("name"), DESCRIPTION("description"),
+		ARTIFACT_TYPE("artifactType");	//$NON-NLS-1$
 
 		public static Key fromKey(String name)
 		{

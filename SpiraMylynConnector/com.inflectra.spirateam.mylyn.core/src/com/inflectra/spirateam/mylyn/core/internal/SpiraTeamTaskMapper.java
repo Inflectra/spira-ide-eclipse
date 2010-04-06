@@ -1,5 +1,6 @@
 package com.inflectra.spirateam.mylyn.core.internal;
 
+import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskMapper;
 
@@ -14,4 +15,15 @@ public class SpiraTeamTaskMapper extends TaskMapper
 		super(taskData);
 		this.client = client;
 	}
+	
+	/*
+	@Override
+	public String getTaskKind()
+	{
+		String tracTaskKind = super.getTaskKind();
+		
+		TaskKind taskKind = TaskKind.fromType(tracTaskKind);
+		return (taskKind != null) ? taskKind.toString() : tracTaskKind;
+		return "Requirement";
+	}*/
 }

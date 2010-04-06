@@ -1,7 +1,9 @@
 package com.inflectra.spirateam.mylyn.ui.internal;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
+import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.AbstractRepositoryConnectorUi;
@@ -60,6 +62,29 @@ public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 	{
 		//Returns the handle to the Spira settings page
 		return new SpiraTeamRepositorySettingsPage(taskRepository);
+	}
+	
+
+	@Override
+	public ImageDescriptor getTaskKindOverlay(ITask task)
+	{
+		//TODO: Change based on type
+		/*
+		TaskKind taskKind = TaskKind.fromString(task.getTaskKind());
+		if (taskKind == TaskKind.DEFECT)
+		{
+			return TracImages.OVERLAY_DEFECT;
+		}
+		else if (taskKind == TaskKind.ENHANCEMENT)
+		{
+			return TracImages.OVERLAY_ENHANCEMENT;
+		}
+		else if (taskKind == TaskKind.TASK)
+		{
+			return null;
+		}
+		return super.getTaskKindOverlay(task);*/
+		return SpiraTeamImages.OVERLAY_REQUIREMENT;
 	}
 
 	@Override

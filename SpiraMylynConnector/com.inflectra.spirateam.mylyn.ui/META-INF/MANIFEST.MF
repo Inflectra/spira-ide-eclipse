@@ -16,3 +16,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.mylyn.commons.net;bundle-version="3.3.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-AutoStart: true
+Import-Package: org.eclipse.mylyn.internal.provisional.commons.ui

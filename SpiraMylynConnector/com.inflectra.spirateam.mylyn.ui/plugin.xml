@@ -18,5 +18,12 @@
             overlayIcon="icons/overlays/spira.gif">
       </connectorUi>
    </extension>
+   <extension
+         point="org.eclipse.mylyn.tasks.ui.editors">
+      <pageFactory
+            class="com.inflectra.spirateam.mylyn.ui.internal.editor.SpiraTeamTaskEditorFactory"
+            id="com.inflectra.spirateam.mylyn.ui.pageFactory">
+      </pageFactory>
+   </extension>
 
 </plugin>

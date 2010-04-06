@@ -141,7 +141,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 					{
 						TaskData taskData = taskDataHandler.createTaskDataFromRequirement(client, repository, requirement, monitor);
 						taskData.setPartial(true);
-						if (session != null && !session.isFullSynchronization() && hasRichEditor(repository))
+						if (session != null && hasRichEditor(repository))
 						{
 							if (taskById == null)
 							{

@@ -304,26 +304,19 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	{
 		data.setVersion(TASK_DATA_VERSION);
 
+		//Common fields for all artifacts
 		createAttribute(data, client, ArtifactAttribute.NAME);
 		createAttribute(data, client, ArtifactAttribute.DESCRIPTION);
-		/*
+		
 		if (existingTask)
 		{
-			createAttribute(data, client, TracAttribute.TIME);
-			createAttribute(data, client, TracAttribute.CHANGE_TIME);
-			createAttribute(data, client, TracAttribute.STATUS);
-			TaskAttribute attribute = createAttribute(data, client, TracAttribute.RESOLUTION);
-			// reset default value to avoid "fixed" resolution on tasks created through web 
-			attribute.setValue(""); //$NON-NLS-1$
+			createAttribute(data, client, ArtifactAttribute.CREATION_DATE);
+			createAttribute(data, client, ArtifactAttribute.LAST_UPDATE_DATE);
 		}
-		createAttribute(data, client, TracAttribute.COMPONENT);
-		createAttribute(data, client, TracAttribute.VERSION);
-		createAttribute(data, client, TracAttribute.PRIORITY);
-		createAttribute(data, client, TracAttribute.SEVERITY);
-		createAttribute(data, client, TracAttribute.MILESTONE);
-		createAttribute(data, client, TracAttribute.TYPE);
-		createAttribute(data, client, TracAttribute.KEYWORDS);
+		createAttribute(data, client, ArtifactAttribute.OWNER_ID);
+		
 		// custom fields
+		/*
 		TracTicketField[] fields = client.getTicketFields();
 		if (fields != null) {
 			for (TracTicketField field : fields) {
@@ -490,60 +483,32 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 	}
 	
+	private static void updateTaskAttribute (TaskData data, Set<TaskAttribute> changedAttributes, ArtifactAttribute artifactAttribute, String stringValue)
+	{
+		TaskAttribute taskAttribute = data.getRoot().getAttribute(artifactAttribute.getArtifactKey());
+		if (stringValue == null)
+		{
+			taskAttribute.clearValues();
+		}
+		else
+		{
+			taskAttribute.setValue(stringValue);
+		}
+		changedAttributes.add(taskAttribute);
+	}
+	
 	public static Set<TaskAttribute> updateTaskData(TaskRepository repository, TaskData data, Artifact artifact)
 	{
 		Set<TaskAttribute> changedAttributes = new HashSet<TaskAttribute>();
 
-		Date lastUpdateDate = artifact.getLastUpdateDate();
-		/*
-		if (lastUpdateDate != null)
-		{
-			TaskAttribute taskAttribute = data.getRoot().getAttribute(TracAttribute.CHANGE_TIME.getTracKey());
-			taskAttribute.setValue(TracUtil.toTracTime(lastChanged) + ""); //$NON-NLS-1$
-			changedAttributes.add(taskAttribute);
-		}
+		//First we set the cross-attribute properties
+		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.NAME, artifact.getName());
+		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.DESCRIPTION, artifact.getDescription());
+		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.OWNER_ID, artifact.getOwnerId().toString());
+		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.CREATION_DATE, artifact.getCreationDate().toString());
+		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.LAST_UPDATE_DATE, artifact.getLastUpdateDate().toString());
 
-		if (ticket.getCreated() != null)
-		{
-			TaskAttribute taskAttribute = data.getRoot().getAttribute(TracAttribute.TIME.getTracKey());
-			taskAttribute.setValue(TracUtil.toTracTime(ticket.getCreated()) + ""); //$NON-NLS-1$
-			changedAttributes.add(taskAttribute);
-		}*/
-
-		//TODO: Need to detect each type of artifact, or do we need to?
-		TaskAttribute taskAttribute;
-		/*
-		TaskAttribute taskAttribute = data.getRoot().getAttribute(ArtifactAttribute.ARTIFACT_TYPE.getArtifactKey());
-		taskAttribute.setValue("Requirement");
-		changedAttributes.add(taskAttribute);*/
-		
-		if (artifact.getName() != null)
-		{
-			taskAttribute = data.getRoot().getAttribute(ArtifactAttribute.NAME.getArtifactKey());
-			taskAttribute.setValue(artifact.getName());
-			changedAttributes.add(taskAttribute);
-		}
-		if (artifact.getDescription() != null)
-		{
-			taskAttribute = data.getRoot().getAttribute(ArtifactAttribute.DESCRIPTION.getArtifactKey());
-			taskAttribute.setValue(artifact.getDescription());
-			changedAttributes.add(taskAttribute);
-		}
-		/* TODO: Implement this to more easily set the attributes
-		Map<String, String> valueByKey = ticket.getValues();
-		for (String key : valueByKey.keySet())
-		{
-			TaskAttribute taskAttribute = data.getRoot().getAttribute(key);
-			if (taskAttribute != null)
-			{
-				taskAttribute.setValue(valueByKey.get(key));
-				changedAttributes.add(taskAttribute);
-			}
-			else
-			{
-				// TODO log missing attribute?
-			}
-		}*/
+		//Need to detect each type of artifact, for the other attributes
 
 		/* TODO: Handle SpiraTeam comments
 		TracComment[] comments = ticket.getComments();

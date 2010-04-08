@@ -58,7 +58,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	@Override
 	public boolean canCreateTaskFromKey(TaskRepository repository)
 	{
-		// We can create a task from its Spira ID 
+		// We can create a task from its artifact key
 		return true;
 	}
 

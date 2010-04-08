@@ -3,6 +3,7 @@ package com.inflectra.spirateam.mylyn.core.internal.model;
 import java.util.Date;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
+import com.inflectra.spirateam.mylyn.core.internal.model.Requirement.Key;
 
 /**
  * Represents a generic SpiraTeam artifact
@@ -38,6 +39,48 @@ public class Artifact
     protected Integer list08;
     protected Integer list09;
     protected Integer list10;
+    
+    public enum Key
+    {
+    	//Common attributes
+    	ARTIFACT_KEY("common.artifactKey"),
+    	ARTIFACT_TYPE("common.artifactType"),
+    	NAME("common.name"),
+    	DESCRIPTION("common.description"),		
+    	CREATION_DATE("common.creationDate"),
+    	LAST_UPDATE_DATE("common.lastUpdateDate"),
+    	OWNER_ID("common.ownerId");
+		
+		public static Key fromKey(String name)
+		{
+			for (Key key : Key.values())
+			{
+				if (key.getKey().equals(name))
+				{
+					return key;
+				}
+			}
+			return null;
+		}
+
+		private String key;
+
+		Key(String key)
+		{
+			this.key = key;
+		}
+
+		@Override
+		public String toString()
+		{
+			return key;
+		}
+
+		public String getKey()
+		{
+			return key;
+		}
+	}
     
     /**
      * Gets the value of the artifactId property.

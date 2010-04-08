@@ -1,5 +1,7 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
+import java.util.Date;
+
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
@@ -21,9 +23,13 @@ public class Requirement
 
     public enum Key
     {
-		ARTIFACT_KEY("artifactKey"), NAME("name"), DESCRIPTION("description"),
-		ARTIFACT_TYPE("artifactType");	//$NON-NLS-1$
-
+		//Requirement-specific attributes
+		STATUS_ID("requirement.artifactKey"),
+		AUTHOR_ID("requirement.artifactKey"),
+		IMPORTANCE_ID("requirement.artifactKey"),
+		RELEASE_ID("requirement.artifactKey"),
+		PLANNED_EFFORT("requirement.artifactKey");
+		
 		public static Key fromKey(String name)
 		{
 			for (Key key : Key.values())

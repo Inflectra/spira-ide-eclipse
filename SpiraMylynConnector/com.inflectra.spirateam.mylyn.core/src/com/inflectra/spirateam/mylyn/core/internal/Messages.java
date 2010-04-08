@@ -35,7 +35,10 @@ public class Messages extends NLS
 	public static String SpiraTeamClientManager_UnableToAuthenticate;
 	public static String SpiraTeamClientManager_MissingCredentials;
 	
-	public static String RequirementAttribute_ArtifactKey;
-	public static String RequirementAttribute_Name;
-	public static String RequirementAttribute_Description;
+	public static String ArtifactAttribute_ArtifactKey;
+	public static String ArtifactAttribute_Name;
+	public static String ArtifactAttribute_Description;
+	public static String ArtifactAttribute_CreationDate;
+	public static String ArtifactAttribute_LastUpdateDate;
+	public static String ArtifactAttribute_OwnerId;
 }

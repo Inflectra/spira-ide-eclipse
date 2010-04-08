@@ -43,8 +43,12 @@ public class Incident extends Artifact
     
     public enum Key
     {
-		ARTIFACT_KEY("artifactKey"), NAME("name"), DESCRIPTION("description"),
-		ARTIFACT_TYPE("artifactType");	//$NON-NLS-1$
+		//Incident-specific attributes
+		STATUS_ID("requirement.artifactKey"),
+		AUTHOR_ID("requirement.artifactKey"),
+		IMPORTANCE_ID("requirement.artifactKey"),
+		RELEASE_ID("requirement.artifactKey"),
+		PLANNED_EFFORT("requirement.artifactKey");
 
 		public static Key fromKey(String name)
 		{

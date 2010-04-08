@@ -10,6 +10,7 @@ import java.util.Map;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamAttributeMapper.Flag;
+import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 
 /**
@@ -19,11 +20,14 @@ import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
  */
 public enum ArtifactAttribute
 {
-	//Requirement attributes
-	ARTIFACT_KEY(Requirement.Key.ARTIFACT_KEY, Messages.RequirementAttribute_ArtifactKey, TaskAttribute.TASK_KEY, TaskAttribute.TYPE_SHORT_TEXT, Flag.PEOPLE),
-	NAME(Requirement.Key.NAME, Messages.RequirementAttribute_Name, TaskAttribute.SUMMARY, TaskAttribute.TYPE_SHORT_RICH_TEXT),
-	DESCRIPTION(Requirement.Key.DESCRIPTION, Messages.RequirementAttribute_Description, TaskAttribute.DESCRIPTION, TaskAttribute.TYPE_LONG_RICH_TEXT);
-
+	//Common attributes
+	ARTIFACT_KEY(Artifact.Key.ARTIFACT_KEY, Messages.ArtifactAttribute_ArtifactKey, TaskAttribute.TASK_KEY, TaskAttribute.TYPE_SHORT_TEXT),
+	NAME(Artifact.Key.NAME, Messages.ArtifactAttribute_Name, TaskAttribute.SUMMARY, TaskAttribute.TYPE_SHORT_RICH_TEXT),
+	DESCRIPTION(Artifact.Key.DESCRIPTION, Messages.ArtifactAttribute_Description, TaskAttribute.DESCRIPTION, TaskAttribute.TYPE_LONG_RICH_TEXT),
+	CREATION_DATE(Artifact.Key.CREATION_DATE, Messages.ArtifactAttribute_CreationDate, TaskAttribute.DATE_CREATION, TaskAttribute.TYPE_DATE, Flag.READ_ONLY),
+	LAST_UPDATE_DATE(Artifact.Key.LAST_UPDATE_DATE, Messages.ArtifactAttribute_LastUpdateDate, TaskAttribute.DATE_MODIFICATION, TaskAttribute.TYPE_DATE),
+	OWNER_ID(Artifact.Key.OWNER_ID, Messages.ArtifactAttribute_OwnerId, TaskAttribute.USER_ASSIGNED, TaskAttribute.TYPE_PERSON, Flag.PEOPLE);
+	
 	static Map<String, ArtifactAttribute> attributeByArtifactKey = new HashMap<String, ArtifactAttribute>();
 
 	static Map<String, String> artifactKeyByTaskKey = new HashMap<String, String>();
@@ -59,7 +63,7 @@ public enum ArtifactAttribute
 		return null;
 	}
 
-	ArtifactAttribute(Requirement.Key artifactKey, String prettyName, String taskKey, String type, Flag firstFlag, Flag... moreFlags)
+	ArtifactAttribute(Artifact.Key artifactKey, String prettyName, String taskKey, String type, Flag firstFlag, Flag... moreFlags)
 	{
 		this.artifactKey = artifactKey.getKey();
 		this.taskKey = taskKey;
@@ -75,7 +79,7 @@ public enum ArtifactAttribute
 		}
 	}
 
-	ArtifactAttribute(Requirement.Key artifactKey, String prettyName, String taskKey, String type)
+	ArtifactAttribute(Artifact.Key artifactKey, String prettyName, String taskKey, String type)
 	{
 		this(artifactKey, prettyName, taskKey, type, null);
 	}

@@ -1,7 +1,5 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
-import java.util.Date;
-
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteRequirement;
@@ -55,14 +53,7 @@ public class Requirement
 			return key;
 		}
 	}
-    
-    /**
-     * Creates an empty requirement
-     */
-    public Requirement()
-    {
-    }
-    
+       
     /**
      * Creates a requirement based on its equivalent SOAP object
      * @param remoteRequirement The SOAP requirement

@@ -2,8 +2,6 @@ package com.inflectra.spirateam.mylyn.core.internal.model;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.XmlElement;
-
 /**
  * Represents a generic SpiraTeam artifact
  * 
@@ -38,29 +36,29 @@ public class Artifact
     protected Integer list08;
     protected Integer list09;
     protected Integer list10;
-
+    
     /**
-     * Gets the value of the requirementId property.
+     * Gets the value of the artifactId property.
      * 
      * @return
      *     possible object is
      *     {@link Integer }
      *     
      */
-    public Integer getRequirementId()
+    public Integer getArtifactId()
     {
         return this.artifactId;
     }
 
     /**
-     * Sets the value of the requirementId property.
+     * Sets the value of the artifactId property.
      * 
      * @param value
      *     allowed object is
      *     {@link Integer }
      *     
      */
-    public void setRequirementId(Integer value)
+    public void setArtifactId(Integer value)
     {
         this.artifactId = value;
     }

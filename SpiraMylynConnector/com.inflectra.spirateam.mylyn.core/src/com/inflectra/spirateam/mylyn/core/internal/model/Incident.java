@@ -1,14 +1,11 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
 import java.util.Date;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteRequirement;
+import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteIncident;
 /**
  * Represents a single incident in SpiraTeam
  *
@@ -42,7 +39,79 @@ public class Incident extends Artifact
     protected String verifiedReleaseVersionNumber;
     protected Boolean incidentStatusOpenStatus;
     
-
+    /**
+     * Creates an incident based on its equivalent SOAP object
+     * @param remoteIncident The SOAP incident
+     */
+    public Incident(RemoteIncident remoteIncident)
+    {
+    	//Set the various member variables
+        this.artifactId = remoteIncident.getIncidentId();
+        this.projectId = remoteIncident.getProjectId();
+        this.ownerId = remoteIncident.getOwnerId();
+        this.name = remoteIncident.getName();
+        this.description = remoteIncident.getDescription();
+        this.creationDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteIncident.getCreationDate());
+        this.lastUpdateDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteIncident.getLastUpdateDate());
+        this.priorityId = remoteIncident.getPriorityId();
+        this.severityId = remoteIncident.getSeverityId();
+        this.incidentStatusId = remoteIncident.getIncidentStatusId();
+        this.incidentTypeId = remoteIncident.getIncidentStatusId();
+        this.openerId = remoteIncident.getOpenerId();
+        this.testRunStepId = remoteIncident.getTestRunStepId();
+        this.detectedReleaseId = remoteIncident.getDetectedReleaseId();
+        this.resolvedReleaseId = remoteIncident.getResolvedReleaseId();
+        this.verifiedReleaseId = remoteIncident.getVerifiedReleaseId();
+        this.startDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteIncident.getStartDate());
+        this.closedDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteIncident.getClosedDate());
+        this.completionPercent = remoteIncident.getCompletionPercent();
+        this.estimatedEffort = remoteIncident.getEstimatedEffort();
+        this.actualEffort = remoteIncident.getActualEffort();
+        this.priorityName = remoteIncident.getPriorityName();
+        this.severityName = remoteIncident.getSeverityName();
+        this.incidentStatusName = remoteIncident.getIncidentStatusName();
+        this.incidentTypeName = remoteIncident.getIncidentTypeName();
+        this.openerName = remoteIncident.getOpenerName();
+        this.ownerName = remoteIncident.getOwnerName();
+        this.projectName = remoteIncident.getProjectName();
+        this.detectedReleaseVersionNumber = remoteIncident.getDetectedReleaseVersionNumber();
+        this.resolvedReleaseVersionNumber = remoteIncident.getResolvedReleaseVersionNumber();
+        this.verifiedReleaseVersionNumber = remoteIncident.getVerifiedReleaseVersionNumber();
+        this.incidentStatusOpenStatus = remoteIncident.isIncidentStatusOpenStatus();
+        
+        //Now the custom properties
+        this.text01 = remoteIncident.getText01();
+        this.text02 = remoteIncident.getText02();
+        this.text03 = remoteIncident.getText03();
+        this.text04 = remoteIncident.getText04();
+        this.text05 = remoteIncident.getText05();
+        this.text06 = remoteIncident.getText06();
+        this.text07 = remoteIncident.getText07();
+        this.text08 = remoteIncident.getText08();
+        this.text09 = remoteIncident.getText09();
+        this.text10 = remoteIncident.getText10();
+        this.list01 = remoteIncident.getList01();
+        this.list02 = remoteIncident.getList02();
+        this.list03 = remoteIncident.getList03();
+        this.list04 = remoteIncident.getList04();
+        this.list05 = remoteIncident.getList05();
+        this.list06 = remoteIncident.getList06();
+        this.list07 = remoteIncident.getList07();
+        this.list08 = remoteIncident.getList08();
+        this.list09 = remoteIncident.getList09();
+        this.list10 = remoteIncident.getList10();
+    }
+    
+    /**
+     * Gets the value of the artifact key (format is IN<incident-id>)
+     * @return The prefixed incident ID
+     */
+    @Override
+    public String getArtifactKey()
+    {
+    	return SpiraTeamCorePlugin.ARTIFACT_PREFIX_INCIDENT + this.artifactId;
+    }
+    
     /**
      * Gets the value of the priorityId property.
      * 

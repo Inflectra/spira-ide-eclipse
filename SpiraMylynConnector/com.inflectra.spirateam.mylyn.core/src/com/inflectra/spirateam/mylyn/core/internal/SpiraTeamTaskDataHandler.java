@@ -327,6 +327,23 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT);
 		}
 		
+		//Incident-specific fields
+		if (artifactType.equals(ArtifactType.INCIDENT))
+		{
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_PRIORITY_ID);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_SEVERITY_ID);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_STATUS_ID);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_TYPE_ID);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_DETECTED_RELEASE_ID);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_RESOLVED_RELEASE_ID);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_VERIFIED_RELEASE_ID);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_START_DATE);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_CLOSED_DATE);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT);
+		}
+		
 		//Task-specific fields
 		if (artifactType.equals(ArtifactType.TASK))
 		{
@@ -556,6 +573,19 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		
 		if (artifact instanceof Incident)
 		{
+			Incident incident = (Incident)artifact;
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_PRIORITY_ID, incident.getPriorityId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_SEVERITY_ID, incident.getSeverityId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_STATUS_ID, incident.getIncidentStatusId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_TYPE_ID, incident.getIncidentTypeId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_DETECTED_RELEASE_ID, incident.getDetectedReleaseId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_RESOLVED_RELEASE_ID, incident.getResolvedReleaseId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_VERIFIED_RELEASE_ID, incident.getVerifiedReleaseId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_START_DATE, incident.getStartDate() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_CLOSED_DATE, incident.getClosedDate() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE, incident.getCompletionPercent() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT, incident.getEstimatedEffort() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT, incident.getActualEffort() + "");
 		}
 		
 		if (artifact instanceof Task)
@@ -570,7 +600,6 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE, task.getCompletionPercent() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ESTIMATED_EFFORT, task.getEstimatedEffort() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ACTUAL_EFFORT, task.getActualEffort() + "");
-
 		}
 
 		/* TODO: Handle SpiraTeam comments

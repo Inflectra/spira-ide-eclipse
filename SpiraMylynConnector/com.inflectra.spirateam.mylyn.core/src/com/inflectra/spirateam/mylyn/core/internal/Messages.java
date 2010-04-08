@@ -57,4 +57,17 @@ public class Messages extends NLS
 	public static String TaskAttribute_CompletionPercentage;
 	public static String TaskAttribute_EstimatedEffort;
 	public static String TaskAttribute_ActualEffort;
+	
+	public static String IncidentAttribute_PriorityId;
+	public static String IncidentAttribute_SeverityId;
+	public static String IncidentAttribute_StatusId;
+	public static String IncidentAttribute_TypeId;
+	public static String IncidentAttribute_DetectedReleaseId;
+	public static String IncidentAttribute_ResolvedReleaseId;
+	public static String IncidentAttribute_VerifiedReleaseId;
+	public static String IncidentAttribute_StartDate;
+	public static String IncidentAttribute_ClosedDate;
+	public static String IncidentAttribute_CompletionPercentage;
+	public static String IncidentAttribute_EstimatedEffort;
+	public static String IncidentAttribute_ActualEffort;
 }

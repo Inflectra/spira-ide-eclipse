@@ -44,11 +44,19 @@ public class Incident extends Artifact
     public enum Key
     {
 		//Incident-specific attributes
-		STATUS_ID("requirement.artifactKey"),
-		AUTHOR_ID("requirement.artifactKey"),
-		IMPORTANCE_ID("requirement.artifactKey"),
-		RELEASE_ID("requirement.artifactKey"),
-		PLANNED_EFFORT("requirement.artifactKey");
+		PRIORITY_ID("incident.priorityId"),
+		SEVERITY_ID("incident.severityId"),
+		STATUS_ID("incident.statusId"),
+		TYPE_ID("incident.typeId"),
+		OPENER_ID("incident.openerId"),
+		DETECTED_RELEASE_ID("incident.detectedReleaseId"),
+		RESOLVED_RELEASE_ID("incident.resolvedReleaseId"),
+		VERIFIED_RELEASE_ID("incident.verifiedReleaseId"),
+		START_DATE("incident.startDate"),
+		CLOSED_DATE("incident.closedDate"),
+		COMPLETION_PERCENTAGE("incident.completionPercentage"),
+		ESTIMATED_EFFORT("incident.estimatedEffort"),
+		ACTUAL_EFFORT("incident.actualEffort");
 
 		public static Key fromKey(String name)
 		{

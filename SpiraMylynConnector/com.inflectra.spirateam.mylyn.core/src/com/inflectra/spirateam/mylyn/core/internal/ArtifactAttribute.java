@@ -38,6 +38,18 @@ public enum ArtifactAttribute
 	REQUIREMENT_PLANNED_EFFORT(Requirement.Key.PLANNED_EFFORT, Messages.Requirementttribute_PlannedEffort, null, TaskAttribute.TYPE_INTEGER),
 	
 	//Incident attributes
+	INCIDENT_PRIORITY_ID(Incident.Key.PRIORITY_ID, Messages.IncidentAttribute_PriorityId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT),
+	INCIDENT_SEVERITY_ID(Incident.Key.SEVERITY_ID, Messages.IncidentAttribute_SeverityId, TaskAttribute.SEVERITY, TaskAttribute.TYPE_SINGLE_SELECT),
+	INCIDENT_STATUS_ID(Incident.Key.STATUS_ID, Messages.IncidentAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT),
+	INCIDENT_TYPE_ID(Incident.Key.TYPE_ID, Messages.IncidentAttribute_TypeId, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SINGLE_SELECT),
+	INCIDENT_DETECTED_RELEASE_ID(Incident.Key.DETECTED_RELEASE_ID, Messages.IncidentAttribute_DetectedReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT),
+	INCIDENT_RESOLVED_RELEASE_ID(Incident.Key.RESOLVED_RELEASE_ID, Messages.IncidentAttribute_ResolvedReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT),
+	INCIDENT_VERIFIED_RELEASE_ID(Incident.Key.VERIFIED_RELEASE_ID, Messages.IncidentAttribute_VerifiedReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT),
+	INCIDENT_START_DATE(Incident.Key.START_DATE, Messages.IncidentAttribute_StartDate, null, TaskAttribute.TYPE_DATE),
+	INCIDENT_CLOSED_DATE(Incident.Key.CLOSED_DATE, Messages.IncidentAttribute_ClosedDate, TaskAttribute.DATE_DUE, TaskAttribute.TYPE_DATE),
+	INCIDENT_COMPLETION_PERCENTAGE(Incident.Key.COMPLETION_PERCENTAGE, Messages.IncidentAttribute_CompletionPercentage, null, TaskAttribute.TYPE_INTEGER),
+	INCIDENT_ESTIMATED_EFFORT(Incident.Key.ESTIMATED_EFFORT, Messages.IncidentAttribute_EstimatedEffort, null, TaskAttribute.TYPE_INTEGER),
+	INCIDENT_ACTUAL_EFFORT(Incident.Key.ACTUAL_EFFORT, Messages.IncidentAttribute_ActualEffort, null, TaskAttribute.TYPE_INTEGER),
 	
 	//Task attributes
 	TASK_STATUS_ID(Task.Key.STATUS_ID, Messages.TaskAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT),

@@ -75,10 +75,31 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	}
 
 	@Override
-	public String getRepositoryUrlFromTaskUrl(String taskFullUrl)
+	public String getRepositoryUrlFromTaskUrl(String url)
 	{
-		// TODO Auto-generated method stub
-		return null;
+		if (url == null)
+		{
+			return null;
+		}
+		int index = url.lastIndexOf(SpiraImportExport.REQUIREMENT_URL);
+		return index == -1 ? null : url.substring(0, index);
+	}
+
+	@Override
+	public String getTaskIdFromTaskUrl(String url)
+	{
+		if (url == null)
+		{
+			return null;
+		}
+		int index = url.lastIndexOf(SpiraImportExport.REQUIREMENT_URL);
+		return index == -1 ? null : url.substring(index + SpiraImportExport.REQUIREMENT_URL.length());
+	}
+	
+	@Override
+	public String getTaskUrl(String repositoryUrl, String taskId)
+	{
+		return repositoryUrl + SpiraImportExport.REQUIREMENT_URL + taskId;
 	}
 
 	@Override
@@ -86,20 +107,6 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 			IProgressMonitor monitor) throws CoreException
 	{
 		return taskDataHandler.getTaskData(taskRepository, taskKey, monitor);
-	}
-
-	@Override
-	public String getTaskIdFromTaskUrl(String taskFullUrl)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getTaskUrl(String repositoryUrl, String taskId)
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override

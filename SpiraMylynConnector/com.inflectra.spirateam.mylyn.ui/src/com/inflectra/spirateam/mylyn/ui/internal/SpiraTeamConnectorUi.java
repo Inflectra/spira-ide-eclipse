@@ -10,6 +10,7 @@ import org.eclipse.mylyn.tasks.ui.AbstractRepositoryConnectorUi;
 import org.eclipse.mylyn.tasks.ui.wizards.ITaskRepositoryPage;
 import org.eclipse.mylyn.tasks.ui.wizards.RepositoryQueryWizard;
 
+import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.ui.internal.wizards.SpiraTeamNamedFilterPage;
 import com.inflectra.spirateam.mylyn.ui.internal.wizards.SpiraTeamRepositorySettingsPage;
@@ -34,7 +35,13 @@ public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 	@Override
 	public String getTaskKindLabel(ITask repositoryTask)
 	{
-		return "Requirement";
+		//Display the appropriate label depending on artifact type
+		ArtifactType artifactType = ArtifactType.byTaskKey(repositoryTask.getTaskKey());
+		if (artifactType != null)
+		{
+			return artifactType.getDisplayName();
+		}
+		return null;
 	}
 
 	@Override
@@ -72,25 +79,23 @@ public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 	
 
 	@Override
-	public ImageDescriptor getTaskKindOverlay(ITask task)
+	public ImageDescriptor getTaskKindOverlay(ITask repositoryTask)
 	{
-		//TODO: Change based on type
-		/*
-		TaskKind taskKind = TaskKind.fromString(task.getTaskKind());
-		if (taskKind == TaskKind.DEFECT)
+		//Display the appropriate overlay depending on artifact type
+		ArtifactType artifactType = ArtifactType.byTaskKey(repositoryTask.getTaskKey());
+		if (artifactType == ArtifactType.REQUIREMENT)
 		{
-			return TracImages.OVERLAY_DEFECT;
+			return SpiraTeamImages.OVERLAY_REQUIREMENT;
 		}
-		else if (taskKind == TaskKind.ENHANCEMENT)
+		else if (artifactType == ArtifactType.INCIDENT)
 		{
-			return TracImages.OVERLAY_ENHANCEMENT;
+			return SpiraTeamImages.OVERLAY_INCIDENT;
 		}
-		else if (taskKind == TaskKind.TASK)
+		else if (artifactType == ArtifactType.TASK)
 		{
-			return null;
+			return SpiraTeamImages.OVERLAY_TASK;
 		}
-		return super.getTaskKindOverlay(task);*/
-		return SpiraTeamImages.OVERLAY_REQUIREMENT;
+		return super.getTaskKindOverlay(repositoryTask);
 	}
 
 	@Override

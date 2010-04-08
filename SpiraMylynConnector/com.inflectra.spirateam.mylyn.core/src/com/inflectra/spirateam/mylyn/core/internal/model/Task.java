@@ -33,11 +33,15 @@ public class Task extends Artifact
     public enum Key
     {
 		//Task-specific attributes
-		STATUS_ID("requirement.artifactKey"),
-		AUTHOR_ID("requirement.artifactKey"),
-		IMPORTANCE_ID("requirement.artifactKey"),
-		RELEASE_ID("requirement.artifactKey"),
-		PLANNED_EFFORT("requirement.artifactKey");
+		STATUS_ID("task.statusId"),
+		REQUIREMENT_ID("task.requirementId"),
+		RELEASE_ID("task.releaseId"),
+		PRIORITY_ID("task.priorityId"),
+		START_DATE("task.startDate"),
+		END_DATE("task.endDate"),
+		COMPLETION_PERCENTAGE("task.completionPercentage"),
+		ESTIMATED_EFFORT("task.estimatedEffort"),
+		ACTUAL_EFFORT("task.actualEffort");
 
 		public static Key fromKey(String name)
 		{

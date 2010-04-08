@@ -24,11 +24,11 @@ public class Requirement
     public enum Key
     {
 		//Requirement-specific attributes
-		STATUS_ID("requirement.artifactKey"),
-		AUTHOR_ID("requirement.artifactKey"),
-		IMPORTANCE_ID("requirement.artifactKey"),
-		RELEASE_ID("requirement.artifactKey"),
-		PLANNED_EFFORT("requirement.artifactKey");
+		STATUS_ID("requirement.statusId"),
+		AUTHOR_ID("requirement.authorId"),
+		IMPORTANCE_ID("requirement.importanceId"),
+		RELEASE_ID("requirement.releaseId"),
+		PLANNED_EFFORT("requirement.plannedEffort");
 		
 		public static Key fromKey(String name)
 		{

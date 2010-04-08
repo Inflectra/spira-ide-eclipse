@@ -41,4 +41,20 @@ public class Messages extends NLS
 	public static String ArtifactAttribute_CreationDate;
 	public static String ArtifactAttribute_LastUpdateDate;
 	public static String ArtifactAttribute_OwnerId;
+	
+	public static String RequirementAttribute_StatusId;
+	public static String RequirementAttribute_AuthorId;
+	public static String RequirementAttribute_ImportanceId;
+	public static String RequirementAttribute_ReleaseId;
+	public static String Requirementttribute_PlannedEffort;
+	
+	public static String TaskAttribute_StatusId;
+	public static String TaskAttribute_RequirementId;
+	public static String TaskAttribute_ReleaseId;
+	public static String TaskAttribute_PriorityId;
+	public static String TaskAttribute_StartDate;
+	public static String TaskAttribute_EndDate;
+	public static String TaskAttribute_CompletionPercentage;
+	public static String TaskAttribute_EstimatedEffort;
+	public static String TaskAttribute_ActualEffort;
 }

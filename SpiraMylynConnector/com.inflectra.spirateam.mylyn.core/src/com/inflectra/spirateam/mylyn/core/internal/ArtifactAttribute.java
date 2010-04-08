@@ -11,7 +11,9 @@ import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamAttributeMapper.Flag;
 import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
+import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
+import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 
 /**
  * The attributes that exist on the various artifacts
@@ -26,10 +28,29 @@ public enum ArtifactAttribute
 	DESCRIPTION(Artifact.Key.DESCRIPTION, Messages.ArtifactAttribute_Description, TaskAttribute.DESCRIPTION, TaskAttribute.TYPE_LONG_RICH_TEXT),
 	CREATION_DATE(Artifact.Key.CREATION_DATE, Messages.ArtifactAttribute_CreationDate, TaskAttribute.DATE_CREATION, TaskAttribute.TYPE_DATE, Flag.READ_ONLY),
 	LAST_UPDATE_DATE(Artifact.Key.LAST_UPDATE_DATE, Messages.ArtifactAttribute_LastUpdateDate, TaskAttribute.DATE_MODIFICATION, TaskAttribute.TYPE_DATE),
-	OWNER_ID(Artifact.Key.OWNER_ID, Messages.ArtifactAttribute_OwnerId, TaskAttribute.USER_ASSIGNED, TaskAttribute.TYPE_PERSON, Flag.PEOPLE);
+	OWNER_ID(Artifact.Key.OWNER_ID, Messages.ArtifactAttribute_OwnerId, TaskAttribute.USER_ASSIGNED, TaskAttribute.TYPE_PERSON, Flag.PEOPLE),
+	
+	//Requirement attributes
+	REQUIREMENT_STATUS_ID(Requirement.Key.STATUS_ID, Messages.RequirementAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT),
+	REQUIREMENT_AUTHOR_ID(Requirement.Key.AUTHOR_ID, Messages.RequirementAttribute_AuthorId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_PERSON, Flag.PEOPLE),
+	REQUIREMENT_IMPORTANCE_ID(Requirement.Key.IMPORTANCE_ID, Messages.RequirementAttribute_ImportanceId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT),
+	REQUIREMENT_RELEASE_ID(Requirement.Key.RELEASE_ID, Messages.RequirementAttribute_ReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT),
+	REQUIREMENT_PLANNED_EFFORT(Requirement.Key.PLANNED_EFFORT, Messages.Requirementttribute_PlannedEffort, null, TaskAttribute.TYPE_INTEGER),
+	
+	//Incident attributes
+	
+	//Task attributes
+	TASK_STATUS_ID(Task.Key.STATUS_ID, Messages.TaskAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT),
+	TASK_REQUIREMENT_ID(Task.Key.REQUIREMENT_ID, Messages.TaskAttribute_RequirementId, null, TaskAttribute.TYPE_SHORT_TEXT, Flag.READ_ONLY),
+	TASK_RELEASE_ID(Task.Key.RELEASE_ID, Messages.TaskAttribute_ReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT),
+	TASK_PRIORITY_ID(Task.Key.PRIORITY_ID, Messages.TaskAttribute_PriorityId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT),
+	TASK_START_DATE(Task.Key.START_DATE, Messages.TaskAttribute_StartDate, null, TaskAttribute.TYPE_DATE),
+	TASK_END_DATE(Task.Key.END_DATE, Messages.TaskAttribute_EndDate, TaskAttribute.DATE_DUE, TaskAttribute.TYPE_DATE),
+	TASK_COMPLETION_PERCENTAGE(Task.Key.COMPLETION_PERCENTAGE, Messages.TaskAttribute_CompletionPercentage, null, TaskAttribute.TYPE_INTEGER),
+	TASK_ESTIMATED_EFFORT(Task.Key.ESTIMATED_EFFORT, Messages.TaskAttribute_EstimatedEffort, null, TaskAttribute.TYPE_INTEGER),
+	TASK_ACTUAL_EFFORT(Task.Key.ACTUAL_EFFORT, Messages.TaskAttribute_ActualEffort, null, TaskAttribute.TYPE_INTEGER);
 	
 	static Map<String, ArtifactAttribute> attributeByArtifactKey = new HashMap<String, ArtifactAttribute>();
-
 	static Map<String, String> artifactKeyByTaskKey = new HashMap<String, String>();
 
 	private final String artifactKey;
@@ -78,12 +99,73 @@ public enum ArtifactAttribute
 			this.flags = EnumSet.of(firstFlag, moreFlags);
 		}
 	}
+	
+	ArtifactAttribute(Requirement.Key artifactKey, String prettyName, String taskKey, String type, Flag firstFlag, Flag... moreFlags)
+	{
+		this.artifactKey = artifactKey.getKey();
+		this.taskKey = taskKey;
+		this.prettyName = prettyName;
+		this.type = type;
+		if (firstFlag == null)
+		{
+			this.flags = SpiraTeamAttributeMapper.NO_FLAGS;
+		}
+		else
+		{
+			this.flags = EnumSet.of(firstFlag, moreFlags);
+		}
+	}
+	
+	ArtifactAttribute(Incident.Key artifactKey, String prettyName, String taskKey, String type, Flag firstFlag, Flag... moreFlags)
+	{
+		this.artifactKey = artifactKey.getKey();
+		this.taskKey = taskKey;
+		this.prettyName = prettyName;
+		this.type = type;
+		if (firstFlag == null)
+		{
+			this.flags = SpiraTeamAttributeMapper.NO_FLAGS;
+		}
+		else
+		{
+			this.flags = EnumSet.of(firstFlag, moreFlags);
+		}
+	}
+	
+	ArtifactAttribute(Task.Key artifactKey, String prettyName, String taskKey, String type, Flag firstFlag, Flag... moreFlags)
+	{
+		this.artifactKey = artifactKey.getKey();
+		this.taskKey = taskKey;
+		this.prettyName = prettyName;
+		this.type = type;
+		if (firstFlag == null)
+		{
+			this.flags = SpiraTeamAttributeMapper.NO_FLAGS;
+		}
+		else
+		{
+			this.flags = EnumSet.of(firstFlag, moreFlags);
+		}
+	}
 
 	ArtifactAttribute(Artifact.Key artifactKey, String prettyName, String taskKey, String type)
 	{
 		this(artifactKey, prettyName, taskKey, type, null);
 	}
+	ArtifactAttribute(Requirement.Key artifactKey, String prettyName, String taskKey, String type)
+	{
+		this(artifactKey, prettyName, taskKey, type, null);
+	}
+	ArtifactAttribute(Incident.Key artifactKey, String prettyName, String taskKey, String type)
+	{
+		this(artifactKey, prettyName, taskKey, type, null);
+	}
+	ArtifactAttribute(Task.Key artifactKey, String prettyName, String taskKey, String type)
+	{
+		this(artifactKey, prettyName, taskKey, type, null);
+	}
 
+	
 	public String getTaskKey()
 	{
 		return taskKey;

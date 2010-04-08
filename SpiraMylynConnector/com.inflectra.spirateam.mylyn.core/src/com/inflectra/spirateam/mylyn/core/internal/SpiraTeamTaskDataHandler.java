@@ -307,13 +307,39 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		//Common fields for all artifacts
 		createAttribute(data, client, ArtifactAttribute.NAME);
 		createAttribute(data, client, ArtifactAttribute.DESCRIPTION);
-		
 		if (existingTask)
 		{
 			createAttribute(data, client, ArtifactAttribute.CREATION_DATE);
 			createAttribute(data, client, ArtifactAttribute.LAST_UPDATE_DATE);
 		}
 		createAttribute(data, client, ArtifactAttribute.OWNER_ID);
+
+		//Find out what type of artifact we're dealing with
+		ArtifactType artifactType = ArtifactType.byTaskKey(data.getTaskId());
+		
+		//Requirement-specific fields
+		if (artifactType.equals(ArtifactType.REQUIREMENT))
+		{
+			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_STATUS_ID);
+			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_AUTHOR_ID);
+			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID);
+			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_RELEASE_ID);
+			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT);
+		}
+		
+		//Task-specific fields
+		if (artifactType.equals(ArtifactType.TASK))
+		{
+			createAttribute(data, client, ArtifactAttribute.TASK_STATUS_ID);
+			createAttribute(data, client, ArtifactAttribute.TASK_REQUIREMENT_ID);
+			createAttribute(data, client, ArtifactAttribute.TASK_RELEASE_ID);
+			createAttribute(data, client, ArtifactAttribute.TASK_PRIORITY_ID);
+			createAttribute(data, client, ArtifactAttribute.TASK_START_DATE);
+			createAttribute(data, client, ArtifactAttribute.TASK_END_DATE);
+			createAttribute(data, client, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE);
+			createAttribute(data, client, ArtifactAttribute.TASK_ESTIMATED_EFFORT);
+			createAttribute(data, client, ArtifactAttribute.TASK_ACTUAL_EFFORT);
+		}
 		
 		// custom fields
 		/*
@@ -509,6 +535,43 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.LAST_UPDATE_DATE, artifact.getLastUpdateDate().toString());
 
 		//Need to detect each type of artifact, for the other attributes
+		if (artifact instanceof Requirement)
+		{
+			Requirement requirement = (Requirement)artifact;
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_STATUS_ID, requirement.getStatusId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_AUTHOR_ID, requirement.getAuthorId() + "");
+			if (requirement.getImportanceId() != null)
+			{
+				updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID, requirement.getImportanceId().toString());
+			}
+			if (requirement.getReleaseId() != null)
+			{
+				updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_RELEASE_ID, requirement.getReleaseId().toString());
+			}
+			if (requirement.getPlannedEffort() != null)
+			{
+				updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT, requirement.getPlannedEffort().toString());
+			}
+		}
+		
+		if (artifact instanceof Incident)
+		{
+		}
+		
+		if (artifact instanceof Task)
+		{
+			Task task = (Task)artifact;
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_STATUS_ID, task.getTaskStatusId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_REQUIREMENT_ID, task.getRequirementId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_RELEASE_ID, task.getReleaseId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_PRIORITY_ID, task.getTaskPriorityId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_START_DATE, task.getStartDate() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_END_DATE, task.getEndDate() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE, task.getCompletionPercent() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ESTIMATED_EFFORT, task.getEstimatedEffort() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ACTUAL_EFFORT, task.getActualEffort() + "");
+
+		}
 
 		/* TODO: Handle SpiraTeam comments
 		TracComment[] comments = ticket.getComments();

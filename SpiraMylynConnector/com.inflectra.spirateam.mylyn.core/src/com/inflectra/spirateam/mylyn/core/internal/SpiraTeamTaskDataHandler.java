@@ -510,24 +510,23 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			changedAttributes.add(taskAttribute);
 		}*/
 
-		//TODO: Need to detect each type of artifact
-		Requirement requirement = (Requirement)artifact;
+		//TODO: Need to detect each type of artifact, or do we need to?
 		TaskAttribute taskAttribute;
 		/*
 		TaskAttribute taskAttribute = data.getRoot().getAttribute(ArtifactAttribute.ARTIFACT_TYPE.getArtifactKey());
 		taskAttribute.setValue("Requirement");
 		changedAttributes.add(taskAttribute);*/
 		
-		if (requirement.getName() != null)
+		if (artifact.getName() != null)
 		{
 			taskAttribute = data.getRoot().getAttribute(ArtifactAttribute.NAME.getArtifactKey());
-			taskAttribute.setValue(requirement.getName());
+			taskAttribute.setValue(artifact.getName());
 			changedAttributes.add(taskAttribute);
 		}
-		if (requirement.getDescription() != null)
+		if (artifact.getDescription() != null)
 		{
 			taskAttribute = data.getRoot().getAttribute(ArtifactAttribute.DESCRIPTION.getArtifactKey());
-			taskAttribute.setValue(requirement.getDescription());
+			taskAttribute.setValue(artifact.getDescription());
 			changedAttributes.add(taskAttribute);
 		}
 		/* TODO: Implement this to more easily set the attributes

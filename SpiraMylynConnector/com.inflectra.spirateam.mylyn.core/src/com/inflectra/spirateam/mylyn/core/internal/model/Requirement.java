@@ -1,5 +1,6 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
+import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteRequirement;
@@ -98,6 +99,12 @@ public class Requirement
         this.list10 = remoteRequirement.getList10();
     }
     
+    @Override
+    public ArtifactType getArtifactType()
+    {
+    	return ArtifactType.REQUIREMENT;
+    }
+    
     /**
      * Gets the value of the artifact key (format is RQ<requirement-id>)
      * @return The prefixed requirement ID
@@ -105,7 +112,7 @@ public class Requirement
     @Override
     public String getArtifactKey()
     {
-    	return SpiraTeamCorePlugin.ARTIFACT_PREFIX_REQUIREMENT + this.artifactId;
+    	return getArtifactType().getPrefix() + this.artifactId;
     }
 
     /**

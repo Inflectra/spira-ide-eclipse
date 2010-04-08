@@ -3,8 +3,10 @@ package com.inflectra.spirateam.mylyn.core.internal.model;
 import java.util.Date;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
+import com.inflectra.spirateam.mylyn.core.internal.model.Requirement.Key;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteTask;
 /**
  * Represents a single task in SpiraTeam
@@ -27,6 +29,42 @@ public class Task extends Artifact
     protected String taskPriorityName;
     protected String projectName;
     protected String releaseVersionNumber;
+    
+    public enum Key
+    {
+		ARTIFACT_KEY("artifactKey"), NAME("name"), DESCRIPTION("description"),
+		ARTIFACT_TYPE("artifactType");	//$NON-NLS-1$
+
+		public static Key fromKey(String name)
+		{
+			for (Key key : Key.values())
+			{
+				if (key.getKey().equals(name))
+				{
+					return key;
+				}
+			}
+			return null;
+		}
+
+		private String key;
+
+		Key(String key)
+		{
+			this.key = key;
+		}
+
+		@Override
+		public String toString()
+		{
+			return key;
+		}
+
+		public String getKey()
+		{
+			return key;
+		}
+	}
     
     /**
      * Creates a task based on its equivalent SOAP object
@@ -81,6 +119,12 @@ public class Task extends Artifact
         this.list10 = remoteTask.getList10();
     }
     
+    @Override
+    public ArtifactType getArtifactType()
+    {
+    	return ArtifactType.TASK;
+    }
+    
     /**
      * Gets the value of the artifact key (format is TK<task-id>)
      * @return The prefixed task ID
@@ -88,7 +132,7 @@ public class Task extends Artifact
     @Override
     public String getArtifactKey()
     {
-    	return SpiraTeamCorePlugin.ARTIFACT_PREFIX_TASK + this.artifactId;
+    	return getArtifactType().getPrefix() + this.artifactId;
     }
     
     /**

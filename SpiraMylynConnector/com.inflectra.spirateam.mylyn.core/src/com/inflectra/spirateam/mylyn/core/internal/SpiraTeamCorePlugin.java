@@ -40,11 +40,6 @@ public class SpiraTeamCorePlugin extends Plugin
 	public static String MY_ASSIGNED_INCIDENTS = "2";
 	public static String MY_ASSIGNED_TASKS = "3";
 	
-	//The different artifact type prefixes
-	public static String ARTIFACT_PREFIX_REQUIREMENT = "RQ";
-	public static String ARTIFACT_PREFIX_INCIDENT = "IN";
-	public static String ARTIFACT_PREFIX_TASK = "TK";
-	
 	/**
 	 * The constructor
 	 */

@@ -29,11 +29,8 @@ public enum ArtifactAttribute
 	static Map<String, String> artifactKeyByTaskKey = new HashMap<String, String>();
 
 	private final String artifactKey;
-
 	private final String prettyName;
-
 	private final String taskKey;
-
 	private final String type;
 
 	private EnumSet<Flag> flags;

@@ -2,6 +2,8 @@ package com.inflectra.spirateam.mylyn.core.internal.model;
 
 import java.util.Date;
 
+import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
+
 /**
  * Represents a generic SpiraTeam artifact
  * 
@@ -88,6 +90,17 @@ public class Artifact
 	     * Needs to be overridden by the derived class
 	     */
 	    public String getArtifactKey()
+	    {
+	    	return null;
+	    }
+	    
+	    /**
+	     * Gets the unique artifact type enum
+	     * @return the artifact's type
+	     * 
+	     * Needs to be overridden by the derived class
+	     */
+	    public ArtifactType getArtifactType()
 	    {
 	    	return null;
 	    }

@@ -17,6 +17,10 @@ public class Messages extends NLS
 		NLS.initializeMessages(BUNDLE_NAME, Messages.class);
 	}
 	
+	public static String ArtifactType_Requirement;
+	public static String ArtifactType_Incident;
+	public static String ArtifactType_Task;
+	
 	public static String SpiraTeamCorePlugin_SpiraTeam_description;
 	public static String SpiraTeamCorePlugin_UnexpectedError;
 

@@ -24,8 +24,10 @@ import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
 import org.eclipse.mylyn.tasks.core.data.TaskMapper;
 import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 
+import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.PredefinedFilter;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
+import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraAuthenticationException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
@@ -106,7 +108,8 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	public TaskData getTaskData(TaskRepository taskRepository, String taskKey,
 			IProgressMonitor monitor) throws CoreException
 	{
-		return taskDataHandler.getTaskData(taskRepository, taskKey, monitor);
+		//TODO: Remove hard-coded project ID, need to store a mapping somewhere
+		return taskDataHandler.getTaskData(taskRepository, 1, taskKey, monitor);
 	}
 
 	@Override
@@ -161,6 +164,62 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 							}
 							// preSyncronization() only handles full synchronizations
 							ITask task = taskById.get(requirement.getArtifactKey()); //$NON-NLS-1$
+							if (task != null && hasTaskChanged(repository, task, taskData))
+							{
+								session.markStale(task);
+							}
+						}
+						collector.accept(taskData);
+					}
+				}
+				if (filter.getId() == SpiraTeamCorePlugin.MY_ASSIGNED_INCIDENTS)
+				{
+					List<Incident> incidents = client.incidentRetrieveAssigned(monitor);
+
+					for (Incident incident : incidents)
+					{
+						TaskData taskData = taskDataHandler.createTaskDataFromIncident(client, repository, incident, monitor);
+						taskData.setPartial(true);
+						if (session != null && hasRichEditor(repository))
+						{
+							if (taskById == null)
+							{
+								taskById = new HashMap<String, ITask>();
+								for (ITask task : session.getTasks())
+								{
+									taskById.put(task.getTaskId(), task);
+								}
+							}
+							// preSyncronization() only handles full synchronizations
+							ITask task = taskById.get(incident.getArtifactKey()); //$NON-NLS-1$
+							if (task != null && hasTaskChanged(repository, task, taskData))
+							{
+								session.markStale(task);
+							}
+						}
+						collector.accept(taskData);
+					}
+				}
+				if (filter.getId() == SpiraTeamCorePlugin.MY_ASSIGNED_TASKS)
+				{
+					List<Task> tasks = client.taskRetrieveAssigned(monitor);
+
+					for (Task spiraTask : tasks)
+					{
+						TaskData taskData = taskDataHandler.createTaskDataFromTask(client, repository, spiraTask, monitor);
+						taskData.setPartial(true);
+						if (session != null && hasRichEditor(repository))
+						{
+							if (taskById == null)
+							{
+								taskById = new HashMap<String, ITask>();
+								for (ITask task : session.getTasks())
+								{
+									taskById.put(task.getTaskId(), task);
+								}
+							}
+							// preSyncronization() only handles full synchronizations
+							ITask task = taskById.get(spiraTask.getArtifactKey()); //$NON-NLS-1$
 							if (task != null && hasTaskChanged(repository, task, taskData))
 							{
 								session.markStale(task);

@@ -17,8 +17,9 @@ import java.util.Map;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
+import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
+import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.*;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
 
@@ -177,10 +178,11 @@ public class SpiraImportExport
 	 * Gets a single requirement by its key (RQ prefix + requirement id)
 	 * @param artifactKey The key for the requirement (RQ prefix + requirement id)
 	 * @param monitor
+	 * @param projectId The project id
 	 * @return Single requirement object
 	 * @throws SpiraException
 	 */
-	public Requirement requirementRetrieveByKey(String artifactKey, IProgressMonitor monitor)
+	public Requirement requirementRetrieveByKey(String artifactKey, int projectId, IProgressMonitor monitor)
 		throws SpiraException
 	{
 		try
@@ -217,8 +219,6 @@ public class SpiraImportExport
 			}
 			
 			//Next we need to connect to the appropriate project
-			//TODO: Replace hard-coded project ID with real project id
-			int projectId = 1;
 			success = soap.connectionConnectToProject(projectId);
 			if (!success)
 			{
@@ -268,6 +268,208 @@ public class SpiraImportExport
 				requirements.add(requirement);
 			}
 	        return requirements;
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+	
+	/**
+	 * Gets a single incident by its key (RQ prefix + incident id)
+	 * @param artifactKey The key for the incident (RQ prefix + incident id)
+	 * @param monitor
+	 * @param projectId The project id
+	 * @return Single incident object
+	 * @throws SpiraException
+	 */
+	public Incident incidentRetrieveByKey(String artifactKey, int projectId, IProgressMonitor monitor)
+		throws SpiraException
+	{
+		try
+		{	
+			//First make sure that the artifact key is in the correct format
+			if (artifactKey == null)
+			{
+				throw new SpiraInvalidArtifactKeyException(Messages.SpiraImportExport_ArtifactKeyNull);
+			}
+			if (artifactKey.length() < 3)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
+			}
+			if (!artifactKey.substring(0, 2).equals(ArtifactType.INCIDENT.getPrefix()))
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
+			}
+			int incidentId;
+			try
+			{
+				incidentId = Integer.parseInt(artifactKey.substring(2));
+			}
+			catch (NumberFormatException e)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
+			}
+			
+			//Next we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+			
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Call the appropriate method
+			RemoteIncident remoteIncident = soap.incidentRetrieveById(incidentId);
+			
+			//Convert the SOAP incident into the local version
+			Incident incident = new Incident(remoteIncident);
+	        return incident;
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+	
+	/**
+	 * Gets the list of incidents assigned to the current user
+	 * @return List of incidents
+	 * @throws SpiraException
+	 */
+	public List<Incident> incidentRetrieveAssigned(IProgressMonitor monitor)
+		throws SpiraException
+	{
+		try
+		{	
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+				
+			//Call the appropriate method
+			List<RemoteIncident> remoteIncidents = soap.incidentRetrieveForOwner().getRemoteIncident();
+			
+			//Convert the SOAP incidents into the local versions
+			List<Incident> incidents = new ArrayList<Incident>();
+			for (RemoteIncident remoteIncident : remoteIncidents)
+			{
+				Incident incident = new Incident(remoteIncident);
+				incidents.add(incident);
+			}
+	        return incidents;
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+	
+	/**
+	 * Gets a single task by its key (RQ prefix + task id)
+	 * @param artifactKey The key for the task (RQ prefix + task id)
+	 * @param monitor
+	 * @param projectId The project id
+	 * @return Single task object
+	 * @throws SpiraException
+	 */
+	public Task taskRetrieveByKey(String artifactKey, int projectId, IProgressMonitor monitor)
+		throws SpiraException
+	{
+		try
+		{	
+			//First make sure that the artifact key is in the correct format
+			if (artifactKey == null)
+			{
+				throw new SpiraInvalidArtifactKeyException(Messages.SpiraImportExport_ArtifactKeyNull);
+			}
+			if (artifactKey.length() < 3)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
+			}
+			if (!artifactKey.substring(0, 2).equals(ArtifactType.TASK.getPrefix()))
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
+			}
+			int taskId;
+			try
+			{
+				taskId = Integer.parseInt(artifactKey.substring(2));
+			}
+			catch (NumberFormatException e)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
+			}
+			
+			//Next we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+			
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Call the appropriate method
+			RemoteTask remoteTask = soap.taskRetrieveById(taskId);
+			
+			//Convert the SOAP task into the local version
+			Task task = new Task(remoteTask);
+	        return task;
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+	
+	/**
+	 * Gets the list of tasks assigned to the current user
+	 * @return List of tasks
+	 * @throws SpiraException
+	 */
+	public List<Task> taskRetrieveAssigned(IProgressMonitor monitor)
+		throws SpiraException
+	{
+		try
+		{	
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+				
+			//Call the appropriate method
+			List<RemoteTask> remoteTasks = soap.taskRetrieveForOwner().getRemoteTask();
+			
+			//Convert the SOAP tasks into the local versions
+			List<Task> tasks = new ArrayList<Task>();
+			for (RemoteTask remoteTask : remoteTasks)
+			{
+				Task task = new Task(remoteTask);
+				tasks.add(task);
+			}
+	        return tasks;
 		}
 		catch (WebServiceException ex)
 		{

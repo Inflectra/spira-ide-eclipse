@@ -28,7 +28,9 @@ import org.eclipse.mylyn.tasks.core.data.TaskData;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
+import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
+import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
@@ -73,14 +75,14 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 	}
 
-	public TaskData getTaskData(TaskRepository repository, String artifactKey, IProgressMonitor monitor)
+	public TaskData getTaskData(TaskRepository repository, int projectId, String artifactKey, IProgressMonitor monitor)
 			throws CoreException
 	{
 		monitor = Policy.monitorFor(monitor);
 		try
 		{
 			monitor.beginTask("Task Download", IProgressMonitor.UNKNOWN); //$NON-NLS-1$
-			return downloadTaskData(repository, artifactKey, monitor);
+			return downloadTaskData(repository, projectId, artifactKey, monitor);
 		}
 		finally
 		{
@@ -88,16 +90,34 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 	}
 
-	public TaskData downloadTaskData(TaskRepository repository, String artifactKey, IProgressMonitor monitor)
+	public TaskData downloadTaskData(TaskRepository repository, int projectId, String artifactKey, IProgressMonitor monitor)
 			throws CoreException
 	{
 		try
 		{
 			SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(repository);
 			//client.updateAttributes(monitor, false);
-			Requirement requirement = client.requirementRetrieveByKey(artifactKey, monitor);
-			
-			return createTaskDataFromRequirement(client, repository, requirement, monitor);
+			//See what artifact type we have and call the appropriate method to get the data
+			if (artifactKey != null && artifactKey.length() > 2)
+			{
+				String prefix = artifactKey.substring(0, 2);
+				if (prefix.equals(ArtifactType.REQUIREMENT.getPrefix()))
+				{
+					Requirement requirement = client.requirementRetrieveByKey(artifactKey, projectId, monitor);
+					return createTaskDataFromRequirement(client, repository, requirement, monitor);
+				}
+				if (prefix.equals(ArtifactType.INCIDENT.getPrefix()))
+				{
+					Incident incident = client.incidentRetrieveByKey(artifactKey, projectId, monitor);
+					return createTaskDataFromIncident(client, repository, incident, monitor);
+				}
+				if (prefix.equals(ArtifactType.TASK.getPrefix()))
+				{
+					Task task = client.taskRetrieveByKey(artifactKey, projectId, monitor);
+					return createTaskDataFromTask(client, repository, task, monitor);
+				}
+			}
+			return null;
 		}
 		catch (OperationCanceledException e)
 		{
@@ -371,6 +391,92 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			{
 				createDefaultAttributes(taskData, client, true);
 				updateTaskData(repository, taskData, requirement);
+			}
+			removeEmptySingleSelectAttributes(taskData);
+			return taskData;
+		}
+		catch (OperationCanceledException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CoreException(SpiraTeamCorePlugin.toStatus(repository, e));
+		}
+	}
+	
+	public TaskData createTaskDataFromIncident(SpiraImportExport client, TaskRepository repository, Incident incident,
+			IProgressMonitor monitor) throws CoreException
+	{
+		TaskData taskData = new TaskData(getAttributeMapper(repository), SpiraTeamCorePlugin.CONNECTOR_KIND,
+				repository.getRepositoryUrl(), incident.getArtifactKey());
+		taskData.setVersion(TASK_DATA_VERSION);
+		try
+		{
+			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
+			{
+				createDefaultAttributes(taskData, client, true);
+				Set<TaskAttribute> changedAttributes = updateTaskData(repository, taskData, incident);
+				// remove attributes that were not set, i.e. were not received from the server
+				List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
+						.getAttributes()
+						.values());
+				for (TaskAttribute attribute : attributes)
+				{
+					if (!changedAttributes.contains(attribute) && !SpiraTeamAttributeMapper.isInternalAttribute(attribute))
+					{
+						taskData.getRoot().removeAttribute(attribute.getId());
+					}
+				}
+				taskData.setPartial(true);
+			}
+			else
+			{
+				createDefaultAttributes(taskData, client, true);
+				updateTaskData(repository, taskData, incident);
+			}
+			removeEmptySingleSelectAttributes(taskData);
+			return taskData;
+		}
+		catch (OperationCanceledException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			throw new CoreException(SpiraTeamCorePlugin.toStatus(repository, e));
+		}
+	}
+	
+	public TaskData createTaskDataFromTask(SpiraImportExport client, TaskRepository repository, Task spiraTask,
+			IProgressMonitor monitor) throws CoreException
+	{
+		TaskData taskData = new TaskData(getAttributeMapper(repository), SpiraTeamCorePlugin.CONNECTOR_KIND,
+				repository.getRepositoryUrl(), spiraTask.getArtifactKey());
+		taskData.setVersion(TASK_DATA_VERSION);
+		try
+		{
+			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
+			{
+				createDefaultAttributes(taskData, client, true);
+				Set<TaskAttribute> changedAttributes = updateTaskData(repository, taskData, spiraTask);
+				// remove attributes that were not set, i.e. were not received from the server
+				List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
+						.getAttributes()
+						.values());
+				for (TaskAttribute attribute : attributes)
+				{
+					if (!changedAttributes.contains(attribute) && !SpiraTeamAttributeMapper.isInternalAttribute(attribute))
+					{
+						taskData.getRoot().removeAttribute(attribute.getId());
+					}
+				}
+				taskData.setPartial(true);
+			}
+			else
+			{
+				createDefaultAttributes(taskData, client, true);
+				updateTaskData(repository, taskData, spiraTask);
 			}
 			removeEmptySingleSelectAttributes(taskData);
 			return taskData;

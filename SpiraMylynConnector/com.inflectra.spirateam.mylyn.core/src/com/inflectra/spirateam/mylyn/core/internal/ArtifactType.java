@@ -23,6 +23,19 @@ public enum ArtifactType
 	private final String prefix;
 	private final String displayName;
 	
+	public static ArtifactType byTaskKey (String taskKey)
+	{
+		String prefix = SpiraTeamUtil.getPrefixFromArtifactKey(taskKey);
+		for (ArtifactType artifactType : values())
+		{
+			if (prefix.equals(artifactType.getPrefix()))
+			{
+				return artifactType;
+			}
+		}
+		return null;
+	}
+	
 	ArtifactType(int artifactTypeId, String prefix, String displayName)
 	{
 		this.artifactTypeId = artifactTypeId;

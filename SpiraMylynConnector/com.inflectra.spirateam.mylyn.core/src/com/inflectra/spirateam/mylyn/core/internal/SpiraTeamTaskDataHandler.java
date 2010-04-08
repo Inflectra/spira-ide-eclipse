@@ -304,7 +304,6 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	{
 		data.setVersion(TASK_DATA_VERSION);
 
-		//createAttribute(data, client, ArtifactAttribute.ARTIFACT_TYPE);
 		createAttribute(data, client, ArtifactAttribute.NAME);
 		createAttribute(data, client, ArtifactAttribute.DESCRIPTION);
 		/*

@@ -89,8 +89,8 @@ public class Incident extends Artifact
         this.ownerId = remoteIncident.getOwnerId();
         this.name = remoteIncident.getName();
         this.description = remoteIncident.getDescription();
-        this.creationDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteIncident.getCreationDate());
-        this.lastUpdateDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteIncident.getLastUpdateDate());
+        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteIncident.getCreationDate());
+        this.lastUpdateDate = SpiraTeamUtil.convertDatesXml2Java(remoteIncident.getLastUpdateDate());
         this.priorityId = remoteIncident.getPriorityId();
         this.severityId = remoteIncident.getSeverityId();
         this.incidentStatusId = remoteIncident.getIncidentStatusId();
@@ -100,8 +100,8 @@ public class Incident extends Artifact
         this.detectedReleaseId = remoteIncident.getDetectedReleaseId();
         this.resolvedReleaseId = remoteIncident.getResolvedReleaseId();
         this.verifiedReleaseId = remoteIncident.getVerifiedReleaseId();
-        this.startDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteIncident.getStartDate());
-        this.closedDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteIncident.getClosedDate());
+        this.startDate = SpiraTeamUtil.convertDatesXml2Java(remoteIncident.getStartDate());
+        this.closedDate = SpiraTeamUtil.convertDatesXml2Java(remoteIncident.getClosedDate());
         this.completionPercent = remoteIncident.getCompletionPercent();
         this.estimatedEffort = remoteIncident.getEstimatedEffort();
         this.actualEffort = remoteIncident.getActualEffort();

@@ -71,8 +71,8 @@ public class Requirement
         this.releaseId = remoteRequirement.getReleaseId();
         this.name = remoteRequirement.getName();
         this.description = remoteRequirement.getDescription();
-        this.creationDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteRequirement.getCreationDate());
-        this.lastUpdateDate = SpiraTeamUtil.ConvertDatesXml2Java(remoteRequirement.getLastUpdateDate());
+        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getCreationDate());
+        this.lastUpdateDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getLastUpdateDate());
         this.summary = remoteRequirement.isSummary();
         this.plannedEffort = remoteRequirement.getPlannedEffort();
         

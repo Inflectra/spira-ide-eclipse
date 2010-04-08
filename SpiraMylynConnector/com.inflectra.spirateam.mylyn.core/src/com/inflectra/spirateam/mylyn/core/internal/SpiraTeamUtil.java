@@ -69,7 +69,16 @@ public class SpiraTeamUtil
 		return null;
 	}
 	
-	public static Date ConvertDatesXml2Java(XMLGregorianCalendar xmlCal)
+	public static String getPrefixFromArtifactKey(String artifactKey)
+	{
+		if (artifactKey != null && artifactKey.length() > 2)
+		{
+			return artifactKey.substring(0, 2);
+		}
+		return null;
+	}
+	
+	public static Date convertDatesXml2Java(XMLGregorianCalendar xmlCal)
 	{
 		if (xmlCal == null)
 		{

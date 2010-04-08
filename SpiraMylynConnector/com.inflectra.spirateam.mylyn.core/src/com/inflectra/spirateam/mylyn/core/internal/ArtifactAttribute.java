@@ -19,7 +19,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
  */
 public enum ArtifactAttribute
 {
-	ARTIFACT_TYPE(Requirement.Key.ARTIFACT_TYPE, "Type", TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT),
+	//Requirement attributes
 	ARTIFACT_KEY(Requirement.Key.ARTIFACT_KEY, Messages.RequirementAttribute_ArtifactKey, TaskAttribute.TASK_KEY, TaskAttribute.TYPE_SHORT_TEXT, Flag.PEOPLE),
 	NAME(Requirement.Key.NAME, Messages.RequirementAttribute_Name, TaskAttribute.SUMMARY, TaskAttribute.TYPE_SHORT_RICH_TEXT),
 	DESCRIPTION(Requirement.Key.DESCRIPTION, Messages.RequirementAttribute_Description, TaskAttribute.DESCRIPTION, TaskAttribute.TYPE_LONG_RICH_TEXT);

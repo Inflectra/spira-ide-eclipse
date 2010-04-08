@@ -13,16 +13,10 @@ import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteRequireme
 public class Requirement
 	extends Artifact
 {
-    protected Integer requirementId;
-    protected int projectId;
     protected int statusId;
     protected int authorId;
-    protected Integer ownerId;
     protected Integer importanceId;
     protected Integer releaseId;
-    protected String name;
-    protected String description;
-    protected Date creationDate;
     protected boolean summary;
     protected Integer plannedEffort;
 
@@ -76,7 +70,7 @@ public class Requirement
     public Requirement(RemoteRequirement remoteRequirement)
     {
     	//Set the various member variables
-        this.requirementId = remoteRequirement.getRequirementId();
+        this.artifactId = remoteRequirement.getRequirementId();
         this.projectId = remoteRequirement.getProjectId();
         this.statusId = remoteRequirement.getStatusId();
         this.authorId = remoteRequirement.getAuthorId();
@@ -117,50 +111,10 @@ public class Requirement
      * Gets the value of the artifact key (format is RQ<requirement-id>)
      * @return The prefixed requirement ID
      */
+    @Override
     public String getArtifactKey()
     {
-    	return SpiraTeamCorePlugin.ARTIFACT_PREFIX_REQUIREMENT + this.requirementId;
-    }
-    
-    /**
-     * Gets the value of the requirementId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getRequirementId()
-    {
-        return requirementId;
-    }
-
-    /**
-     * Sets the value of the requirementId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setRequirementId(Integer value) {
-        this.requirementId = value;
-    }
-
-    /**
-     * Gets the value of the projectId property.
-     * 
-     */
-    public int getProjectId() {
-        return projectId;
-    }
-
-    /**
-     * Sets the value of the projectId property.
-     * 
-     */
-    public void setProjectId(int value) {
-        this.projectId = value;
+    	return SpiraTeamCorePlugin.ARTIFACT_PREFIX_REQUIREMENT + this.artifactId;
     }
 
     /**
@@ -195,29 +149,7 @@ public class Requirement
         this.authorId = value;
     }
 
-    /**
-     * Gets the value of the ownerId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getOwnerId() {
-        return ownerId;
-    }
-
-    /**
-     * Sets the value of the ownerId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setOwnerId(Integer value) {
-        this.ownerId = value;
-    }
+ 
 
     /**
      * Gets the value of the importanceId property.
@@ -267,77 +199,7 @@ public class Requirement
         this.releaseId = value;
     }
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
-
-    /**
-     * Gets the value of the description property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Sets the value of the description property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDescription(String value) {
-        this.description = value;
-    }
-
-    /**
-     * Gets the value of the creationDate property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Date }
-     *     
-     */
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    /**
-     * Sets the value of the creationDate property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Date }
-     *     
-     */
-    public void setCreationDate(Date value) {
-        this.creationDate = value;
-    }
+ 
 
     /**
      * Gets the value of the summary property.

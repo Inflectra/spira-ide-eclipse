@@ -11,28 +11,185 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class Artifact
 {
-    	protected Date lastUpdateDate;
-	    protected String text01;
-	    protected String text02;
-	    protected String text03;
-	    protected String text04;
-	    protected String text05;
-	    protected String text06;
-	    protected String text07;
-	    protected String text08;
-	    protected String text09;
-	    protected String text10;
-	    protected Integer list01;
-	    protected Integer list02;
-	    protected Integer list03;
-	    protected Integer list04;
-	    protected Integer list05;
-	    protected Integer list06;
-	    protected Integer list07;
-	    protected Integer list08;
-	    protected Integer list09;
-	    protected Integer list10;
+    protected Integer artifactId;
+    protected int projectId;
+    protected Integer ownerId;
+    protected String name;
+    protected String description;
+    protected Date creationDate;
+	protected Date lastUpdateDate;
+    protected String text01;
+    protected String text02;
+    protected String text03;
+    protected String text04;
+    protected String text05;
+    protected String text06;
+    protected String text07;
+    protected String text08;
+    protected String text09;
+    protected String text10;
+    protected Integer list01;
+    protected Integer list02;
+    protected Integer list03;
+    protected Integer list04;
+    protected Integer list05;
+    protected Integer list06;
+    protected Integer list07;
+    protected Integer list08;
+    protected Integer list09;
+    protected Integer list10;
 
+    /**
+     * Gets the value of the requirementId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getRequirementId()
+    {
+        return this.artifactId;
+    }
+
+    /**
+     * Sets the value of the requirementId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setRequirementId(Integer value)
+    {
+        this.artifactId = value;
+    }
+
+    /**
+     * Gets the value of the projectId property.
+     * 
+     */
+    public int getProjectId()
+    {
+        return projectId;
+    }
+
+    /**
+     * Sets the value of the projectId property.
+     * 
+     */
+    public void setProjectId(int value)
+    {
+        this.projectId = value;
+    }
+    
+	    /**
+	     * Gets the unique artifact key (two-letter prefix + ID)
+	     * @return the artifact's key
+	     * 
+	     * Needs to be overridden by the derived class
+	     */
+	    public String getArtifactKey()
+	    {
+	    	return null;
+	    }
+	    
+	    /**
+	     * Gets the value of the ownerId property.
+	     * 
+	     * @return
+	     *     possible object is
+	     *     {@link Integer }
+	     *     
+	     */
+	    public Integer getOwnerId() {
+	        return ownerId;
+	    }
+
+	    /**
+	     * Sets the value of the ownerId property.
+	     * 
+	     * @param value
+	     *     allowed object is
+	     *     {@link Integer }
+	     *     
+	     */
+	    public void setOwnerId(Integer value) {
+	        this.ownerId = value;
+	    }
+	    
+	    /**
+	     * Gets the value of the name property.
+	     * 
+	     * @return
+	     *     possible object is
+	     *     {@link String }
+	     *     
+	     */
+	    public String getName() {
+	        return name;
+	    }
+
+	    /**
+	     * Sets the value of the name property.
+	     * 
+	     * @param value
+	     *     allowed object is
+	     *     {@link String }
+	     *     
+	     */
+	    public void setName(String value) {
+	        this.name = value;
+	    }
+
+	    /**
+	     * Gets the value of the description property.
+	     * 
+	     * @return
+	     *     possible object is
+	     *     {@link String }
+	     *     
+	     */
+	    public String getDescription() {
+	        return description;
+	    }
+
+	    /**
+	     * Sets the value of the description property.
+	     * 
+	     * @param value
+	     *     allowed object is
+	     *     {@link String }
+	     *     
+	     */
+	    public void setDescription(String value) {
+	        this.description = value;
+	    }
+
+	    /**
+	     * Gets the value of the creationDate property.
+	     * 
+	     * @return
+	     *     possible object is
+	     *     {@link Date }
+	     *     
+	     */
+	    public Date getCreationDate() {
+	        return creationDate;
+	    }
+
+	    /**
+	     * Sets the value of the creationDate property.
+	     * 
+	     * @param value
+	     *     allowed object is
+	     *     {@link Date }
+	     *     
+	     */
+	    public void setCreationDate(Date value) {
+	        this.creationDate = value;
+	    }
+	    
 	    /**
 	     * Gets the value of the text01 property.
 	     * 

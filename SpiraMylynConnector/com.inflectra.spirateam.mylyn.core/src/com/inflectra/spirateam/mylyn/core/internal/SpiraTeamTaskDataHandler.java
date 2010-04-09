@@ -42,7 +42,7 @@ import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
  */
 public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 {
-	private static final String TASK_DATA_VERSION = "1"; //$NON-NLS-1$
+	private static final String TASK_DATA_VERSION = "2.3.1"; //$NON-NLS-1$
 	private static final String ARTIFACT_KEY = "spiraKey"; //$NON-NLS-1$
 	
 	private final SpiraTeamRepositoryConnector connector;
@@ -157,6 +157,12 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 	}
 
+	/**
+	 * This overload is used for the custom properties
+	 * @param data
+	 * @param field
+	 * @return
+	 */
 	private static TaskAttribute createAttribute(TaskData data, ArtifactField field)
 	{
 		TaskAttribute attr = data.getRoot().createAttribute(field.getName());
@@ -240,6 +246,13 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		return createAttribute(data, null, artifactAttribute);
 	}
 
+	/**
+	 * This overload is used for standard fields
+	 * @param data
+	 * @param client
+	 * @param artifactAttribute
+	 * @return
+	 */
 	public static TaskAttribute createAttribute(TaskData data, SpiraImportExport client, ArtifactAttribute artifactAttribute)
 	{
 		TaskAttribute attr = data.getRoot().createAttribute(artifactAttribute.getArtifactKey());
@@ -367,19 +380,6 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 					createAttribute(data, field);
 				}
 			}
-		}
-		// people
-		createAttribute(data, client, TracAttribute.OWNER);
-		if (existingTask) {
-			createAttribute(data, client, TracAttribute.REPORTER);
-		}
-		createAttribute(data, client, TracAttribute.CC);
-		if (existingTask) {
-			data.getRoot().createAttribute(TracAttributeMapper.NEW_CC).getMetaData().setType(
-					TaskAttribute.TYPE_SHORT_TEXT).setReadOnly(false);
-			data.getRoot().createAttribute(TracAttributeMapper.REMOVE_CC);
-			data.getRoot().createAttribute(TaskAttribute.COMMENT_NEW).getMetaData().setType(
-					TaskAttribute.TYPE_LONG_RICH_TEXT).setReadOnly(false);
 		}
 		// operations
 		data.getRoot().createAttribute(TaskAttribute.OPERATION).getMetaData().setType(TaskAttribute.TYPE_OPERATION);*/

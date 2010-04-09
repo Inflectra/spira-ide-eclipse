@@ -43,6 +43,7 @@ public class Artifact
     public enum Key
     {
     	//Common attributes
+    	PROJECT_ID("common.projectId"),
     	ARTIFACT_KEY("common.artifactKey"),
     	ARTIFACT_TYPE("common.artifactType"),
     	NAME("common.name"),

@@ -88,4 +88,16 @@ public class SpiraTeamUtil
 		Date date = calendar.getTime();
 		return date;
 	}
+	
+	public static String dateToString(Date date)
+	{
+		if (date == null)
+		{
+			return ""; //$NON-NLS-1$
+		}
+		else
+		{
+			return date.getTime() + ""; //$NON-NLS-1$
+		}
+	}
 }

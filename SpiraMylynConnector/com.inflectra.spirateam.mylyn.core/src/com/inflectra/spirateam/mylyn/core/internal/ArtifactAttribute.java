@@ -23,6 +23,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 public enum ArtifactAttribute
 {
 	//Common attributes
+	PROJECT_ID(Artifact.Key.PROJECT_ID, Messages.ArtifactAttribute_ProjectId, TaskAttribute.PRODUCT, TaskAttribute.TYPE_SHORT_TEXT, Flag.READ_ONLY),
 	ARTIFACT_KEY(Artifact.Key.ARTIFACT_KEY, Messages.ArtifactAttribute_ArtifactKey, TaskAttribute.TASK_KEY, TaskAttribute.TYPE_SHORT_TEXT),
 	NAME(Artifact.Key.NAME, Messages.ArtifactAttribute_Name, TaskAttribute.SUMMARY, TaskAttribute.TYPE_SHORT_RICH_TEXT),
 	DESCRIPTION(Artifact.Key.DESCRIPTION, Messages.ArtifactAttribute_Description, TaskAttribute.DESCRIPTION, TaskAttribute.TYPE_LONG_RICH_TEXT),

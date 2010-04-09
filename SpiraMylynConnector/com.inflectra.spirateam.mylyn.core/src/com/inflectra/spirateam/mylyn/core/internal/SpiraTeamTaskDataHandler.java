@@ -548,8 +548,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.NAME, artifact.getName());
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.DESCRIPTION, artifact.getDescription());
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.OWNER_ID, artifact.getOwnerId().toString());
-		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.CREATION_DATE, artifact.getCreationDate().toString());
-		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.LAST_UPDATE_DATE, artifact.getLastUpdateDate().toString());
+		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.CREATION_DATE, SpiraTeamUtil.dateToString(artifact.getCreationDate()));
+		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.LAST_UPDATE_DATE, SpiraTeamUtil.dateToString(artifact.getLastUpdateDate()));
 
 		//Need to detect each type of artifact, for the other attributes
 		if (artifact instanceof Requirement)
@@ -581,8 +581,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_DETECTED_RELEASE_ID, incident.getDetectedReleaseId() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_RESOLVED_RELEASE_ID, incident.getResolvedReleaseId() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_VERIFIED_RELEASE_ID, incident.getVerifiedReleaseId() + "");
-			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_START_DATE, incident.getStartDate() + "");
-			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_CLOSED_DATE, incident.getClosedDate() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_START_DATE, SpiraTeamUtil.dateToString(incident.getStartDate()));
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_CLOSED_DATE, SpiraTeamUtil.dateToString(incident.getClosedDate()));
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE, incident.getCompletionPercent() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT, incident.getEstimatedEffort() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT, incident.getActualEffort() + "");
@@ -595,8 +595,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_REQUIREMENT_ID, task.getRequirementId() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_RELEASE_ID, task.getReleaseId() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_PRIORITY_ID, task.getTaskPriorityId() + "");
-			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_START_DATE, task.getStartDate() + "");
-			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_END_DATE, task.getEndDate() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_START_DATE, SpiraTeamUtil.dateToString(task.getStartDate()));
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_END_DATE, SpiraTeamUtil.dateToString(task.getEndDate()));
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE, task.getCompletionPercent() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ESTIMATED_EFFORT, task.getEstimatedEffort() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ACTUAL_EFFORT, task.getActualEffort() + "");

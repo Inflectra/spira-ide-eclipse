@@ -20,14 +20,14 @@ import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
  * @author Inflectra Corporation
  *
  */
-public class RequirementTaskEditorPage extends AbstractTaskEditorPage
+public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 {
 	//private TracRenderingEngine renderingEngine;
 
-	public RequirementTaskEditorPage(TaskEditor editor)
+	public SpiraTeamTaskEditorPage(TaskEditor editor)
 	{
 		super(editor, SpiraTeamCorePlugin.CONNECTOR_KIND);
-		setNeedsPrivateSection(true);
+		setNeedsPrivateSection(false);
 		setNeedsSubmitButton(true);
 	}
 
@@ -36,15 +36,15 @@ public class RequirementTaskEditorPage extends AbstractTaskEditorPage
 	{
 		Set<TaskEditorPartDescriptor> descriptors = super.createPartDescriptors();
 		// remove unnecessary default editor parts
-		/*
 		for (Iterator<TaskEditorPartDescriptor> it = descriptors.iterator(); it.hasNext();)
 		{
 			TaskEditorPartDescriptor taskEditorPartDescriptor = it.next();
-			if (taskEditorPartDescriptor.getId().equals(ID_PART_PEOPLE))
+			/*if (taskEditorPartDescriptor.getId().equals(ID_PART_PEOPLE))
 			{
 				it.remove();
-			}
+			}*/
 		}
+		/*
 		descriptors.add(new TaskEditorPartDescriptor(ID_PART_PEOPLE)
 		{
 			@Override

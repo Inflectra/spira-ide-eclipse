@@ -41,35 +41,13 @@ public class SpiraTeamTaskEditorFactory extends AbstractTaskEditorPageFactory
 	@Override
 	public FormPage createPage(TaskEditor parentEditor)
 	{
-		/*TODO: Need to determine based on artifact type
-		TaskEditorInput input = parentEditor.getTaskEditorInput();
-		if (TasksUiUtil.isOutgoingNewTask(input.getTask(), SpiraTeamCorePlugin.CONNECTOR_KIND))
-		{
-			return new TracTaskEditorPage(parentEditor);
-		}
-		else if (SpiraTeamRepositoryConnector.hasRichEditor(input.getTaskRepository()))
-		{
-			return new TracTaskEditorPage(parentEditor);
-		}
-		else
-		{
-			return new BrowserFormPage(parentEditor, Messages.TracTaskEditorPageFactory_Browser);
-		}*/
-		return new RequirementTaskEditorPage(parentEditor);
+		return new SpiraTeamTaskEditorPage(parentEditor);
 	}
 
 	@Override
 	public String[] getConflictingIds(TaskEditorInput input)
 	{
-		if (SpiraTeamRepositoryConnector.hasRichEditor(input.getTaskRepository())
-				|| TasksUiUtil.isOutgoingNewTask(input.getTask(), SpiraTeamCorePlugin.CONNECTOR_KIND))
-		{
-			return new String[] { ITasksUiConstants.ID_PAGE_PLANNING };
-		}
-		else
-		{
-			return super.getConflictingIds(input);
-		}
+		return new String[] { ITasksUiConstants.ID_PAGE_PLANNING };
 	}
 
 	@Override

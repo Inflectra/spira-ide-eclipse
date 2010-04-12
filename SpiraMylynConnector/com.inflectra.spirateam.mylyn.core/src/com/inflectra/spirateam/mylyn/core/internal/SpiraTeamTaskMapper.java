@@ -159,7 +159,7 @@ public class SpiraTeamTaskMapper extends TaskMapper
 		{
 			return "Buggered";
 		}
-		return super.getTaskKind();
+		return super.getTaskStatus();
 	}
 	
 	@Override

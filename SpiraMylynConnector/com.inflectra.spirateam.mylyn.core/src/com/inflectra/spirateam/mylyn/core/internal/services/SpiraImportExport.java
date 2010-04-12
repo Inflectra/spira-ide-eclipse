@@ -429,7 +429,13 @@ public class SpiraImportExport
 	
 	public ArtifactField taskGetRelease()
 	{
-		return this.taskGetRelease(this.storedProjectId);
+		//Don't return releases if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.taskGetRelease(projectId);
 	}
 	
 	public ArtifactField taskGetRelease(int projectId)
@@ -612,6 +618,18 @@ public class SpiraImportExport
 			
 			//Convert the SOAP task into the local version
 			Task task = new Task(remoteTask);
+			
+			//We need to also get the requirement if one is set to get the name
+			if (task.getRequirementId() != null)
+			{					
+				//Call the appropriate method
+				RemoteRequirement remoteRequirement = soap.requirementRetrieveById(task.getRequirementId());
+				if (remoteRequirement != null)
+				{
+					task.setRequirementName(remoteRequirement.getName());
+				}
+			}
+			
 	        return task;
 		}
 		catch (WebServiceException ex)

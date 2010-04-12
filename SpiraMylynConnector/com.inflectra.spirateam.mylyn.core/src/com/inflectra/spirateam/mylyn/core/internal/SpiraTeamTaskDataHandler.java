@@ -126,7 +126,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 		catch (Exception e)
 		{
-			// TODO catch TracException
+			// TODO catch SpiraException
 			throw new CoreException(SpiraTeamCorePlugin.toStatus(repository, e));
 		}
 	}
@@ -329,6 +329,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		//Requirement-specific fields
 		if (artifactType.equals(ArtifactType.REQUIREMENT))
 		{
+			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_TYPE);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_STATUS_ID);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_AUTHOR_ID);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID);
@@ -356,6 +357,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		//Task-specific fields
 		if (artifactType.equals(ArtifactType.TASK))
 		{
+			createAttribute(data, client, ArtifactAttribute.TASK_TYPE);
 			createAttribute(data, client, ArtifactAttribute.TASK_STATUS_ID);
 			createAttribute(data, client, ArtifactAttribute.TASK_REQUIREMENT_ID);
 			createAttribute(data, client, ArtifactAttribute.TASK_RELEASE_ID);
@@ -557,6 +559,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		if (artifact instanceof Requirement)
 		{
 			Requirement requirement = (Requirement)artifact;
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_TYPE, ArtifactType.REQUIREMENT.name());
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_STATUS_ID, requirement.getStatusId() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_AUTHOR_ID, requirement.getAuthorId() + "");
 			if (requirement.getImportanceId() != null)
@@ -592,9 +595,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		
 		if (artifact instanceof Task)
 		{
-			Task task = (Task)artifact;
+			Task task = (Task)artifact;						
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_TYPE, ArtifactType.TASK.name());
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_STATUS_ID, task.getTaskStatusId() + "");
-			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_REQUIREMENT_ID, task.getRequirementId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_REQUIREMENT_ID, task.getRequirementName());
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_RELEASE_ID, task.getReleaseId() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_PRIORITY_ID, task.getTaskPriorityId() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_START_DATE, SpiraTeamUtil.dateToString(task.getStartDate()));

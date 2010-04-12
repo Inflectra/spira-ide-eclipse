@@ -43,12 +43,14 @@ public class Messages extends NLS
 	public static String ArtifactAttribute_LastUpdateDate;
 	public static String ArtifactAttribute_OwnerId;
 	
+	public static String RequirementAttribute_Type;
 	public static String RequirementAttribute_StatusId;
 	public static String RequirementAttribute_AuthorId;
 	public static String RequirementAttribute_ImportanceId;
 	public static String RequirementAttribute_ReleaseId;
 	public static String Requirementttribute_PlannedEffort;
 	
+	public static String TaskAttribute_Type;
 	public static String TaskAttribute_StatusId;
 	public static String TaskAttribute_RequirementId;
 	public static String TaskAttribute_ReleaseId;

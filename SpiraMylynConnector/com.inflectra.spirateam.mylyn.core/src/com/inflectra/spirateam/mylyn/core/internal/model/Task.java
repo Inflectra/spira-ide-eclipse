@@ -29,10 +29,12 @@ public class Task extends Artifact
     protected String taskPriorityName;
     protected String projectName;
     protected String releaseVersionNumber;
+    protected String requirementName;
     
     public enum Key
     {
 		//Task-specific attributes
+    	TYPE("task.type"),
 		STATUS_ID("task.statusId"),
 		REQUIREMENT_ID("task.requirementId"),
 		RELEASE_ID("task.releaseId"),
@@ -41,7 +43,8 @@ public class Task extends Artifact
 		END_DATE("task.endDate"),
 		COMPLETION_PERCENTAGE("task.completionPercentage"),
 		ESTIMATED_EFFORT("task.estimatedEffort"),
-		ACTUAL_EFFORT("task.actualEffort");
+		ACTUAL_EFFORT("task.actualEffort"),
+		REQUIREMENT_NAME("task.requirementName");
 
 		public static Key fromKey(String name)
 		{
@@ -402,5 +405,14 @@ public class Task extends Artifact
      */
     public String getReleaseVersionNumber() {
         return releaseVersionNumber;
+    }
+    
+    public String getRequirementName()
+    {
+    	return this.requirementName;
+    }
+    public void setRequirementName(String requirementName)
+    {
+    	this.requirementName = requirementName;
     }
 }

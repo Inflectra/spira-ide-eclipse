@@ -12,11 +12,14 @@ import org.eclipse.osgi.util.NLS;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
@@ -42,6 +45,9 @@ public class SpiraImportExport
 	private String password = "";
 	private ImportExport service = null;
 	private ImportExportSoap soap = null;
+	
+	private ArtifactField taskField_TaskStatus = null;
+	private ArtifactField taskField_TaskPriority = null;
 
 	protected SpiraTeamClientData data;
 	
@@ -338,6 +344,54 @@ public class SpiraImportExport
 		{
 			throw new SpiraException(ex.getMessage());
 		}
+	}
+	
+	public ArtifactField getArtifactFieldByName(String name)
+	{
+		if (name.equals("TaskStatus"))
+		{
+			return taskGetStatus();
+		}
+		if (name.equals("TaskPriority"))
+		{
+			return taskGetPriority();
+		}
+		return null;
+	}
+	
+	public ArtifactField taskGetStatus()
+	{
+		if (this.taskField_TaskStatus == null)
+		{
+			this.taskField_TaskStatus = new ArtifactField("TaskStatus");
+			this.taskField_TaskStatus.setOptional(false);
+			
+			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[5];
+			lookupValues[0] = new ArtifactFieldValue(1, "Not Started");
+			lookupValues[1] = new ArtifactFieldValue(2, "In Progress");
+			lookupValues[2] = new ArtifactFieldValue(3, "Completed");
+			lookupValues[3] = new ArtifactFieldValue(4, "Blocked");
+			lookupValues[4] = new ArtifactFieldValue(5, "Deferred");
+			this.taskField_TaskStatus.setValues(lookupValues);
+		}
+		return this.taskField_TaskStatus;
+	}
+	
+	public ArtifactField taskGetPriority()
+	{
+		if (this.taskField_TaskPriority == null)
+		{
+			this.taskField_TaskPriority = new ArtifactField("TaskPriority");
+			this.taskField_TaskStatus.setOptional(true);
+	
+			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[4];
+			lookupValues[0] = new ArtifactFieldValue(1, "1 - Critical");
+			lookupValues[1] = new ArtifactFieldValue(2, "2 - High");
+			lookupValues[2] = new ArtifactFieldValue(3, "3 - Medium");
+			lookupValues[3] = new ArtifactFieldValue(4, "4 - Low");
+			this.taskField_TaskPriority.setValues(lookupValues);
+		}
+		return this.taskField_TaskPriority;
 	}
 	
 	/**

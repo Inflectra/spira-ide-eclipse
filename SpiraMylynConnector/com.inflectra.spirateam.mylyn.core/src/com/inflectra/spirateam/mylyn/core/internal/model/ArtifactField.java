@@ -56,7 +56,7 @@ public class ArtifactField implements Serializable
 
 	private String label;
 
-	private String[] options;
+	private ArtifactFieldValue[] values;
 
 	private String defaultValue;
 
@@ -104,14 +104,14 @@ public class ArtifactField implements Serializable
 		this.label = label;
 	}
 
-	public String[] getOptions()
+	public ArtifactFieldValue[] getValues()
 	{
-		return options;
+		return this.values;
 	}
 
-	public void setOptions(String[] options)
+	public void setValues(ArtifactFieldValue[] values)
 	{
-		this.options = options;
+		this.values = values;
 	}
 
 	public int getOrder()

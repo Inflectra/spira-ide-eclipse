@@ -28,6 +28,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskData;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
@@ -187,16 +188,16 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		else if (field.getType() == ArtifactField.Type.SELECT || field.getType() == ArtifactField.Type.RADIO)
 		{
 			metaData.setType(TaskAttribute.TYPE_SINGLE_SELECT);
-			String[] values = field.getOptions();
+			ArtifactFieldValue[] values = field.getValues();
 			if (values != null && values.length > 0)
 			{
 				if (field.isOptional())
 				{
 					attr.putOption("", ""); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-				for (String value : values)
+				for (ArtifactFieldValue value : values)
 				{
-					attr.putOption(value, value);
+					attr.putOption(value.getId() + "", value.getName());
 				}
 				if (field.getDefaultValue() != null)
 				{
@@ -205,16 +206,16 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 						int index = Integer.parseInt(field.getDefaultValue());
 						if (index > 0 && index < values.length)
 						{
-							attr.setValue(values[index]);
+							attr.setValue(values[index].getName());
 						}
 					}
 					catch (NumberFormatException e)
 					{
-						for (String value : values)
+						for (ArtifactFieldValue value : values)
 						{
 							if (field.getDefaultValue().equals(value.toString()))
 							{
-								attr.setValue(value);
+								attr.setValue(value.getName());
 								break;
 							}
 						}
@@ -264,9 +265,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		metaData.putValue(ARTIFACT_KEY, artifactAttribute.getArtifactKey());
 		if (client != null)
 		{
-			//ArtifactField field = client.getArtifactFieldByName(artifactAttribute.getArtifactKey());
-			//TODO: Implement repository field options (workflows, etc.)
-			/*
+			ArtifactField field = client.getArtifactFieldByName(artifactAttribute.getArtifactKey());
 			Map<String, String> values = SpiraTeamAttributeMapper.getRepositoryOptions(client, attr.getId());
 			if (values != null && values.size() > 0)
 			{
@@ -282,11 +281,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 					setDefault = false;
 				}
 			}
-			else*/ if (TaskAttribute.TYPE_SINGLE_SELECT.equals(artifactAttribute.getType()))
+			else if (TaskAttribute.TYPE_SINGLE_SELECT.equals(artifactAttribute.getType()))
 			{
 				attr.getMetaData().setReadOnly(true);
 			}
-			/*
 			if (field != null)
 			{
 				String defaultValue = field.getDefaultValue();
@@ -294,7 +292,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				{
 					attr.setValue(defaultValue);
 				}
-			}*/
+			}
 		}
 		return attr;
 	}

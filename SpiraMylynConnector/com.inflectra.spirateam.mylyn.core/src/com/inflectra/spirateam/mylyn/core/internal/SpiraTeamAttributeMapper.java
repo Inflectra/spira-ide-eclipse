@@ -4,12 +4,16 @@
 package com.inflectra.spirateam.mylyn.core.internal;
 
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 
 /**
@@ -53,5 +57,57 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 	{
 		ArtifactAttribute attribute = ArtifactAttribute.getByTaskKey(taskKey);
 		return (attribute != null) ? attribute.getArtifactKey() : taskKey;
+	}
+	
+	@Override
+	public Map<String, String> getOptions(TaskAttribute attribute)
+	{
+		Map<String, String> options = getRepositoryOptions(client, attribute.getId());
+		return (options != null) ? options : super.getOptions(attribute);
+	}
+
+	public static Map<String, String> getRepositoryOptions(SpiraImportExport client, String artifactAttributeKey)
+	{
+		if (ArtifactAttribute.TASK_STATUS_ID.getArtifactKey().equals(artifactAttributeKey))
+		{
+			return getOptions(client.taskGetStatus(), false);
+		}
+		else if (ArtifactAttribute.TASK_PRIORITY_ID.getArtifactKey().equals(artifactAttributeKey))
+		{
+			return getOptions(client.taskGetPriority(), true);
+		}
+		/*else if (TracAttribute.RESOLUTION.getTracKey().equals(trackKey)) {
+			return getOptions(client.getTicketResolutions(), false);
+		} else if (TracAttribute.COMPONENT.getTracKey().equals(trackKey)) {
+			return getOptions(client.getComponents(), false);
+		} else if (TracAttribute.VERSION.getTracKey().equals(trackKey)) {
+			return getOptions(client.getVersions(), true);
+		} else if (TracAttribute.SEVERITY.getTracKey().equals(trackKey)) {
+			return getOptions(client.getSeverities(), false);
+		} else if (TracAttribute.MILESTONE.getTracKey().equals(trackKey)) {
+			return getOptions(client.getMilestones(), true);
+		} else if (TracAttribute.TYPE.getTracKey().equals(trackKey)) {
+			return getOptions(client.getTicketTypes(), false);
+		}*/
+		return null;
+	}
+
+	private static Map<String, String> getOptions(ArtifactField artifactField, boolean allowEmpty)
+	{
+		ArtifactFieldValue[] values = artifactField.getValues();
+		if (values != null && values.length > 0)
+		{
+			Map<String, String> options = new LinkedHashMap<String, String>();
+			if (allowEmpty)
+			{
+				options.put("", ""); //$NON-NLS-1$ //$NON-NLS-2$
+			}
+			for (ArtifactFieldValue value : values)
+			{
+				options.put(value.getId() + "", value.getName());
+			}
+			return options;
+		}
+		return null;
 	}
 }

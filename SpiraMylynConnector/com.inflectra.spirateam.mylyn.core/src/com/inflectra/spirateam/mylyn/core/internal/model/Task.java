@@ -34,7 +34,6 @@ public class Task extends Artifact
     public enum Key
     {
 		//Task-specific attributes
-    	TYPE("task.type"),
 		STATUS_ID("task.statusId"),
 		REQUIREMENT_ID("task.requirementId"),
 		RELEASE_ID("task.releaseId"),

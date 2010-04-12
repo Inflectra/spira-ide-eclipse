@@ -24,7 +24,6 @@ public class Requirement
     public enum Key
     {
 		//Requirement-specific attributes
-    	TYPE("requirement.type"),
 		STATUS_ID("requirement.statusId"),
 		AUTHOR_ID("requirement.authorId"),
 		IMPORTANCE_ID("requirement.importanceId"),

@@ -3,6 +3,7 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal;
 
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -51,7 +52,6 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 		return TaskAttribute.COMMENT_NEW.equals(id) || TaskAttribute.ADD_SELF_CC.equals(id);
 	}
 	
-
 	@Override
 	public String mapToRepositoryKey(TaskAttribute parent, String taskKey)
 	{

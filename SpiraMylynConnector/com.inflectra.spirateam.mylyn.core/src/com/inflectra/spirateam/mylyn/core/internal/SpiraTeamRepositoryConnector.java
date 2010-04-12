@@ -19,11 +19,13 @@ import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.mylyn.tasks.core.RepositoryStatus;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.TaskRepositoryLocationFactory;
+import org.eclipse.mylyn.tasks.core.ITask.PriorityLevel;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
 import org.eclipse.mylyn.tasks.core.data.TaskMapper;
 import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.PredefinedFilter;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
@@ -76,6 +78,32 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 		return SpiraTeamCorePlugin.LABEL;
 	}
 
+	//Returns the equivalent Mylyn priority for a Spira task priority
+	public static PriorityLevel getMylynPriorityForTask(String priority)
+	{
+		if (priority == null)
+		{
+			return null;
+		}
+		if (priority.equals("1"))
+		{
+			return PriorityLevel.P1;
+		}
+		if (priority.equals("2"))
+		{
+			return PriorityLevel.P2;
+		}
+		if (priority.equals("3"))
+		{
+			return PriorityLevel.P3;
+		}
+		if (priority.equals("4"))
+		{
+			return PriorityLevel.P4;
+		}
+		return null;
+	}
+	
 	@Override
 	public String getRepositoryUrlFromTaskUrl(String url)
 	{

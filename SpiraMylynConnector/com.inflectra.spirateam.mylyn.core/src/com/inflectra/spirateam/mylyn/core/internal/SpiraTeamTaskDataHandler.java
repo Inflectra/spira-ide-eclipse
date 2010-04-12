@@ -142,8 +142,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		try
 		{
 			SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(repository);
-			//TODO: Need to pass the real projectId not just use 1
-			createDefaultAttributes(data, client, false, 1);
+			createDefaultAttributes(data, client, false);
 			removeEmptySingleSelectAttributes(data);
 			return true;
 		}
@@ -310,7 +309,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	}
 
 	
-	public static void createDefaultAttributes(TaskData data, SpiraImportExport client, boolean existingTask, int projectId)
+	public static void createDefaultAttributes(TaskData data, SpiraImportExport client, boolean existingTask)
 	{
 		data.setVersion(TASK_DATA_VERSION);
 
@@ -403,11 +402,12 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		TaskData taskData = new TaskData(getAttributeMapper(repository), SpiraTeamCorePlugin.CONNECTOR_KIND,
 				repository.getRepositoryUrl(), requirement.getArtifactKey());
 		taskData.setVersion(TASK_DATA_VERSION);
+		client.setStoredProjectId(requirement.getProjectId());
 		try
 		{
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
 			{
-				createDefaultAttributes(taskData, client, true, requirement.getProjectId());
+				createDefaultAttributes(taskData, client, true);
 				Set<TaskAttribute> changedAttributes = updateTaskData(repository, taskData, requirement);
 				// remove attributes that were not set, i.e. were not received from the server
 				List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
@@ -424,7 +424,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 			else
 			{
-				createDefaultAttributes(taskData, client, true, requirement.getProjectId());
+				createDefaultAttributes(taskData, client, true);
 				updateTaskData(repository, taskData, requirement);
 			}
 			removeEmptySingleSelectAttributes(taskData);
@@ -446,11 +446,12 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		TaskData taskData = new TaskData(getAttributeMapper(repository), SpiraTeamCorePlugin.CONNECTOR_KIND,
 				repository.getRepositoryUrl(), incident.getArtifactKey());
 		taskData.setVersion(TASK_DATA_VERSION);
+		client.setStoredProjectId(incident.getProjectId());
 		try
 		{
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
 			{
-				createDefaultAttributes(taskData, client, true, incident.getProjectId());
+				createDefaultAttributes(taskData, client, true);
 				Set<TaskAttribute> changedAttributes = updateTaskData(repository, taskData, incident);
 				// remove attributes that were not set, i.e. were not received from the server
 				List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
@@ -467,7 +468,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 			else
 			{
-				createDefaultAttributes(taskData, client, true, incident.getProjectId());
+				createDefaultAttributes(taskData, client, true);
 				updateTaskData(repository, taskData, incident);
 			}
 			removeEmptySingleSelectAttributes(taskData);
@@ -489,11 +490,12 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		TaskData taskData = new TaskData(getAttributeMapper(repository), SpiraTeamCorePlugin.CONNECTOR_KIND,
 				repository.getRepositoryUrl(), spiraTask.getArtifactKey());
 		taskData.setVersion(TASK_DATA_VERSION);
+		client.setStoredProjectId(spiraTask.getProjectId());
 		try
 		{
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
 			{
-				createDefaultAttributes(taskData, client, true, spiraTask.getProjectId());
+				createDefaultAttributes(taskData, client, true);
 				Set<TaskAttribute> changedAttributes = updateTaskData(repository, taskData, spiraTask);
 				// remove attributes that were not set, i.e. were not received from the server
 				List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
@@ -510,7 +512,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 			else
 			{
-				createDefaultAttributes(taskData, client, true, spiraTask.getProjectId());
+				createDefaultAttributes(taskData, client, true);
 				updateTaskData(repository, taskData, spiraTask);
 			}
 			removeEmptySingleSelectAttributes(taskData);

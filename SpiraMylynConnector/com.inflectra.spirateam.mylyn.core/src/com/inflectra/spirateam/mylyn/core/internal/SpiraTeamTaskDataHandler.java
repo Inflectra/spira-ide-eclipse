@@ -142,9 +142,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		try
 		{
 			SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(repository);
-			//TODO: Get any meta-data (priorities, etc.) from SpiraTeam
-			//client.updateAttributes(monitor, false);
-			createDefaultAttributes(data, client, false);
+			//TODO: Need to pass the real projectId not just use 1
+			createDefaultAttributes(data, client, false, 1);
 			removeEmptySingleSelectAttributes(data);
 			return true;
 		}
@@ -311,7 +310,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	}
 
 	
-	public static void createDefaultAttributes(TaskData data, SpiraImportExport client, boolean existingTask)
+	public static void createDefaultAttributes(TaskData data, SpiraImportExport client, boolean existingTask, int projectId)
 	{
 		data.setVersion(TASK_DATA_VERSION);
 
@@ -369,18 +368,21 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.TASK_ACTUAL_EFFORT);
 		}
 		
-		// custom fields
+		// custom fields - add when API supports it
 		/*
-		TracTicketField[] fields = client.getTicketFields();
-		if (fields != null) {
-			for (TracTicketField field : fields) {
-				if (field.isCustom()) {
+		ArtifactField[] fields = client.getCustomProperties(ArtifactType.TASK, projectId);
+		if (fields != null)
+		{
+			for (ArtifactField field : fields)
+			{
+				if (field.isCustom())
+				{
 					createAttribute(data, field);
 				}
 			}
-		}
+		}*/
 		// operations
-		data.getRoot().createAttribute(TaskAttribute.OPERATION).getMetaData().setType(TaskAttribute.TYPE_OPERATION);*/
+		//data.getRoot().createAttribute(TaskAttribute.OPERATION).getMetaData().setType(TaskAttribute.TYPE_OPERATION);
 	}
 	
 	/* (non-Javadoc)
@@ -405,7 +407,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		{
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
 			{
-				createDefaultAttributes(taskData, client, true);
+				createDefaultAttributes(taskData, client, true, requirement.getProjectId());
 				Set<TaskAttribute> changedAttributes = updateTaskData(repository, taskData, requirement);
 				// remove attributes that were not set, i.e. were not received from the server
 				List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
@@ -422,7 +424,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 			else
 			{
-				createDefaultAttributes(taskData, client, true);
+				createDefaultAttributes(taskData, client, true, requirement.getProjectId());
 				updateTaskData(repository, taskData, requirement);
 			}
 			removeEmptySingleSelectAttributes(taskData);
@@ -448,7 +450,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		{
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
 			{
-				createDefaultAttributes(taskData, client, true);
+				createDefaultAttributes(taskData, client, true, incident.getProjectId());
 				Set<TaskAttribute> changedAttributes = updateTaskData(repository, taskData, incident);
 				// remove attributes that were not set, i.e. were not received from the server
 				List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
@@ -465,7 +467,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 			else
 			{
-				createDefaultAttributes(taskData, client, true);
+				createDefaultAttributes(taskData, client, true, incident.getProjectId());
 				updateTaskData(repository, taskData, incident);
 			}
 			removeEmptySingleSelectAttributes(taskData);
@@ -491,7 +493,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		{
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
 			{
-				createDefaultAttributes(taskData, client, true);
+				createDefaultAttributes(taskData, client, true, spiraTask.getProjectId());
 				Set<TaskAttribute> changedAttributes = updateTaskData(repository, taskData, spiraTask);
 				// remove attributes that were not set, i.e. were not received from the server
 				List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
@@ -508,7 +510,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 			else
 			{
-				createDefaultAttributes(taskData, client, true);
+				createDefaultAttributes(taskData, client, true, spiraTask.getProjectId());
 				updateTaskData(repository, taskData, spiraTask);
 			}
 			removeEmptySingleSelectAttributes(taskData);

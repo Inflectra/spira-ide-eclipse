@@ -40,6 +40,10 @@ public class SpiraTeamCorePlugin extends Plugin
 	public static String MY_ASSIGNED_INCIDENTS = "2";
 	public static String MY_ASSIGNED_TASKS = "3";
 	
+	//Custom Property types
+	public static int CustomPropertyType_Text = 1;
+	public static int CustomPropertyType_List = 2;
+	
 	/**
 	 * The constructor
 	 */

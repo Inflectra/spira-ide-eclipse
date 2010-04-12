@@ -18,11 +18,13 @@ import java.util.Map;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
+import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField.Type;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.*;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
 
@@ -358,6 +360,62 @@ public class SpiraImportExport
 		}
 		return null;
 	}
+	
+	/*TODO: Add support for custom fields once API supports it
+	public ArtifactField[] getCustomProperties(ArtifactType artifactType, int projectId)
+	{
+		try
+		{	
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Get the list of custom properties
+			List<RemoteCustomProperty> remoteCustomProperties = soap.projectRetrieveCustomProperties(artifactType.getArtifactTypeId()).getRemoteCustomProperty();
+			
+			//Convert the SOAP custom properties into the ArtifactField class
+			ArrayList<ArtifactField> artifactFields = new ArrayList<ArtifactField>();
+			for (RemoteCustomProperty remoteCustomProperty : remoteCustomProperties)
+			{
+				ArtifactField artifactField = new ArtifactField(remoteCustomProperty.getCustomPropertyName());
+				artifactField.setLabel(remoteCustomProperty.getAlias());
+				artifactField.setCustom(true);
+				if (remoteCustomProperty.getCustomPropertyTypeId() == SpiraTeamCorePlugin.CustomPropertyType_Text)
+				{
+					artifactField.setType(Type.TEXT);
+				}
+				if (remoteCustomProperty.getCustomPropertyTypeId() == SpiraTeamCorePlugin.CustomPropertyType_List)
+				{
+					artifactField.setType(Type.SELECT);
+					
+					//Now we need to get the custom list values
+					//artifactField.setValues(values);
+				}
+				artifactFields.add(artifactField);
+			}
+	        return artifactFields.toArray(new ArtifactField[0]);
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (WebServiceException ex)
+		{
+			return null;
+		}
+	}*/
 	
 	public ArtifactField taskGetStatus()
 	{

@@ -613,6 +613,18 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				//Let the user know
 				throw new SpiraException(Messages.SpiraTeamTaskDataHandler_UnableToRetrieveComments);
 			}
+			
+			//TODO: Add workflow actions
+			/*
+			TracAction[] actions = ticket.getActions();
+			if (actions != null)
+			{
+				// add actions and set first as default
+				for (TracAction action : actions)
+				{
+					addOperation(repository, data, ticket, action, action == actions[0]);
+				}
+			}*/
 		}
 		
 		if (artifact instanceof Task)
@@ -629,8 +641,6 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ESTIMATED_EFFORT, SpiraTeamUtil.effortValuesToString(task.getEstimatedEffort()));
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ACTUAL_EFFORT, SpiraTeamUtil.effortValuesToString(task.getActualEffort()));
 		}
-
-
 
 		/* Handle attachments - future enhancement once the API has been upgraded
 		TracAttachment[] attachments = ticket.getAttachments();
@@ -653,15 +663,6 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 
 				TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_ATTACHMENT + (i + 1));
 				mapper.applyTo(attribute);
-			}
-		}*/
-
-		/* TODO: Add workflow actions
-		TracAction[] actions = ticket.getActions();
-		if (actions != null) {
-			// add actions and set first as default
-			for (TracAction action : actions) {
-				addOperation(repository, data, ticket, action, action == actions[0]);
 			}
 		}*/
 

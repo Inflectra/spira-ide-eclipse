@@ -477,7 +477,7 @@ public class SpiraImportExport
 			List<RemoteProjectUser> remoteProjectUsers = soap.projectRetrieveUserMembership().getRemoteProjectUser();
 			
 			//Convert the SOAP release into the ArtifactField class
-			ArtifactField artifactField = new ArtifactField("Release");
+			ArtifactField artifactField = new ArtifactField("User");
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteProjectUser remoteProjectUser : remoteProjectUsers)
 			{
@@ -486,7 +486,7 @@ public class SpiraImportExport
 				RemoteUser remoteUser = soap.userRetrieveById(userId);
 				if (remoteUser != null)
 				{
-					lookupValues.add(new ArtifactFieldValue(userId, remoteUser.getFirstName() + " " + remoteUser.getLastName() + " <" + remoteUser.getEmailAddress() + ">"));
+					lookupValues.add(new ArtifactFieldValue(userId, remoteUser.getFirstName() + " " + remoteUser.getLastName() + " [" + remoteUser.getEmailAddress() + "]"));
 				}
 			}		
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
@@ -577,7 +577,7 @@ public class SpiraImportExport
 		if (this.taskField_TaskPriority == null)
 		{
 			this.taskField_TaskPriority = new ArtifactField("TaskPriority");
-			this.taskField_TaskStatus.setOptional(true);
+			this.taskField_TaskPriority.setOptional(true);
 	
 			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[4];
 			lookupValues[0] = new ArtifactFieldValue(1, "1 - Critical");

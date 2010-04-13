@@ -441,6 +441,60 @@ public class SpiraImportExport
 		return this.taskGetRelease(projectId);
 	}
 	
+	public ArtifactField usersGet(int projectId)
+	{
+		try
+		{
+			//Get the list of users from the SOAP API
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+	
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Get the list of users
+			/*
+			List<RemoteUser> remoteUsers = soap.project(true).getRemoteRelease();
+			
+			//Convert the SOAP release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("Release");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteRelease remoteRelease : remoteReleases)
+			{
+				if (remoteRelease.isIteration())
+				{
+					//Indent iterations with spaces for now
+					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId(), "  " + remoteRelease.getVersionNumber() + " - " + remoteRelease.getName()));				
+				}
+				else
+				{
+					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId(), remoteRelease.getVersionNumber() + " - " + remoteRelease.getName()));
+				}
+			}		
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;*/
+			return null;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (WebServiceException ex)
+		{
+			return null;
+		}
+	}
+	
 	public ArtifactField taskGetRelease(int projectId)
 	{
 		try

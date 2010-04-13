@@ -34,10 +34,10 @@ public enum ArtifactAttribute
 	//Requirement attributes
 	REQUIREMENT_TYPE(Requirement.Key.TYPE, Messages.RequirementAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT),
 	REQUIREMENT_STATUS_ID(Requirement.Key.STATUS_ID, Messages.RequirementAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
-	REQUIREMENT_AUTHOR_ID(Requirement.Key.AUTHOR_ID, Messages.RequirementAttribute_AuthorId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_PERSON, Flag.PEOPLE),
+	REQUIREMENT_AUTHOR_ID(Requirement.Key.AUTHOR_ID, Messages.RequirementAttribute_AuthorId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_SHORT_TEXT, Flag.PEOPLE, Flag.READ_ONLY),
 	REQUIREMENT_IMPORTANCE_ID(Requirement.Key.IMPORTANCE_ID, Messages.RequirementAttribute_ImportanceId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
 	REQUIREMENT_RELEASE_ID(Requirement.Key.RELEASE_ID, Messages.RequirementAttribute_ReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
-	REQUIREMENT_PLANNED_EFFORT(Requirement.Key.PLANNED_EFFORT, Messages.Requirementttribute_PlannedEffort, null, TaskAttribute.TYPE_INTEGER, Flag.ATTRIBUTE),
+	REQUIREMENT_PLANNED_EFFORT(Requirement.Key.PLANNED_EFFORT, Messages.Requirementttribute_PlannedEffort, null, TaskAttribute.TYPE_SHORT_TEXT, Flag.ATTRIBUTE),
 	
 	//Incident attributes
 	INCIDENT_PRIORITY_ID(Incident.Key.PRIORITY_ID, Messages.IncidentAttribute_PriorityId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),

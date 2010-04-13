@@ -73,7 +73,23 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 
 	public static Map<String, String> getRepositoryOptions(SpiraImportExport client, String artifactAttributeKey)
 	{
-		if (ArtifactAttribute.TASK_STATUS_ID.getArtifactKey().equals(artifactAttributeKey))
+		if (ArtifactAttribute.OWNER_ID.getArtifactKey().equals(artifactAttributeKey))
+		{
+			return getOptions(client.usersGet(), true);
+		}
+		else if (ArtifactAttribute.REQUIREMENT_STATUS_ID.getArtifactKey().equals(artifactAttributeKey))
+		{
+			return getOptions(client.requirementGetStatus(), false);
+		}
+		else if (ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID.getArtifactKey().equals(artifactAttributeKey))
+		{
+			return getOptions(client.requirementGetImportance(), true);
+		}
+		else if (ArtifactAttribute.REQUIREMENT_RELEASE_ID.getArtifactKey().equals(artifactAttributeKey))
+		{
+			return getOptions(client.releasesGet(true), true);
+		}
+		else if (ArtifactAttribute.TASK_STATUS_ID.getArtifactKey().equals(artifactAttributeKey))
 		{
 			return getOptions(client.taskGetStatus(), false);
 		}
@@ -83,25 +99,8 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 		}
 		else if (ArtifactAttribute.TASK_RELEASE_ID.getArtifactKey().equals(artifactAttributeKey))
 		{
-			return getOptions(client.taskGetRelease(), true);
+			return getOptions(client.releasesGet(true), true);
 		}
-		else if (ArtifactAttribute.OWNER_ID.getArtifactKey().equals(artifactAttributeKey))
-		{
-			return getOptions(client.usersGet(), true);
-		}
-		/*else if (TracAttribute.RESOLUTION.getTracKey().equals(trackKey)) {
-			return getOptions(client.getTicketResolutions(), false);
-		} else if (TracAttribute.COMPONENT.getTracKey().equals(trackKey)) {
-			return getOptions(client.getComponents(), false);
-		} else if (TracAttribute.VERSION.getTracKey().equals(trackKey)) {
-			return getOptions(client.getVersions(), true);
-		} else if (TracAttribute.SEVERITY.getTracKey().equals(trackKey)) {
-			return getOptions(client.getSeverities(), false);
-		} else if (TracAttribute.MILESTONE.getTracKey().equals(trackKey)) {
-			return getOptions(client.getMilestones(), true);
-		} else if (TracAttribute.TYPE.getTracKey().equals(trackKey)) {
-			return getOptions(client.getTicketTypes(), false);
-		}*/
 		return null;
 	}
 

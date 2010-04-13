@@ -49,6 +49,8 @@ public class SpiraImportExport
 	private ImportExportSoap soap = null;
 	private Integer storedProjectId = null;
 	
+	private ArtifactField requirementField_Status = null;
+	private ArtifactField requirementField_Importance = null;
 	private ArtifactField taskField_TaskStatus = null;
 	private ArtifactField taskField_TaskPriority = null;
 	
@@ -252,6 +254,14 @@ public class SpiraImportExport
 			
 			//Convert the SOAP requirement into the local version
 			Requirement requirement = new Requirement(remoteRequirement);
+			
+			//We need to also get the author's name
+			RemoteUser remoteAuthor = soap.userRetrieveById(requirement.getAuthorId());
+			if (remoteAuthor != null)
+			{
+				requirement.setAuthorName(remoteAuthor.getFirstName() + " " + remoteAuthor.getLastName() + " [" + remoteAuthor.getEmailAddress() + "]");
+			}
+			
 	        return requirement;
 		}
 		catch (WebServiceException ex)
@@ -371,6 +381,14 @@ public class SpiraImportExport
 		{
 			return taskGetPriority();
 		}
+		if (name.equals("RequirementStatus"))
+		{
+			return requirementGetStatus();
+		}
+		if (name.equals("RequirementImportance"))
+		{
+			return requirementGetImportance();
+		}
 		return null;
 	}
 	
@@ -430,7 +448,7 @@ public class SpiraImportExport
 		}
 	}*/
 	
-	public ArtifactField taskGetRelease()
+	public ArtifactField releasesGet(boolean activeOnly)
 	{
 		//Don't return releases if we have no project set
 		if (this.storedProjectId == null)
@@ -438,7 +456,7 @@ public class SpiraImportExport
 			return null;
 		}
 		int projectId = this.storedProjectId.intValue();
-		return this.taskGetRelease(projectId);
+		return this.releasesGet(activeOnly, projectId);
 	}
 	
 	public ArtifactField usersGet()
@@ -502,7 +520,7 @@ public class SpiraImportExport
 		}
 	}
 	
-	public ArtifactField taskGetRelease(int projectId)
+	public ArtifactField releasesGet(boolean activeOnly, int projectId)
 	{
 		try
 		{
@@ -524,7 +542,7 @@ public class SpiraImportExport
 			}
 				
 			//Get the list of releases
-			List<RemoteRelease> remoteReleases = soap.releaseRetrieve(true).getRemoteRelease();
+			List<RemoteRelease> remoteReleases = soap.releaseRetrieve(activeOnly).getRemoteRelease();
 			
 			//Convert the SOAP release into the ArtifactField class
 			ArtifactField artifactField = new ArtifactField("Release");
@@ -587,6 +605,44 @@ public class SpiraImportExport
 			this.taskField_TaskPriority.setValues(lookupValues);
 		}
 		return this.taskField_TaskPriority;
+	}
+	
+	public ArtifactField requirementGetStatus()
+	{
+		if (this.requirementField_Status == null)
+		{
+			this.requirementField_Status = new ArtifactField("RequirementStatus");
+			this.requirementField_Status.setOptional(false);
+			
+			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[7];
+			lookupValues[0] = new ArtifactFieldValue(1, "Requested");
+			lookupValues[1] = new ArtifactFieldValue(2, "Planned");
+			lookupValues[2] = new ArtifactFieldValue(3, "In Progress");
+			lookupValues[3] = new ArtifactFieldValue(4, "Completed");
+			lookupValues[4] = new ArtifactFieldValue(5, "Accepted");
+			lookupValues[5] = new ArtifactFieldValue(6, "Rejected");
+			lookupValues[6] = new ArtifactFieldValue(7, "Evaluated");
+			
+			this.requirementField_Status.setValues(lookupValues);
+		}
+		return this.requirementField_Status;
+	}
+	
+	public ArtifactField requirementGetImportance()
+	{
+		if (this.requirementField_Importance == null)
+		{
+			this.requirementField_Importance = new ArtifactField("RequirementImportance");
+			this.requirementField_Importance.setOptional(true);
+	
+			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[4];
+			lookupValues[0] = new ArtifactFieldValue(1, "1 - Critical");
+			lookupValues[1] = new ArtifactFieldValue(2, "2 - High");
+			lookupValues[2] = new ArtifactFieldValue(3, "3 - Medium");
+			lookupValues[3] = new ArtifactFieldValue(4, "4 - Low");
+			this.requirementField_Importance.setValues(lookupValues);
+		}
+		return this.requirementField_Importance;
 	}
 	
 	/**
@@ -690,7 +746,7 @@ public class SpiraImportExport
 				RemoteRequirement remoteRequirement = soap.requirementRetrieveById(task.getRequirementId());
 				if (remoteRequirement != null)
 				{
-					task.setRequirementName(remoteRequirement.getName());
+					task.setRequirementName(remoteRequirement.getName() + " [RQ" + task.getRequirementId() + "]");
 				}
 			}
 			

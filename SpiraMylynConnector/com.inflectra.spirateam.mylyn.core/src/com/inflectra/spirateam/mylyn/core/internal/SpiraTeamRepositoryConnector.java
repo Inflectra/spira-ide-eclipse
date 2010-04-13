@@ -104,6 +104,32 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 		return null;
 	}
 	
+	//Returns the equivalent Mylyn priority for a Spira requirement importance
+	public static PriorityLevel getMylynPriorityForRequirement(String importance)
+	{
+		if (importance == null)
+		{
+			return null;
+		}
+		if (importance.equals("1"))
+		{
+			return PriorityLevel.P1;
+		}
+		if (importance.equals("2"))
+		{
+			return PriorityLevel.P2;
+		}
+		if (importance.equals("3"))
+		{
+			return PriorityLevel.P3;
+		}
+		if (importance.equals("4"))
+		{
+			return PriorityLevel.P4;
+		}
+		return null;
+	}
+	
 	@Override
 	public String getRepositoryUrlFromTaskUrl(String url)
 	{

@@ -328,6 +328,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		//Requirement-specific fields
 		if (artifactType.equals(ArtifactType.REQUIREMENT))
 		{
+			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_TYPE);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_STATUS_ID);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_AUTHOR_ID);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID);
@@ -559,19 +560,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			Requirement requirement = (Requirement)artifact;
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_TYPE, ArtifactType.REQUIREMENT.getDisplayName());
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_STATUS_ID, requirement.getStatusId() + "");
-			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_AUTHOR_ID, requirement.getAuthorId() + "");
-			if (requirement.getImportanceId() != null)
-			{
-				updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID, requirement.getImportanceId().toString());
-			}
-			if (requirement.getReleaseId() != null)
-			{
-				updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_RELEASE_ID, requirement.getReleaseId().toString());
-			}
-			if (requirement.getPlannedEffort() != null)
-			{
-				updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT, requirement.getPlannedEffort().toString());
-			}
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_AUTHOR_ID, requirement.getAuthorName());
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID, requirement.getImportanceId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_RELEASE_ID, requirement.getReleaseId() + "");
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT, SpiraTeamUtil.effortValuesToString(requirement.getPlannedEffort()));
 		}
 		
 		if (artifact instanceof Incident)

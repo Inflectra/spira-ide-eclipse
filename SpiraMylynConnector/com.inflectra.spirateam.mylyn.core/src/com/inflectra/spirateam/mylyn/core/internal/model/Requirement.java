@@ -16,6 +16,7 @@ public class Requirement
 {
     protected int statusId;
     protected int authorId;
+    protected String authorName;
     protected Integer importanceId;
     protected Integer releaseId;
     protected boolean summary;
@@ -154,7 +155,23 @@ public class Requirement
         this.authorId = value;
     }
 
+    /**
+     * Gets the value of the authorName property.
+     * 
+     */
+    public String getAuthorName()
+    {
+        return authorName;
+    }
  
+    /**
+     * Sets the value of the authorName property.
+     * 
+     */
+    public void setAuthorName(String value)
+    {
+        this.authorName = value;
+    }
 
     /**
      * Gets the value of the importanceId property.

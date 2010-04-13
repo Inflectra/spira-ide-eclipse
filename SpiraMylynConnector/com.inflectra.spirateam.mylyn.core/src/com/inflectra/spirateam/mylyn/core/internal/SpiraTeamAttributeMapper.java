@@ -3,7 +3,6 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal;
 
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;

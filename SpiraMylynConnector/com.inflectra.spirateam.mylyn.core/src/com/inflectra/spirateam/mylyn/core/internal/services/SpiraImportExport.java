@@ -580,11 +580,11 @@ public class SpiraImportExport
 			this.taskField_TaskStatus.setOptional(false);
 			
 			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[5];
-			lookupValues[0] = new ArtifactFieldValue(1, "Not Started");
-			lookupValues[1] = new ArtifactFieldValue(2, "In Progress");
-			lookupValues[2] = new ArtifactFieldValue(TASK_STATUS_COMPLETED, "Completed");
-			lookupValues[3] = new ArtifactFieldValue(4, "Blocked");
-			lookupValues[4] = new ArtifactFieldValue(5, "Deferred");
+			lookupValues[0] = new ArtifactFieldValue(1, Messages.TaskStatus_NotStarted);
+			lookupValues[1] = new ArtifactFieldValue(2, Messages.TaskStatus_InProgress);
+			lookupValues[2] = new ArtifactFieldValue(TASK_STATUS_COMPLETED, Messages.TaskStatus_Completed);
+			lookupValues[3] = new ArtifactFieldValue(4, Messages.TaskStatus_Blocked);
+			lookupValues[4] = new ArtifactFieldValue(5, Messages.TaskStatus_Deferred);
 			this.taskField_TaskStatus.setValues(lookupValues);
 		}
 		return this.taskField_TaskStatus;
@@ -598,10 +598,10 @@ public class SpiraImportExport
 			this.taskField_TaskPriority.setOptional(true);
 	
 			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[4];
-			lookupValues[0] = new ArtifactFieldValue(1, "1 - Critical");
-			lookupValues[1] = new ArtifactFieldValue(2, "2 - High");
-			lookupValues[2] = new ArtifactFieldValue(3, "3 - Medium");
-			lookupValues[3] = new ArtifactFieldValue(4, "4 - Low");
+			lookupValues[0] = new ArtifactFieldValue(1, Messages.TaskPriority_Critical);
+			lookupValues[1] = new ArtifactFieldValue(2, Messages.TaskPriority_High);
+			lookupValues[2] = new ArtifactFieldValue(3, Messages.TaskPriority_Medium);
+			lookupValues[3] = new ArtifactFieldValue(4, Messages.TaskPriority_Low);
 			this.taskField_TaskPriority.setValues(lookupValues);
 		}
 		return this.taskField_TaskPriority;
@@ -615,13 +615,13 @@ public class SpiraImportExport
 			this.requirementField_Status.setOptional(false);
 			
 			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[7];
-			lookupValues[0] = new ArtifactFieldValue(1, "Requested");
-			lookupValues[1] = new ArtifactFieldValue(2, "Planned");
-			lookupValues[2] = new ArtifactFieldValue(3, "In Progress");
-			lookupValues[3] = new ArtifactFieldValue(4, "Completed");
-			lookupValues[4] = new ArtifactFieldValue(5, "Accepted");
-			lookupValues[5] = new ArtifactFieldValue(6, "Rejected");
-			lookupValues[6] = new ArtifactFieldValue(7, "Evaluated");
+			lookupValues[0] = new ArtifactFieldValue(1, Messages.RequirementStatus_Requested);
+			lookupValues[1] = new ArtifactFieldValue(2, Messages.RequirementStatus_Planned);
+			lookupValues[2] = new ArtifactFieldValue(3, Messages.RequirementStatus_InProgress);
+			lookupValues[3] = new ArtifactFieldValue(4, Messages.RequirementStatus_Completed);
+			lookupValues[4] = new ArtifactFieldValue(5, Messages.RequirementStatus_Accepted);
+			lookupValues[5] = new ArtifactFieldValue(6, Messages.RequirementStatus_Rejected);
+			lookupValues[6] = new ArtifactFieldValue(7, Messages.RequirementStatus_Evaluated);
 			
 			this.requirementField_Status.setValues(lookupValues);
 		}
@@ -636,10 +636,10 @@ public class SpiraImportExport
 			this.requirementField_Importance.setOptional(true);
 	
 			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[4];
-			lookupValues[0] = new ArtifactFieldValue(1, "1 - Critical");
-			lookupValues[1] = new ArtifactFieldValue(2, "2 - High");
-			lookupValues[2] = new ArtifactFieldValue(3, "3 - Medium");
-			lookupValues[3] = new ArtifactFieldValue(4, "4 - Low");
+			lookupValues[0] = new ArtifactFieldValue(1, Messages.RequirementImportance_Critical);
+			lookupValues[1] = new ArtifactFieldValue(2, Messages.RequirementImportance_High);
+			lookupValues[2] = new ArtifactFieldValue(3, Messages.RequirementImportance_Medium);
+			lookupValues[3] = new ArtifactFieldValue(4, Messages.RequirementImportance_Low);
 			this.requirementField_Importance.setValues(lookupValues);
 		}
 		return this.requirementField_Importance;

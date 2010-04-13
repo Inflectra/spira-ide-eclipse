@@ -572,6 +572,226 @@ public class SpiraImportExport
 		}
 	}
 	
+	public ArtifactField incidentGetStatus()
+	{
+		//Don't return releases if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.incidentGetStatus(projectId);
+	}
+	
+	public ArtifactField incidentGetStatus(int projectId)
+	{
+		try
+		{
+			//Get the list of incident statuses from the SOAP API
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+	
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Get the list of statuses
+			List<RemoteIncidentStatus> remoteStatuses = soap.incidentRetrieveStatuses().getRemoteIncidentStatus();
+			
+			//Convert the SOAP release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("IncidentStatus");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteIncidentStatus remoteStatus : remoteStatuses)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteStatus.getIncidentStatusId(), remoteStatus.getName()));
+			}		
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (WebServiceException ex)
+		{
+			return null;
+		}
+	}
+	
+	public ArtifactField incidentGetType()
+	{
+		//Don't return releases if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.incidentGetType(projectId);
+	}
+	
+	public ArtifactField incidentGetType(int projectId)
+	{
+		try
+		{
+			//Get the list of incident types from the SOAP API
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+	
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Get the list of types
+			List<RemoteIncidentType> remoteTypes = soap.incidentRetrieveTypes().getRemoteIncidentType();
+			
+			//Convert the SOAP release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("IncidentType");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteIncidentType remoteType : remoteTypes)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteType.getIncidentTypeId(), remoteType.getName()));
+			}		
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (WebServiceException ex)
+		{
+			return null;
+		}
+	}
+	
+	public ArtifactField incidentGetPriority()
+	{
+		//Don't return releases if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.incidentGetPriority(projectId);
+	}
+	
+	public ArtifactField incidentGetPriority(int projectId)
+	{
+		try
+		{
+			//Get the list of incident priorities from the SOAP API
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+	
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Get the list of priorities
+			List<RemoteIncidentPriority> remotePriorities = soap.incidentRetrievePriorities().getRemoteIncidentPriority();
+			
+			//Convert the SOAP release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("IncidentPriority");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteIncidentPriority remotePriority : remotePriorities)
+			{
+				lookupValues.add(new ArtifactFieldValue(remotePriority.getPriorityId(), remotePriority.getName()));
+			}		
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (WebServiceException ex)
+		{
+			return null;
+		}
+	}
+	
+	public ArtifactField incidentGetSeverity()
+	{
+		//Don't return releases if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.incidentGetSeverity(projectId);
+	}
+	
+	public ArtifactField incidentGetSeverity(int projectId)
+	{
+		try
+		{
+			//Get the list of incident severities from the SOAP API
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+	
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Get the list of severities
+			List<RemoteIncidentSeverity> remoteSeverities = soap.incidentRetrieveSeverities().getRemoteIncidentSeverity();
+			
+			//Convert the SOAP release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("IncidentSeverity");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteIncidentSeverity remoteSeverity : remoteSeverities)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteSeverity.getSeverityId(), remoteSeverity.getName()));
+			}		
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (WebServiceException ex)
+		{
+			return null;
+		}
+	}
+	
 	public ArtifactField taskGetStatus()
 	{
 		if (this.taskField_TaskStatus == null)

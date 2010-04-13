@@ -44,21 +44,4 @@ public class SpiraTeamTaskMapper extends TaskMapper
 		}
 		return null;
 	}
-	
-	@Override
-	public String getTaskKind()
-	{
-		//See which type of artifact we have
-		String taskKey = taskData.getTaskId();
-		ArtifactType artifactType = ArtifactType.byTaskKey(taskKey);
-		if (artifactType == null)
-		{
-			return super.getTaskKind();
-		}
-		if (artifactType.equals(ArtifactType.TASK) || artifactType.equals(ArtifactType.REQUIREMENT))
-		{
-			return artifactType.getDisplayName();
-		}
-		return super.getTaskKind();
-	}
 }

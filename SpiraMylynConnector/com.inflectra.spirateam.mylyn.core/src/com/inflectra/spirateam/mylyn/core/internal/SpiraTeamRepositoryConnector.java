@@ -360,8 +360,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	
 	public static boolean hasRichEditor(TaskRepository repository)
 	{
-		//TODO: Determine if the current version can display a rich editor for this artifact type
-		//return Version.XML_RPC.name().equals(repository.getVersion());
+		//All artifacts have a rich-editor
 		return true;
 	}
 

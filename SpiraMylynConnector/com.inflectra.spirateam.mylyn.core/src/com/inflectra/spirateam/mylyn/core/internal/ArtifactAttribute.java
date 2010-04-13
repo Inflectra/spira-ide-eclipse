@@ -70,14 +70,19 @@ public enum ArtifactAttribute
 	private final String prettyName;
 	private final String taskKey;
 	private final String type;
+	private ArtifactType artifactType = null;
 
 	private EnumSet<Flag> flags;
 
-	public static ArtifactAttribute getByTaskKey(String taskKey)
+	public static ArtifactAttribute getByTaskKey(String taskKey, ArtifactType artifactType)
 	{
+		if (taskKey == null || artifactType == null)
+		{
+			return null;
+		}
 		for (ArtifactAttribute attribute : values())
 		{
-			if (taskKey.equals(attribute.getTaskKey()))
+			if (taskKey.equals(attribute.getTaskKey()) && (attribute.getArtifactType() == null || attribute.getArtifactType() == artifactType))
 			{
 				return attribute;
 			}
@@ -99,6 +104,7 @@ public enum ArtifactAttribute
 
 	ArtifactAttribute(Artifact.Key artifactKey, String prettyName, String taskKey, String type, Flag firstFlag, Flag... moreFlags)
 	{
+		this.artifactType = null;	//Common attribute
 		this.artifactKey = artifactKey.getKey();
 		this.taskKey = taskKey;
 		this.prettyName = prettyName;
@@ -115,6 +121,7 @@ public enum ArtifactAttribute
 	
 	ArtifactAttribute(Requirement.Key artifactKey, String prettyName, String taskKey, String type, Flag firstFlag, Flag... moreFlags)
 	{
+		this.artifactType = ArtifactType.REQUIREMENT;	//Requirement attribute
 		this.artifactKey = artifactKey.getKey();
 		this.taskKey = taskKey;
 		this.prettyName = prettyName;
@@ -131,6 +138,7 @@ public enum ArtifactAttribute
 	
 	ArtifactAttribute(Incident.Key artifactKey, String prettyName, String taskKey, String type, Flag firstFlag, Flag... moreFlags)
 	{
+		this.artifactType = ArtifactType.INCIDENT;	//Incident attribute
 		this.artifactKey = artifactKey.getKey();
 		this.taskKey = taskKey;
 		this.prettyName = prettyName;
@@ -147,6 +155,7 @@ public enum ArtifactAttribute
 	
 	ArtifactAttribute(Task.Key artifactKey, String prettyName, String taskKey, String type, Flag firstFlag, Flag... moreFlags)
 	{
+		this.artifactType = ArtifactType.TASK;	//Task attribute
 		this.artifactKey = artifactKey.getKey();
 		this.taskKey = taskKey;
 		this.prettyName = prettyName;
@@ -178,6 +187,10 @@ public enum ArtifactAttribute
 		this(artifactKey, prettyName, taskKey, type, null);
 	}
 
+	public ArtifactType getArtifactType()
+	{
+		return artifactType;
+	}
 	
 	public String getTaskKey()
 	{

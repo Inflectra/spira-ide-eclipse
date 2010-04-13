@@ -53,10 +53,15 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 	}
 	
 	@Override
-	public String mapToRepositoryKey(TaskAttribute parent, String taskKey)
+	public String mapToRepositoryKey(TaskAttribute parent, String taskAttributeKey)
 	{
-		ArtifactAttribute attribute = ArtifactAttribute.getByTaskKey(taskKey);
-		return (attribute != null) ? attribute.getArtifactKey() : taskKey;
+		//First we need to find out the type of artifact we have
+		//since the same Mylyn attribute maps to different Spira attributes
+		//depending on the artifact type
+		String taskId = parent.getTaskData().getTaskId();
+		ArtifactType artifactType = ArtifactType.byTaskKey(taskId);
+		ArtifactAttribute attribute = ArtifactAttribute.getByTaskKey(taskAttributeKey, artifactType);
+		return (attribute != null) ? attribute.getArtifactKey() : taskAttributeKey;
 	}
 	
 	@Override

@@ -54,6 +54,44 @@ public class SpiraTeamTaskMapper extends TaskMapper
 				return SpiraTeamRepositoryConnector.getMylynPriorityForRequirement(priority);
 			}
 		}
+		if (artifactType.equals(ArtifactType.INCIDENT))
+		{
+			//Get the current priority
+			//Incidents have customizable values, so we can't infer from the ID
+			//However if the first character of its name is numeric, we will use that
+			TaskAttribute priorityAttribute = taskData.getRoot().getAttribute(ArtifactAttribute.INCIDENT_PRIORITY_ID.getArtifactKey());
+			if (priorityAttribute != null)
+			{
+				String priority = priorityAttribute.getValue();
+				if (priority != null)
+				{
+					String priorityName = priorityAttribute.getOption(priorityAttribute.getValue());
+					if (priorityName != null)
+					{
+						if (priorityName.startsWith("1"))
+						{
+							return PriorityLevel.P1;
+						}
+						if (priorityName.startsWith("2"))
+						{
+							return PriorityLevel.P2;
+						}
+						if (priorityName.startsWith("3"))
+						{
+							return PriorityLevel.P3;
+						}
+						if (priorityName.startsWith("4"))
+						{
+							return PriorityLevel.P4;
+						}
+						if (priorityName.startsWith("5"))
+						{
+							return PriorityLevel.P5;
+						}
+					}
+				}
+			}
+		}
 		return null;
 	}
 	

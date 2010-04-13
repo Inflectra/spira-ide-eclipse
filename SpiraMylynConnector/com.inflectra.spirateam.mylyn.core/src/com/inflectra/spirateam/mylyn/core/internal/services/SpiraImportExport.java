@@ -51,6 +51,9 @@ public class SpiraImportExport
 	
 	private ArtifactField taskField_TaskStatus = null;
 	private ArtifactField taskField_TaskPriority = null;
+	
+	//Specific constant ID values
+	public static int TASK_STATUS_COMPLETED = 3;
 
 	protected SpiraTeamClientData data;
 	
@@ -500,7 +503,7 @@ public class SpiraImportExport
 			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[5];
 			lookupValues[0] = new ArtifactFieldValue(1, "Not Started");
 			lookupValues[1] = new ArtifactFieldValue(2, "In Progress");
-			lookupValues[2] = new ArtifactFieldValue(3, "Completed");
+			lookupValues[2] = new ArtifactFieldValue(TASK_STATUS_COMPLETED, "Completed");
 			lookupValues[3] = new ArtifactFieldValue(4, "Blocked");
 			lookupValues[4] = new ArtifactFieldValue(5, "Deferred");
 			this.taskField_TaskStatus.setValues(lookupValues);

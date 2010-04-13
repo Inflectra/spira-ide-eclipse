@@ -363,6 +363,14 @@ public class SpiraImportExport
 			
 			//Convert the SOAP incident into the local version
 			Incident incident = new Incident(remoteIncident);
+			
+			//We need to also get the detector's name
+			RemoteUser remoteOpener = soap.userRetrieveById(incident.getOpenerId());
+			if (remoteOpener != null)
+			{
+				incident.setOpenerName(remoteOpener.getFirstName() + " " + remoteOpener.getLastName() + " [" + remoteOpener.getEmailAddress() + "]");
+			}
+			
 	        return incident;
 		}
 		catch (WebServiceException ex)

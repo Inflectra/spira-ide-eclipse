@@ -535,6 +535,15 @@ public class Incident extends Artifact
     }
 
     /**
+     * Sets the value of the openerName property.
+     * 
+     */
+    public void setOpenerName(String value)
+    {
+        this.openerName = value;
+    }
+    
+    /**
      * Gets the value of the ownerName property.
      * 
      * @return

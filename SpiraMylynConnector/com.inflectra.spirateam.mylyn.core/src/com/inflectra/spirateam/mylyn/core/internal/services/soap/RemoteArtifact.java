@@ -76,7 +76,8 @@ import javax.xml.bind.annotation.XmlType;
     RemoteRelease.class,
     RemoteRequirement.class,
     RemoteTask.class,
-    RemoteTestCase.class
+    RemoteTestCase.class,
+    RemoteTestStep.class
 })
 public class RemoteArtifact {
 

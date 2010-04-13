@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="RemoteTestStep">
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *     &lt;extension base="{http://www.inflectra.com/SpiraTest/Services/v2.2/}RemoteArtifact">
  *       &lt;sequence>
  *         &lt;element name="TestStepId" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="TestCaseId" type="{http://www.w3.org/2001/XMLSchema}int"/>
@@ -26,7 +26,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="SampleData" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="LinkedTestCaseId" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *       &lt;/sequence>
- *     &lt;/restriction>
+ *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -44,7 +44,9 @@ import javax.xml.bind.annotation.XmlType;
     "sampleData",
     "linkedTestCaseId"
 })
-public class RemoteTestStep {
+public class RemoteTestStep
+    extends RemoteArtifact
+{
 
     @XmlElement(name = "TestStepId", required = true, type = Integer.class, nillable = true)
     protected Integer testStepId;

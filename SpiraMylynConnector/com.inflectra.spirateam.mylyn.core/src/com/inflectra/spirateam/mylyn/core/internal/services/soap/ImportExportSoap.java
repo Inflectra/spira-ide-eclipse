@@ -25,6 +25,75 @@ public interface ImportExportSoap {
 
 
     /**
+     * Creates a new test set folder in the system
+     * 
+     * @param parentTestSetFolderId
+     * @param remoteTestSet
+     * @return
+     *     returns com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteTestSet
+     */
+    @WebMethod(operationName = "TestSet_CreateFolder", action = "http://www.inflectra.com/SpiraTest/Services/v2.2/TestSet_CreateFolder")
+    @WebResult(name = "TestSet_CreateFolderResult", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+    @RequestWrapper(localName = "TestSet_CreateFolder", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetCreateFolder")
+    @ResponseWrapper(localName = "TestSet_CreateFolderResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetCreateFolderResponse")
+    public RemoteTestSet testSetCreateFolder(
+        @WebParam(name = "remoteTestSet", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        RemoteTestSet remoteTestSet,
+        @WebParam(name = "parentTestSetFolderId", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        Integer parentTestSetFolderId);
+
+    /**
+     * Creates a new test set in the system
+     * 
+     * @param parentTestSetFolderId
+     * @param remoteTestSet
+     * @return
+     *     returns com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteTestSet
+     */
+    @WebMethod(operationName = "TestSet_Create", action = "http://www.inflectra.com/SpiraTest/Services/v2.2/TestSet_Create")
+    @WebResult(name = "TestSet_CreateResult", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+    @RequestWrapper(localName = "TestSet_Create", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetCreate")
+    @ResponseWrapper(localName = "TestSet_CreateResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetCreateResponse")
+    public RemoteTestSet testSetCreate(
+        @WebParam(name = "remoteTestSet", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        RemoteTestSet remoteTestSet,
+        @WebParam(name = "parentTestSetFolderId", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        Integer parentTestSetFolderId);
+
+    /**
+     * Retrieves a list of testSets in the system that match the provided filter
+     * 
+     * @param numberOfRows
+     * @param remoteFilters
+     * @param startingRow
+     * @return
+     *     returns com.inflectra.spirateam.mylyn.core.internal.services.soap.ArrayOfRemoteTestSet
+     */
+    @WebMethod(operationName = "TestSet_Retrieve", action = "http://www.inflectra.com/SpiraTest/Services/v2.2/TestSet_Retrieve")
+    @WebResult(name = "TestSet_RetrieveResult", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+    @RequestWrapper(localName = "TestSet_Retrieve", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetRetrieve")
+    @ResponseWrapper(localName = "TestSet_RetrieveResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetRetrieveResponse")
+    public ArrayOfRemoteTestSet testSetRetrieve(
+        @WebParam(name = "remoteFilters", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        ArrayOfRemoteFilter remoteFilters,
+        @WebParam(name = "startingRow", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        int startingRow,
+        @WebParam(name = "numberOfRows", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        int numberOfRows);
+
+    /**
+     * Retrieves all testSets owned by the currently authenticated user
+     * 
+     * @return
+     *     returns com.inflectra.spirateam.mylyn.core.internal.services.soap.ArrayOfRemoteTestSet
+     */
+    @WebMethod(operationName = "TestSet_RetrieveForOwner", action = "http://www.inflectra.com/SpiraTest/Services/v2.2/TestSet_RetrieveForOwner")
+    @WebResult(name = "TestSet_RetrieveForOwnerResult", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+    @RequestWrapper(localName = "TestSet_RetrieveForOwner", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetRetrieveForOwner")
+    @ResponseWrapper(localName = "TestSet_RetrieveForOwnerResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetRetrieveForOwnerResponse")
+    public ArrayOfRemoteTestSet testSetRetrieveForOwner();
+
+    /**
      * Retrieves a single test set/folder in the system
      * 
      * @param testSetId
@@ -547,6 +616,18 @@ public interface ImportExportSoap {
         int projectRoleId);
 
     /**
+     * Retrieves the list of users that are members of the current project
+     * 
+     * @return
+     *     returns com.inflectra.spirateam.mylyn.core.internal.services.soap.ArrayOfRemoteProjectUser
+     */
+    @WebMethod(operationName = "Project_RetrieveUserMembership", action = "http://www.inflectra.com/SpiraTest/Services/v2.2/Project_RetrieveUserMembership")
+    @WebResult(name = "Project_RetrieveUserMembershipResult", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+    @RequestWrapper(localName = "Project_RetrieveUserMembership", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.ProjectRetrieveUserMembership")
+    @ResponseWrapper(localName = "Project_RetrieveUserMembershipResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.ProjectRetrieveUserMembershipResponse")
+    public ArrayOfRemoteProjectUser projectRetrieveUserMembership();
+
+    /**
      * Retrieves a single user in the system
      * 
      * @param userId
@@ -806,6 +887,48 @@ public interface ImportExportSoap {
     @RequestWrapper(localName = "Incident_RetrieveStatuses", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.IncidentRetrieveStatuses")
     @ResponseWrapper(localName = "Incident_RetrieveStatusesResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.IncidentRetrieveStatusesResponse")
     public ArrayOfRemoteIncidentStatus incidentRetrieveStatuses();
+
+    /**
+     * Will retrieve available transitions for the specied status ID for the currently logged-on user.
+     * 
+     * @param isOwner
+     * @param currentStatusID
+     * @param isDetector
+     * @param currentTypeID
+     * @return
+     *     returns com.inflectra.spirateam.mylyn.core.internal.services.soap.ArrayOfRemoteWorkflowIncidentTransition
+     */
+    @WebMethod(operationName = "Incident_RetrieveWorkflowTransitions", action = "http://www.inflectra.com/SpiraTest/Services/v2.2/Incident_RetrieveWorkflowTransitions")
+    @WebResult(name = "Incident_RetrieveWorkflowTransitionsResult", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+    @RequestWrapper(localName = "Incident_RetrieveWorkflowTransitions", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.IncidentRetrieveWorkflowTransitions")
+    @ResponseWrapper(localName = "Incident_RetrieveWorkflowTransitionsResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.IncidentRetrieveWorkflowTransitionsResponse")
+    public ArrayOfRemoteWorkflowIncidentTransition incidentRetrieveWorkflowTransitions(
+        @WebParam(name = "currentTypeID", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        int currentTypeID,
+        @WebParam(name = "currentStatusID", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        int currentStatusID,
+        @WebParam(name = "isDetector", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        boolean isDetector,
+        @WebParam(name = "isOwner", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        boolean isOwner);
+
+    /**
+     * Retrieves the list of incident fields and their workflow status for a given type and status/step.
+     * 
+     * @param currentStatusID
+     * @param currentTypeID
+     * @return
+     *     returns com.inflectra.spirateam.mylyn.core.internal.services.soap.ArrayOfRemoteWorkflowIncidentFields
+     */
+    @WebMethod(operationName = "Incident_RetrieveWorkflowFields", action = "http://www.inflectra.com/SpiraTest/Services/v2.2/Incident_RetrieveWorkflowFields")
+    @WebResult(name = "Incident_RetrieveWorkflowFieldsResult", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+    @RequestWrapper(localName = "Incident_RetrieveWorkflowFields", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.IncidentRetrieveWorkflowFields")
+    @ResponseWrapper(localName = "Incident_RetrieveWorkflowFieldsResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.IncidentRetrieveWorkflowFieldsResponse")
+    public ArrayOfRemoteWorkflowIncidentFields incidentRetrieveWorkflowFields(
+        @WebParam(name = "currentTypeID", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        int currentTypeID,
+        @WebParam(name = "currentStatusID", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
+        int currentStatusID);
 
     /**
      * Retrieves all the releases and iterations belonging to the current project
@@ -1418,75 +1541,6 @@ public interface ImportExportSoap {
         RemoteTestRun remoteTestRun,
         @WebParam(name = "endDate", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
         XMLGregorianCalendar endDate);
-
-    /**
-     * Creates a new test set folder in the system
-     * 
-     * @param parentTestSetFolderId
-     * @param remoteTestSet
-     * @return
-     *     returns com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteTestSet
-     */
-    @WebMethod(operationName = "TestSet_CreateFolder", action = "http://www.inflectra.com/SpiraTest/Services/v2.2/TestSet_CreateFolder")
-    @WebResult(name = "TestSet_CreateFolderResult", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
-    @RequestWrapper(localName = "TestSet_CreateFolder", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetCreateFolder")
-    @ResponseWrapper(localName = "TestSet_CreateFolderResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetCreateFolderResponse")
-    public RemoteTestSet testSetCreateFolder(
-        @WebParam(name = "remoteTestSet", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
-        RemoteTestSet remoteTestSet,
-        @WebParam(name = "parentTestSetFolderId", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
-        Integer parentTestSetFolderId);
-
-    /**
-     * Creates a new test set in the system
-     * 
-     * @param parentTestSetFolderId
-     * @param remoteTestSet
-     * @return
-     *     returns com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteTestSet
-     */
-    @WebMethod(operationName = "TestSet_Create", action = "http://www.inflectra.com/SpiraTest/Services/v2.2/TestSet_Create")
-    @WebResult(name = "TestSet_CreateResult", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
-    @RequestWrapper(localName = "TestSet_Create", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetCreate")
-    @ResponseWrapper(localName = "TestSet_CreateResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetCreateResponse")
-    public RemoteTestSet testSetCreate(
-        @WebParam(name = "remoteTestSet", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
-        RemoteTestSet remoteTestSet,
-        @WebParam(name = "parentTestSetFolderId", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
-        Integer parentTestSetFolderId);
-
-    /**
-     * Retrieves a list of testSets in the system that match the provided filter
-     * 
-     * @param numberOfRows
-     * @param remoteFilters
-     * @param startingRow
-     * @return
-     *     returns com.inflectra.spirateam.mylyn.core.internal.services.soap.ArrayOfRemoteTestSet
-     */
-    @WebMethod(operationName = "TestSet_Retrieve", action = "http://www.inflectra.com/SpiraTest/Services/v2.2/TestSet_Retrieve")
-    @WebResult(name = "TestSet_RetrieveResult", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
-    @RequestWrapper(localName = "TestSet_Retrieve", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetRetrieve")
-    @ResponseWrapper(localName = "TestSet_RetrieveResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetRetrieveResponse")
-    public ArrayOfRemoteTestSet testSetRetrieve(
-        @WebParam(name = "remoteFilters", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
-        ArrayOfRemoteFilter remoteFilters,
-        @WebParam(name = "startingRow", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
-        int startingRow,
-        @WebParam(name = "numberOfRows", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
-        int numberOfRows);
-
-    /**
-     * Retrieves all testSets owned by the currently authenticated user
-     * 
-     * @return
-     *     returns com.inflectra.spirateam.mylyn.core.internal.services.soap.ArrayOfRemoteTestSet
-     */
-    @WebMethod(operationName = "TestSet_RetrieveForOwner", action = "http://www.inflectra.com/SpiraTest/Services/v2.2/TestSet_RetrieveForOwner")
-    @WebResult(name = "TestSet_RetrieveForOwnerResult", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/")
-    @RequestWrapper(localName = "TestSet_RetrieveForOwner", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetRetrieveForOwner")
-    @ResponseWrapper(localName = "TestSet_RetrieveForOwnerResponse", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v2.2/", className = "com.inflectra.spirateam.mylyn.core.internal.services.soap.TestSetRetrieveForOwnerResponse")
-    public ArrayOfRemoteTestSet testSetRetrieveForOwner();
 
     /**
      * Retrieves the current date-time on the server

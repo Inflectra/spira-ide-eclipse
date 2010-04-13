@@ -22,6 +22,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="Active" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *         &lt;element name="Issue" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *         &lt;element name="Risk" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
+ *         &lt;element name="WorkflowID" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -36,7 +37,8 @@ import javax.xml.bind.annotation.XmlType;
     "name",
     "active",
     "issue",
-    "risk"
+    "risk",
+    "workflowID"
 })
 public class RemoteIncidentType {
 
@@ -50,6 +52,8 @@ public class RemoteIncidentType {
     protected boolean issue;
     @XmlElement(name = "Risk")
     protected boolean risk;
+    @XmlElement(name = "WorkflowID")
+    protected int workflowID;
 
     /**
      * Gets the value of the incidentTypeId property.
@@ -145,6 +149,22 @@ public class RemoteIncidentType {
      */
     public void setRisk(boolean value) {
         this.risk = value;
+    }
+
+    /**
+     * Gets the value of the workflowID property.
+     * 
+     */
+    public int getWorkflowID() {
+        return workflowID;
+    }
+
+    /**
+     * Sets the value of the workflowID property.
+     * 
+     */
+    public void setWorkflowID(int value) {
+        this.workflowID = value;
     }
 
 }

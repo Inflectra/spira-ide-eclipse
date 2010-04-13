@@ -3,7 +3,6 @@ package com.inflectra.spirateam.mylyn.core.internal.model;
 import java.util.Date;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
-import com.inflectra.spirateam.mylyn.core.internal.model.Requirement.Key;
 
 /**
  * Represents a generic SpiraTeam artifact

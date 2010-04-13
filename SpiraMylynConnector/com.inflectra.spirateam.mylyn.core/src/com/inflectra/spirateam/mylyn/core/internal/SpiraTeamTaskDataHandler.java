@@ -22,11 +22,13 @@ import org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMetaData;
+import org.eclipse.mylyn.tasks.core.data.TaskCommentMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
+import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
@@ -410,7 +412,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
 			{
 				createDefaultAttributes(taskData, client, true);
-				Set<TaskAttribute> changedAttributes = updateTaskData(repository, taskData, requirement);
+				Set<TaskAttribute> changedAttributes = updateTaskData(client, repository, taskData, requirement);
 				// remove attributes that were not set, i.e. were not received from the server
 				List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
 						.getAttributes()
@@ -427,7 +429,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			else
 			{
 				createDefaultAttributes(taskData, client, true);
-				updateTaskData(repository, taskData, requirement);
+				updateTaskData(client, repository, taskData, requirement);
 			}
 			removeEmptySingleSelectAttributes(taskData);
 			return taskData;
@@ -454,7 +456,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
 			{
 				createDefaultAttributes(taskData, client, true);
-				Set<TaskAttribute> changedAttributes = updateTaskData(repository, taskData, incident);
+				Set<TaskAttribute> changedAttributes = updateTaskData(client, repository, taskData, incident);
 				// remove attributes that were not set, i.e. were not received from the server
 				List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
 						.getAttributes()
@@ -471,7 +473,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			else
 			{
 				createDefaultAttributes(taskData, client, true);
-				updateTaskData(repository, taskData, incident);
+				updateTaskData(client, repository, taskData, incident);
 			}
 			removeEmptySingleSelectAttributes(taskData);
 			return taskData;
@@ -498,7 +500,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
 			{
 				createDefaultAttributes(taskData, client, true);
-				Set<TaskAttribute> changedAttributes = updateTaskData(repository, taskData, spiraTask);
+				Set<TaskAttribute> changedAttributes = updateTaskData(client, repository, taskData, spiraTask);
 				// remove attributes that were not set, i.e. were not received from the server
 				List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
 						.getAttributes()
@@ -515,7 +517,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			else
 			{
 				createDefaultAttributes(taskData, client, true);
-				updateTaskData(repository, taskData, spiraTask);
+				updateTaskData(client, repository, taskData, spiraTask);
 			}
 			removeEmptySingleSelectAttributes(taskData);
 			return taskData;
@@ -544,7 +546,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		changedAttributes.add(taskAttribute);
 	}
 	
-	public static Set<TaskAttribute> updateTaskData(TaskRepository repository, TaskData data, Artifact artifact)
+	public static Set<TaskAttribute> updateTaskData(SpiraImportExport client, TaskRepository repository, TaskData data, Artifact artifact)
+		throws SpiraException
 	{
 		Set<TaskAttribute> changedAttributes = new HashSet<TaskAttribute>();
 
@@ -583,6 +586,33 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE, incident.getCompletionPercent() + "");
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT, SpiraTeamUtil.effortValuesToString(incident.getEstimatedEffort()));
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT, SpiraTeamUtil.effortValuesToString(incident.getActualEffort()));
+			
+			// Handle SpiraTeam comments/resolutions if we have an incident
+			try
+			{
+				IncidentResolution[] resolutions = client.incidentRetrieveResolutions(incident.getArtifactKey()).toArray(new IncidentResolution[0]);
+				if (resolutions != null)
+				{
+					int count = 1;
+					for (int i = 0; i < resolutions.length; i++)
+					{
+						TaskCommentMapper mapper = new TaskCommentMapper();
+						mapper.setAuthor(repository.createPerson(resolutions[i].getCreatorName()));
+						mapper.setCreationDate(resolutions[i].getCreationDate());
+						mapper.setText(resolutions[i].getResolution());
+						mapper.setNumber(count);
+	
+						TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_COMMENT + count);
+						mapper.applyTo(attribute);
+						count++;
+					}
+				}
+			}
+			catch (SpiraException ex)
+			{
+				//Let the user know
+				throw new SpiraException(Messages.SpiraTeamTaskDataHandler_UnableToRetrieveComments);
+			}
 		}
 		
 		if (artifact instanceof Task)
@@ -600,29 +630,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ACTUAL_EFFORT, SpiraTeamUtil.effortValuesToString(task.getActualEffort()));
 		}
 
-		/* TODO: Handle SpiraTeam comments
-		TracComment[] comments = ticket.getComments();
-		if (comments != null) {
-			int count = 1;
-			for (int i = 0; i < comments.length; i++) {
-				if (!"comment".equals(comments[i].getField()) || "".equals(comments[i].getNewValue())) { //$NON-NLS-1$ //$NON-NLS-2$
-					continue;
-				}
 
-				TaskCommentMapper mapper = new TaskCommentMapper();
-				mapper.setAuthor(repository.createPerson(comments[i].getAuthor()));
-				mapper.setCreationDate(comments[i].getCreated());
-				mapper.setText(comments[i].getNewValue());
-				// TODO mapper.setUrl();
-				mapper.setNumber(count);
 
-				TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_COMMENT + count);
-				mapper.applyTo(attribute);
-				count++;
-			}
-		}*/
-
-		/* Handle attachments
+		/* Handle attachments - future enhancement once the API has been upgraded
 		TracAttachment[] attachments = ticket.getAttachments();
 		if (attachments != null) {
 			for (int i = 0; i < attachments.length; i++) {

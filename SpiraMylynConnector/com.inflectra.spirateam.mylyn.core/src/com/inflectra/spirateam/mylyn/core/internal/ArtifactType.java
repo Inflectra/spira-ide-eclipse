@@ -3,11 +3,6 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal;
 
-import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
-
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamAttributeMapper.Flag;
-import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
-
 /**
  * The various Spira artifact types that we support
  * @author Inflectra Corporation

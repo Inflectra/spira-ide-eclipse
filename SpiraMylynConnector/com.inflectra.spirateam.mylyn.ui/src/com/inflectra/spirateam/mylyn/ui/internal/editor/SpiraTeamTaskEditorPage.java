@@ -11,9 +11,12 @@ import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPage;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPart;
 import org.eclipse.mylyn.tasks.ui.editors.AttributeEditorFactory;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
+import org.eclipse.mylyn.tasks.ui.editors.TaskEditorInput;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditorPartDescriptor;
+import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 
+import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 
 /**
@@ -22,13 +25,39 @@ import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
  */
 public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 {
-	//private TracRenderingEngine renderingEngine;
-
-	public SpiraTeamTaskEditorPage(TaskEditor editor)
+	private ArtifactType artifactType = null;
+	
+	public SpiraTeamTaskEditorPage(TaskEditor parentEditor)
 	{
-		super(editor, SpiraTeamCorePlugin.CONNECTOR_KIND);
+		super(parentEditor, SpiraTeamCorePlugin.CONNECTOR_KIND);
+
+		//Need to see what kind of artifact we're displaying
+		TaskEditorInput input = parentEditor.getTaskEditorInput();
+		ITask task = input.getTask();
+		artifactType = null;
+		if (task != null)
+		{
+			String taskKey = task.getTaskKey();
+			if (taskKey != null)
+			{
+				artifactType = ArtifactType.byTaskKey(taskKey);
+			}
+		}
+		
+		//Set the parts that are visible appropriately for each artifact type
 		setNeedsPrivateSection(false);
-		setNeedsSubmitButton(true);
+		if (artifactType.equals(ArtifactType.REQUIREMENT))
+		{
+			setNeedsSubmitButton(false);
+		}
+		if (artifactType.equals(ArtifactType.TASK))
+		{
+			setNeedsSubmitButton(true);
+		}
+		if (artifactType.equals(ArtifactType.INCIDENT))
+		{
+			setNeedsSubmitButton(true);
+		}
 	}
 
 	@Override
@@ -39,32 +68,30 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 		for (Iterator<TaskEditorPartDescriptor> it = descriptors.iterator(); it.hasNext();)
 		{
 			TaskEditorPartDescriptor taskEditorPartDescriptor = it.next();
-			/*if (taskEditorPartDescriptor.getId().equals(ID_PART_PEOPLE))
+			
+			if (taskEditorPartDescriptor.getId().equals(ID_PART_COMMENTS))
 			{
-				it.remove();
-			}*/
-		}
-		/*
-		descriptors.add(new TaskEditorPartDescriptor(ID_PART_PEOPLE)
-		{
-			@Override
-			public AbstractTaskEditorPart createPart()
-			{
-				return new TracPeoplePart();
+				//Requirements and Tasks don't currently support comments
+				if (artifactType.equals(ArtifactType.REQUIREMENT) || artifactType.equals(ArtifactType.TASK))
+				{
+					it.remove();
+				}
 			}
-		}.setPath(PATH_PEOPLE));*/
+			if (taskEditorPartDescriptor.getId().equals(ID_PART_ACTIONS))
+			{
+				//Requirements and Tasks don't currently support comments
+				if (artifactType.equals(ArtifactType.REQUIREMENT))
+				{
+					it.remove();
+				}
+			}
+		}
 		return descriptors;
 	}
 
 	@Override
 	protected void createParts()
 	{
-		/*TODO: Add HTML preview
-		if (renderingEngine == null)
-		{
-			renderingEngine = new TracRenderingEngine();
-		}
-		getAttributeEditorToolkit().setRenderingEngine(renderingEngine);*/
 		super.createParts();
 	}
 
@@ -76,11 +103,6 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 			@Override
 			public AbstractAttributeEditor createEditor(String type, TaskAttribute taskAttribute)
 			{
-				/*
-				if (TracAttribute.CC.getTracKey().equals(taskAttribute.getId()))
-				{
-					return new TracCcAttributeEditor(getModel(), taskAttribute);
-				}*/
 				return super.createEditor(type, taskAttribute);
 			}
 		};

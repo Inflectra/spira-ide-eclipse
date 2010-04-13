@@ -123,4 +123,190 @@ public class SpiraTeamUtil
 			return effortHoursRounded;
 		}
 	}
+	
+	/**
+	 * Renders HTML content as plain textsince Mylyn cannot handle HTML tags
+	 */
+	public static String HtmlRenderAsPlainText (String source)
+	{
+		if (source == null)
+		{
+			return "";
+		}
+		try
+		{
+			String result;
+
+			// Remove HTML Development formatting
+			// Replace line breaks with space
+			// because browsers inserts space
+			result = source.replace("\r"," ");
+			// Replace line breaks with space
+			// because browsers inserts space
+			result = result.replace("\n"," ");
+			// Remove step-formatting
+			result = result.replace("\t","");
+			// Remove repeating speces becuase browsers ignore them
+			result = result.replace( 
+				"( )+"," ");
+
+			// Remove the header (prepare first by clearing attributes)
+			result = result.replaceAll( 
+				"<( )*head([^>])*>","<head>"
+				);
+			result = result.replaceAll( 
+				"(<( )*(/)( )*head( )*>)","</head>"
+				);
+			result = result.replaceAll( 
+				"(<head>).*(</head>)",""
+				);
+
+			// remove all scripts (prepare first by clearing attributes)
+			result = result.replaceAll( 
+				"<( )*script([^>])*>","<script>"
+				);
+			result = result.replaceAll( 
+				"(<( )*(/)( )*script( )*>)","</script>"
+				);
+			//result = result.replace( 
+			//         @"(<script>)([^(<script>\.</script>)])*(</script>)",
+			//         ""
+			//         );
+			result = result.replaceAll( 
+				"(<script>).*(</script>)",""
+				);
+    
+			// remove all styles (prepare first by clearing attributes)
+			result = result.replaceAll( 
+				"<( )*style([^>])*>","<style>"
+				);
+			result = result.replaceAll( 
+				"(<( )*(/)( )*style( )*>)","</style>"
+				);
+			result = result.replaceAll( 
+				"(<style>).*(</style>)",""
+				);
+
+			// insert tabs in spaces of <td> tags
+			result = result.replaceAll( 
+				"<( )*td([^>])*>","\t"
+				);
+
+			// insert line breaks in places of <BR> and <LI> tags
+			result = result.replaceAll( 
+				"<( )*br( )*>","\r"
+				);
+			result = result.replaceAll( 
+				"<( )*li( )*>","\r"
+				);
+
+			// insert line paragraphs (double line breaks) in place
+			// if <P><DIV> and <TR> tags
+			result = result.replaceAll( 
+				"<( )*div([^>])*>","\r\r"
+				);
+			result = result.replaceAll( 
+				"<( )*tr([^>])*>","\r\r"
+				);
+			result = result.replaceAll( 
+				"<( )*p([^>])*>","\r\r"
+				);
+
+			// Remove remaining tags like <a>linksimages,
+			// comments etc - anything thats enclosed inside < >
+			result = result.replaceAll( 
+				"<[^>]*>",""
+				);
+
+			// replace special characters:
+			result = result.replaceAll( 
+				"&nbsp;"," "
+				);
+    
+			result = result.replaceAll( 
+				"&bull;"," * "
+				);    
+			result = result.replaceAll( 
+				"&lsaquo;","<"
+				);        
+			result = result.replaceAll( 
+				"&rsaquo;",">"
+				);        
+			result = result.replaceAll( 
+				"&trade;","(tm)"
+				);        
+			result = result.replaceAll( 
+				"&frasl;","/"
+				);        
+			result = result.replaceAll( 
+				"<","<"
+				);        
+			result = result.replaceAll( 
+				">",">"
+				);        
+			result = result.replaceAll( 
+				"&copy;","(c)"
+				);        
+			result = result.replaceAll( 
+				"&reg;","(r)"
+				);    
+			// Remove all others. More can be addedsee
+			// http://hotwired.lycos.com/webmonkey/reference/special_characters/
+			result = result.replaceAll( 
+				"&(.{2,6});",""
+				);    
+
+			// for testng
+			//result.replace( 
+			//       this.txtRegex.Text,""
+			//       );
+
+			// make line breaking consistent
+			result = result.replace("\n","\r");
+
+			// Remove extra line breaks and tabs:
+			// replace over 2 breaks with 2 and over 4 tabs with 4. 
+			// Prepare first to remove any whitespaces inbetween
+			// the escaped characters and remove redundant tabs inbetween linebreaks
+			result = result.replaceAll( 
+				"(\r)( )+(\r)","\r\r"
+				);
+			result = result.replaceAll( 
+				"(\t)( )+(\t)","\t\t"
+				);
+			result = result.replaceAll( 
+				"(\t)( )+(\r)","\t\r"
+				);
+			result = result.replaceAll( 
+				"(\r)( )+(\t)","\r\t"
+				);
+			// Remove redundant tabs
+			result = result.replaceAll( 
+				"(\r)(\t)+(\r)","\r\r"
+				);
+			// Remove multible tabs followind a linebreak with just one tab
+			result = result.replaceAll( 
+				"(\r)(\t)+","\r\t"
+				);
+			// Initial replacement target string for linebreaks
+			String breaks = "\r\r\r";
+			// Initial replacement target string for tabs
+			String tabs = "\t\t\t\t\t";
+			for (int index=0; index<result.length(); index++)
+			{
+				result = result.replace(breaks, "\r\r");
+				result = result.replace(tabs, "\t\t\t\t");
+				breaks = breaks + "\r";    
+				tabs = tabs + "\t";
+			}
+
+			// Thats it.
+			return result;
+
+		}
+		catch (Exception ex)
+		{
+			return source;
+		}
+	}
 }

@@ -553,7 +553,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 
 		//First we set the cross-attribute properties
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.NAME, artifact.getName());
-		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.DESCRIPTION, artifact.getDescription());
+		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.DESCRIPTION, SpiraTeamUtil.HtmlRenderAsPlainText(artifact.getDescription()));
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.OWNER_ID, artifact.getOwnerId().toString());
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.CREATION_DATE, SpiraTeamUtil.dateToString(artifact.getCreationDate()));
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.LAST_UPDATE_DATE, SpiraTeamUtil.dateToString(artifact.getLastUpdateDate()));
@@ -599,7 +599,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 						TaskCommentMapper mapper = new TaskCommentMapper();
 						mapper.setAuthor(repository.createPerson(resolutions[i].getCreatorName()));
 						mapper.setCreationDate(resolutions[i].getCreationDate());
-						mapper.setText(resolutions[i].getResolution());
+						mapper.setText(SpiraTeamUtil.HtmlRenderAsPlainText(resolutions[i].getResolution()));
 						mapper.setNumber(count);
 	
 						TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_COMMENT + count);

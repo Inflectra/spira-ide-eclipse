@@ -644,7 +644,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 					}
 					mapper.setCreationDate(attachments[i].getCreated());
 				}
-				mapper.setUrl(repository.getRepositoryUrl() + ITracClient.TICKET_ATTACHMENT_URL + ticket.getId() + "/" //$NON-NLS-1$
+				mapper.setUrl(repository.itoryUrl() + ITracClient.TICKET_ATTACHMENT_URL + ticket.getId() + "/" //$NON-NLS-1$
 						+ TracUtil.encodeUrl(attachments[i].getFilename()));
 				mapper.setAttachmentId(i + ""); //$NON-NLS-1$
 

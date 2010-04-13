@@ -441,6 +441,17 @@ public class SpiraImportExport
 		return this.taskGetRelease(projectId);
 	}
 	
+	public ArtifactField usersGet()
+	{
+		//Don't return releases if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.usersGet(projectId);
+	}
+	
 	public ArtifactField usersGet(int projectId)
 	{
 		try
@@ -463,27 +474,23 @@ public class SpiraImportExport
 			}
 				
 			//Get the list of users
-			/*
-			List<RemoteUser> remoteUsers = soap.project(true).getRemoteRelease();
+			List<RemoteProjectUser> remoteProjectUsers = soap.projectRetrieveUserMembership().getRemoteProjectUser();
 			
 			//Convert the SOAP release into the ArtifactField class
 			ArtifactField artifactField = new ArtifactField("Release");
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
-			for (RemoteRelease remoteRelease : remoteReleases)
+			for (RemoteProjectUser remoteProjectUser : remoteProjectUsers)
 			{
-				if (remoteRelease.isIteration())
+				int userId = remoteProjectUser.getUserId();
+				//Now we need to retrieve the user record (hopefully newer API will combine these)
+				RemoteUser remoteUser = soap.userRetrieveById(userId);
+				if (remoteUser != null)
 				{
-					//Indent iterations with spaces for now
-					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId(), "  " + remoteRelease.getVersionNumber() + " - " + remoteRelease.getName()));				
-				}
-				else
-				{
-					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId(), remoteRelease.getVersionNumber() + " - " + remoteRelease.getName()));
+					lookupValues.add(new ArtifactFieldValue(userId, remoteUser.getFirstName() + " " + remoteUser.getLastName() + " <" + remoteUser.getEmailAddress() + ">"));
 				}
 			}		
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
-			return artifactField;*/
-			return null;
+			return artifactField;
 		}
 		catch (SpiraException ex)
 		{

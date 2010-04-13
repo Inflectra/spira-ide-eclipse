@@ -3,6 +3,7 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal;
 
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -98,6 +99,28 @@ public class SpiraTeamUtil
 		else
 		{
 			return date.getTime() + ""; //$NON-NLS-1$
+		}
+	}
+	
+	/**
+	 * Converts an effort value in minutes (integer)
+	 * into an hours/mins one that can be displayed in Eclipse
+	 * @param effort Effort in minutes
+	 * @return string representation in hours and minutes (1 dec place only)
+	 */
+	public static String effortValuesToString(Integer effort)
+	{
+		if (effort == null)
+		{
+			return ""; //$NON-NLS-1$
+		}
+		else
+		{
+			DecimalFormat onePlace = new DecimalFormat("0.0");
+			int effortInt = effort.intValue();
+			double effortHours = (double)effortInt / 60.0;
+			String effortHoursRounded = onePlace.format(effortHours);
+			return effortHoursRounded;
 		}
 	}
 }

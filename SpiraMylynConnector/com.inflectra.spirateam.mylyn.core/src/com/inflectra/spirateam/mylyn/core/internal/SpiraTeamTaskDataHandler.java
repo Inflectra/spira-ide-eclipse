@@ -5,12 +5,10 @@ package com.inflectra.spirateam.mylyn.core.internal;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.Map.Entry;
 
 import org.eclipse.core.runtime.CoreException;
@@ -28,11 +26,9 @@ import org.eclipse.mylyn.tasks.core.data.TaskData;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
-import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
-import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 
@@ -43,7 +39,9 @@ import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
  */
 public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 {
-	private static final String TASK_DATA_VERSION = "2.3.1"; //$NON-NLS-1$
+	//The TASK_DATA_VERSION should be the version number (e.g. v2.3.1) in XXYYZZ format
+	//So that we can migrate old tasks if necessary when we add new attributes
+	private static final String TASK_DATA_VERSION = "020301"; //$NON-NLS-1$
 	private static final String ARTIFACT_KEY = "spiraKey"; //$NON-NLS-1$
 	
 	private final SpiraTeamRepositoryConnector connector;
@@ -157,11 +155,12 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	}
 
 	/**
-	 * This overload is used for the custom properties
+	 * This overload is used for the custom properties, when we add support for that
 	 * @param data
 	 * @param field
 	 * @return
 	 */
+	/*
 	private static TaskAttribute createAttribute(TaskData data, ArtifactField field)
 	{
 		TaskAttribute attr = data.getRoot().createAttribute(field.getName());
@@ -238,7 +237,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 		}
 		return attr;
-	}
+	}*/
 
 	public static TaskAttribute createAttribute(TaskData data, ArtifactAttribute artifactAttribute)
 	{
@@ -663,5 +662,29 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}*/
 
 		return changedAttributes;
+	}
+	
+
+	@Override
+	public void migrateTaskData(TaskRepository taskRepository, TaskData taskData)
+	{
+		int version = 0;
+		if (taskData.getVersion() != null)
+		{
+			try
+			{
+				version = Integer.parseInt(taskData.getVersion());
+			}
+			catch (NumberFormatException e)
+			{
+				// ignore
+			}
+		}
+		if (version < 020301)
+		{
+			//Data older than v2.3.1 we just set to the current version
+			//because v2.3.1 was the first version of the Mylyn connector :-)
+			taskData.setVersion(TASK_DATA_VERSION);
+		}
 	}
 }

@@ -55,6 +55,10 @@ public class SpiraTeamTaskMapper extends TaskMapper
 		{
 			return super.getTaskKind();
 		}
-		return artifactType.getDisplayName();
+		if (artifactType.equals(ArtifactType.TASK) || artifactType.equals(ArtifactType.REQUIREMENT))
+		{
+			return artifactType.getDisplayName();
+		}
+		return super.getTaskKind();
 	}
 }

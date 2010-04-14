@@ -79,13 +79,29 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 			}
 			if (taskEditorPartDescriptor.getId().equals(ID_PART_ACTIONS))
 			{
-				//Requirements and Tasks don't currently support actions
-				if (artifactType.equals(ArtifactType.REQUIREMENT) || artifactType.equals(ArtifactType.TASK))
+				//Requirements don't have Actions
+				//Tasks uses the default Actions
+				//Incidents uses a customized Actions Part
+				if (artifactType.equals(ArtifactType.REQUIREMENT) || artifactType.equals(ArtifactType.INCIDENT))
 				{
 					it.remove();
 				}
 			}
 		}
+		
+		//Add the new Actions Part
+		if (artifactType.equals(ArtifactType.INCIDENT))
+		{
+			descriptors.add(new TaskEditorPartDescriptor(ID_PART_ACTIONS)
+			{
+				@Override
+				public AbstractTaskEditorPart createPart()
+				{
+					return new SpiraTeamActionsPart();
+				}
+			}.setPath(PATH_ACTIONS));
+		}
+		
 		return descriptors;
 	}
 

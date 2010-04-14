@@ -79,8 +79,8 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 			}
 			if (taskEditorPartDescriptor.getId().equals(ID_PART_ACTIONS))
 			{
-				//Requirements and Tasks don't currently support comments
-				if (artifactType.equals(ArtifactType.REQUIREMENT))
+				//Requirements and Tasks don't currently support actions
+				if (artifactType.equals(ArtifactType.REQUIREMENT) || artifactType.equals(ArtifactType.TASK))
 				{
 					it.remove();
 				}

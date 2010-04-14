@@ -23,6 +23,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
+import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransition;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField.Type;
@@ -652,6 +653,57 @@ public class SpiraImportExport
 		catch (WebServiceException ex)
 		{
 			return null;
+		}
+	}
+	
+	public List<IncidentWorkflowTransition> incidentRetrieveWorkflowTransitions(int currentTypeId, int currentStatusId, boolean isDetector, boolean isOwner)
+		throws SpiraException
+	{
+		//Don't return releases if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.incidentRetrieveWorkflowTransitions(projectId, currentTypeId, currentStatusId, isDetector, isOwner);
+	}
+	
+	public List<IncidentWorkflowTransition> incidentRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isDetector, boolean isOwner)
+		throws SpiraException
+	{
+		try
+		{
+			//Get the list of incident statuses from the SOAP API
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+	
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Get the list of workflow transitions
+			List<RemoteWorkflowIncidentTransition> remoteTransitions = soap.incidentRetrieveWorkflowTransitions(currentTypeId, currentStatusId, isDetector, isOwner).getRemoteWorkflowIncidentTransition();
+			
+			//Convert the SOAP transitions into local versions
+			ArrayList<IncidentWorkflowTransition> transitions = new ArrayList<IncidentWorkflowTransition>();
+			for (RemoteWorkflowIncidentTransition remoteTransition : remoteTransitions)
+			{
+				transitions.add(new IncidentWorkflowTransition(remoteTransition));
+			}		
+			return transitions;
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
 		}
 	}
 	

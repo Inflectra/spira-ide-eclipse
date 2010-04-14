@@ -43,7 +43,7 @@ public enum ArtifactAttribute
 	INCIDENT_OPENER_ID(Incident.Key.OPENER_ID, Messages.IncidentAttribute_OpenerId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_SHORT_TEXT, Flag.PEOPLE, Flag.READ_ONLY),
 	INCIDENT_PRIORITY_ID(Incident.Key.PRIORITY_ID, Messages.IncidentAttribute_PriorityId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
 	INCIDENT_SEVERITY_ID(Incident.Key.SEVERITY_ID, Messages.IncidentAttribute_SeverityId, TaskAttribute.SEVERITY, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
-	INCIDENT_STATUS_ID(Incident.Key.STATUS_ID, Messages.IncidentAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
+	INCIDENT_STATUS_ID(Incident.Key.STATUS_ID, Messages.IncidentAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE, Flag.READ_ONLY),
 	INCIDENT_TYPE_ID(Incident.Key.TYPE_ID, Messages.IncidentAttribute_TypeId, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
 	INCIDENT_DETECTED_RELEASE_ID(Incident.Key.DETECTED_RELEASE_ID, Messages.IncidentAttribute_DetectedReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
 	INCIDENT_RESOLVED_RELEASE_ID(Incident.Key.RESOLVED_RELEASE_ID, Messages.IncidentAttribute_ResolvedReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),

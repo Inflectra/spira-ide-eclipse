@@ -24,11 +24,13 @@ import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMetaData;
 import org.eclipse.mylyn.tasks.core.data.TaskCommentMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
+import org.eclipse.mylyn.tasks.core.data.TaskOperation;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
+import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransition;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
@@ -354,6 +356,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT);
+			
+			// Workflow Transitions
+			data.getRoot().createAttribute(TaskAttribute.OPERATION).getMetaData().setType(TaskAttribute.TYPE_OPERATION);
 		}
 		
 		//Task-specific fields
@@ -384,8 +389,6 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				}
 			}
 		}*/
-		// operations
-		//data.getRoot().createAttribute(TaskAttribute.OPERATION).getMetaData().setType(TaskAttribute.TYPE_OPERATION);
 	}
 	
 	/* (non-Javadoc)
@@ -614,17 +617,28 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				throw new SpiraException(Messages.SpiraTeamTaskDataHandler_UnableToRetrieveComments);
 			}
 			
-			//TODO: Add workflow actions
-			/*
-			TracAction[] actions = ticket.getActions();
-			if (actions != null)
+			//Workflow Transitions
+			try
 			{
-				// add actions and set first as default
-				for (TracAction action : actions)
+				boolean isOwner = true;	//Always TRUE
+				boolean isDetector = false;	//TODO: Need to check
+				int currentTypeId = incident.getIncidentTypeId();
+				int currentStatusId = incident.getIncidentStatusId();
+				List<IncidentWorkflowTransition> transitions = client.incidentRetrieveWorkflowTransitions(currentTypeId, currentStatusId, isDetector, isOwner);
+				if (transitions != null)
 				{
-					addOperation(repository, data, ticket, action, action == actions[0]);
+					// add transitions and set first as default
+					for (IncidentWorkflowTransition transition : transitions)
+					{
+						addOperation(repository, data, incident, transition);
+					}
 				}
-			}*/
+			}
+			catch (SpiraException ex)
+			{
+				//Let the user know
+				throw new SpiraException(Messages.SpiraTeamTaskDataHandler_UnableToRetrieveWorkflowTransitions);
+			}
 		}
 		
 		if (artifact instanceof Task)
@@ -669,6 +683,15 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		return changedAttributes;
 	}
 	
+	private static void addOperation(TaskRepository repository, TaskData data, Incident incident, IncidentWorkflowTransition transition)
+	{
+		String label = transition.getName();
+		if (label != null)
+		{
+			TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_OPERATION + transition.getTransitionID());
+			TaskOperation.applyTo(attribute, transition.getTransitionID() + "", label);
+		}
+	}
 
 	@Override
 	public void migrateTaskData(TaskRepository taskRepository, TaskData taskData)

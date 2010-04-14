@@ -13,6 +13,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.*;
 
 
@@ -23,7 +25,7 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 	private TaskAttribute selectedOperationAttribute;
 	private Button submitButton;
 	private Button attachContextButton;
-	private List<Button> operationButtons;
+	private List<Hyperlink> operationButtons;
 	
 	public SpiraTeamActionsPart()
 	{
@@ -87,8 +89,16 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 
 		if (!getTaskData().isNew())
 		{
-			//addAttachContextButton(buttonComposite, toolkit);
+			addAttachContextButton(buttonComposite, toolkit);
 		}
+	}
+	
+
+	protected void addAttachContextButton(Composite buttonComposite, FormToolkit toolkit)
+	{
+		attachContextButton = toolkit.createButton(buttonComposite, Messages.TaskEditorActionPart_Attach_Context,
+				SWT.CHECK);
+		attachContextButton.setImage(CommonImages.getImage(TasksUiImages.CONTEXT_ATTACH));
 	}
 	
 	private void createHyperlinks(Composite buttonComposite, FormToolkit toolkit, TaskOperation selectedOperation)
@@ -96,25 +106,16 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 		List<TaskOperation> operations = getTaskData().getAttributeMapper().getTaskOperations(selectedOperationAttribute);
 		if (operations.size() > 0)
 		{
-			operationButtons = new ArrayList<Button>();
-			Button selectedButton = null;
+			operationButtons = new ArrayList<Hyperlink>();
 			for (TaskOperation operation : operations)
 			{
-				Button button = toolkit.createButton(buttonComposite, operation.getLabel(), SWT.RADIO);
+				Hyperlink button = toolkit.createHyperlink(buttonComposite, "> " + operation.getLabel(), 0);
 				button.setFont(TEXT_FONT);
 				button.setData(KEY_OPERATION, operation);
 				GridData radioData = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
-				TaskAttribute associatedAttribute = getTaskData().getAttributeMapper().getAssoctiatedAttribute(
-						operation);
-				radioData.horizontalSpan = 4;
 				button.setLayoutData(radioData);
-				//TODO: Add Listener
-				//button.addSelectionListener(new SelectButtonListener(button));
+				button.addHyperlinkListener(new HyperlinkListener(button));
 				operationButtons.add(button);
-				if (operation.equals(selectedOperation))
-				{
-					selectedButton = button;
-				}
 			}
 		}
 	}
@@ -126,8 +127,39 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 			if (enabled)
 			{
 				submitButton.setToolTipText(MessageFormat.format(Messages.TaskEditorActionPart_Submit_to_X,
-						getTaskEditorPage().getTaskRepository().getRepositoryUrl()));
+						getTaskEditorPage().getTaskRepository().getRepositoryLabel()));
 			}
+		}
+	}
+	
+	public class HyperlinkListener implements IHyperlinkListener
+	{
+		private Hyperlink hyperlink = null;
+		
+		public HyperlinkListener(Hyperlink hyperlink)
+		{
+			this.hyperlink = hyperlink;
+		}
+
+		@Override
+		public void linkActivated(HyperlinkEvent arg0)
+		{
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void linkEntered(HyperlinkEvent arg0)
+		{
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void linkExited(HyperlinkEvent arg0)
+		{
+			// TODO Auto-generated method stub
+			
 		}
 	}
 }

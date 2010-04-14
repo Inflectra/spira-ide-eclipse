@@ -21,4 +21,5 @@ public class Messages extends NLS
 	public static String TaskEditorActionPart_Submit;
 	public static String TaskEditorActionPart_Submit_to_X;
 	public static String SpiraTeamActionsPart_PartName;
+	public static String TaskEditorActionPart_Attach_Context;
 }

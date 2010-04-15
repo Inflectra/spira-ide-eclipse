@@ -10,9 +10,9 @@ package com.inflectra.spirateam.mylyn.core.internal;
  */
 public enum ArtifactType
 {
-	REQUIREMENT(1, "RQ", Messages.ArtifactType_Requirement, "RequirementDetails.aspx?requirementId="),
-	INCIDENT(3, "IN", Messages.ArtifactType_Incident, "IncidentDetails.aspx?incidentId="),
-	TASK (6, "TK", Messages.ArtifactType_Task, "TaskDetails.aspx?taskId=");
+	REQUIREMENT(1, "RQ", Messages.ArtifactType_Requirement, "/RequirementDetails.aspx?requirementId="),
+	INCIDENT(3, "IN", Messages.ArtifactType_Incident, "/IncidentDetails.aspx?incidentId="),
+	TASK (6, "TK", Messages.ArtifactType_Task, "/TaskDetails.aspx?taskId=");
 	
 	private final int artifactTypeId;
 	private final String prefix;

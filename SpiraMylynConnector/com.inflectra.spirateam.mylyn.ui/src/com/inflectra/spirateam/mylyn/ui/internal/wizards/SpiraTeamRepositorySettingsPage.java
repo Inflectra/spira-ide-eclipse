@@ -9,16 +9,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.mylyn.commons.net.AuthenticationCredentials;
 import org.eclipse.mylyn.commons.net.AuthenticationType;
-import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
-import org.eclipse.mylyn.tasks.ui.TasksUi;
 import org.eclipse.mylyn.tasks.ui.wizards.AbstractRepositorySettingsPage;
 import org.eclipse.swt.widgets.Composite;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.inflectra.spirateam.mylyn.core.internal.*;
-import com.inflectra.spirateam.mylyn.core.internal.model.PredefinedFilter;
 import com.inflectra.spirateam.mylyn.core.internal.services.*;
 import com.inflectra.spirateam.mylyn.ui.internal.*;
 
@@ -43,6 +40,7 @@ public class SpiraTeamRepositorySettingsPage extends
 		setNeedsEncoding(false);
 		setNeedsTimeZone(false);
 		setNeedsAdvanced(false);
+		setNeedsProxy(false);
 	}
 	
 	/* (non-Javadoc)

@@ -18,7 +18,6 @@ import java.util.Map;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
@@ -26,7 +25,6 @@ import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransition;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
-import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField.Type;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.*;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
 
@@ -58,6 +56,19 @@ public class SpiraImportExport
 	public static int TASK_STATUS_COMPLETED = 3;
 
 	protected SpiraTeamClientData data;
+	
+	public boolean hasAttributes()
+	{
+		return (data.lastUpdate != 0);
+	}
+
+	public void updateAttributes(IProgressMonitor monitor, boolean force)
+	{
+		if (!hasAttributes() || force)
+		{
+			data.lastUpdate = System.currentTimeMillis();
+		}
+	}
 	
 	/**
 	 * The constructor
@@ -294,9 +305,21 @@ public class SpiraImportExport
 			//Convert the SOAP requirements into the local versions
 			List<Requirement> requirements = new ArrayList<Requirement>();
 			for (RemoteRequirement remoteRequirement : remoteRequirements)
-			{
+			{			
 				Requirement requirement = new Requirement(remoteRequirement);
 				requirements.add(requirement);
+				//Add to the stored artifact-key to project mapping
+				if (data != null)
+				{
+					if (data.taskToProjectMapping == null)
+					{
+						data.taskToProjectMapping = new HashMap<String, Integer>();
+					}
+					if (!data.taskToProjectMapping.containsKey(requirement.getArtifactKey()))
+					{
+						data.taskToProjectMapping.put(requirement.getArtifactKey(), requirement.getProjectId());
+					}
+				}
 			}
 	        return requirements;
 		}

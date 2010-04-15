@@ -38,12 +38,10 @@ public class SpiraTeamClientManager implements IRepositoryListener
 	private final Map<String, SpiraImportExport> clientByUrl = new HashMap<String, SpiraImportExport>();
 	private final Map<String, SpiraTeamClientData> clientDataByUrl = new HashMap<String, SpiraTeamClientData>();
 	private final File cacheFile;
-	private volatile TaskRepositoryLocationFactory taskRepositoryLocationFactory;
 
 	public SpiraTeamClientManager(File cacheFile, TaskRepositoryLocationFactory taskRepositoryLocationFactory)
 	{
 		this.cacheFile = cacheFile;
-		this.taskRepositoryLocationFactory = taskRepositoryLocationFactory;
 
 		readCache();
 	}
@@ -107,7 +105,8 @@ public class SpiraTeamClientManager implements IRepositoryListener
 		}
 
 		ObjectInputStream in = null;
-		try {
+		try
+		{
 			in = new ObjectInputStream(new FileInputStream(cacheFile));
 			int size = in.readInt();
 			for (int i = 0; i < size; i++)

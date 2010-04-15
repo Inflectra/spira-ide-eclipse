@@ -6,7 +6,9 @@
 
 package com.inflectra.spirateam.mylyn.core.internal;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 import org.eclipse.mylyn.tasks.core.RepositoryStatus;
@@ -44,6 +46,8 @@ public class SpiraTeamCorePlugin extends Plugin
 	public static int CustomPropertyType_Text = 1;
 	public static int CustomPropertyType_List = 2;
 	
+	private SpiraTeamRepositoryConnector connector;
+	
 	/**
 	 * The constructor
 	 */
@@ -67,8 +71,24 @@ public class SpiraTeamCorePlugin extends Plugin
 	 */
 	public void stop(BundleContext context) throws Exception
 	{
+		if (connector != null)
+		{
+			connector.stop();
+			connector = null;
+		}
+		
 		plugin = null;
 		super.stop(context);
+	}
+	
+	public SpiraTeamRepositoryConnector getConnector()
+	{
+		return connector;
+	}
+
+	void setConnector(SpiraTeamRepositoryConnector connector)
+	{
+		this.connector = connector;
 	}
 
 	/**
@@ -80,7 +100,17 @@ public class SpiraTeamCorePlugin extends Plugin
 	{
 		return plugin;
 	}
-
+	
+	/**
+	 * Returns the path to the file caching repository attributes.
+	 */
+	protected IPath getRepostioryAttributeCachePath()
+	{
+		IPath stateLocation = Platform.getStateLocation(getBundle());
+		IPath cacheFile = stateLocation.append("repositoryConfigurations"); //$NON-NLS-1$
+		return cacheFile;
+	}
+	
 	public static IStatus toStatus(TaskRepository repository, Throwable e)
 	{
 		String url = repository.getRepositoryUrl();

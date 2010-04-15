@@ -2,11 +2,13 @@ package com.inflectra.spirateam.mylyn.core.internal;
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
@@ -25,12 +27,10 @@ import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
 import org.eclipse.mylyn.tasks.core.data.TaskMapper;
 import org.eclipse.mylyn.tasks.core.sync.ISynchronizationSession;
 
-import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.PredefinedFilter;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
-import com.inflectra.spirateam.mylyn.core.internal.services.SpiraAuthenticationException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 
@@ -48,6 +48,12 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	 */
 	public SpiraTeamRepositoryConnector()
 	{
+		if (SpiraTeamCorePlugin.getDefault() != null)
+		{
+			SpiraTeamCorePlugin.getDefault().setConnector(this);
+			IPath path = SpiraTeamCorePlugin.getDefault().getRepostioryAttributeCachePath();
+			this.repositoryConfigurationCacheFile = path.toFile();
+		}
 	}
 
 	@Override
@@ -197,6 +203,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 			IProgressMonitor monitor) throws CoreException
 	{
 		//TODO: Remove hard-coded project ID, need to store a mapping somewhere
+		//taskRepository.
 		return taskDataHandler.getTaskData(taskRepository, 1, taskKey, monitor);
 	}
 
@@ -204,8 +211,21 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	public boolean hasTaskChanged(TaskRepository taskRepository, ITask task,
 			TaskData taskData)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		TaskMapper mapper = getTaskMapping(taskData);
+		if (taskData.isPartial())
+		{
+			return mapper.hasChanges(task);
+		}
+		else
+		{
+			Date repositoryDate = mapper.getModificationDate();
+			Date localDate = SpiraTeamUtil.parseDate(task.getAttribute(ArtifactAttribute.LAST_UPDATE_DATE.getArtifactKey()));
+			if (repositoryDate != null && repositoryDate.equals(localDate))
+			{
+				return false;
+			}
+			return true;
+		}
 	}
 
 	/**
@@ -347,8 +367,26 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	public void updateRepositoryConfiguration(TaskRepository taskRepository,
 			IProgressMonitor monitor) throws CoreException
 	{
-		// TODO Auto-generated method stub
+		try
+		{
+			SpiraImportExport client = getClientManager().getSpiraTeamClient(taskRepository);
+			client.updateAttributes(monitor, true);
+		}
+		catch (Exception e)
+		{
+			throw new CoreException(RepositoryStatus.createStatus(taskRepository.getRepositoryUrl(), IStatus.WARNING,
+					SpiraTeamCorePlugin.PLUGIN_ID, "Could not update attributes")); //$NON-NLS-1$
+		}
 
+	}
+	
+
+	public void stop()
+	{
+		if (clientManager != null)
+		{
+			clientManager.writeCache();
+		}
 	}
 	
 	private void trace(IStatus status)

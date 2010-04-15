@@ -137,8 +137,22 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 		{
 			return null;
 		}
-		int index = url.lastIndexOf(SpiraImportExport.REQUIREMENT_URL);
-		return index == -1 ? null : url.substring(0, index);
+		int index = url.lastIndexOf(ArtifactType.REQUIREMENT.getBaseUrl());
+		if (index != -1)
+		{
+			return url.substring(0, index);
+		}
+		index = url.lastIndexOf(ArtifactType.INCIDENT.getBaseUrl());
+		if (index != -1)
+		{
+			return url.substring(0, index);
+		}
+		index = url.lastIndexOf(ArtifactType.TASK.getBaseUrl());
+		if (index != -1)
+		{
+			return url.substring(0, index);
+		}
+		return null;
 	}
 
 	@Override
@@ -148,14 +162,34 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 		{
 			return null;
 		}
-		int index = url.lastIndexOf(SpiraImportExport.REQUIREMENT_URL);
-		return index == -1 ? null : url.substring(index + SpiraImportExport.REQUIREMENT_URL.length());
+		
+		int index = url.lastIndexOf(ArtifactType.REQUIREMENT.getBaseUrl());
+		if (index != -1)
+		{
+			return url.substring(index + ArtifactType.REQUIREMENT.getBaseUrl().length());
+		}
+		index = url.lastIndexOf(ArtifactType.INCIDENT.getBaseUrl());
+		if (index != -1)
+		{
+			return url.substring(index + ArtifactType.INCIDENT.getBaseUrl().length());
+		}
+		index = url.lastIndexOf(ArtifactType.TASK.getBaseUrl());
+		if (index != -1)
+		{
+			return url.substring(index + ArtifactType.TASK.getBaseUrl().length());
+		}
+		return null;
 	}
 	
 	@Override
-	public String getTaskUrl(String repositoryUrl, String taskId)
+	public String getTaskUrl(String repositoryUrl, String taskKey)
 	{
-		return repositoryUrl + SpiraImportExport.REQUIREMENT_URL + taskId;
+		ArtifactType artifactType = ArtifactType.byTaskKey(taskKey);
+		if (artifactType != null)
+		{
+			return repositoryUrl + artifactType.getBaseUrl() + taskKey;
+		}
+		return null;
 	}
 
 	@Override

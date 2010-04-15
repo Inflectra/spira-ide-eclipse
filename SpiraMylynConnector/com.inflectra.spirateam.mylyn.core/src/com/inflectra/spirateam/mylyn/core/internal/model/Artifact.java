@@ -49,7 +49,8 @@ public class Artifact
     	DESCRIPTION("common.description"),		
     	CREATION_DATE("common.creationDate"),
     	LAST_UPDATE_DATE("common.lastUpdateDate"),
-    	OWNER_ID("common.ownerId");
+    	OWNER_ID("common.ownerId"),
+    	URL("common.url");
 		
 		public static Key fromKey(String name)
 		{

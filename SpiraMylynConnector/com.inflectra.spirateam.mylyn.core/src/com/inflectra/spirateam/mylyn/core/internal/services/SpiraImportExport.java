@@ -42,8 +42,6 @@ public class SpiraImportExport
 	private static final String WEB_SERVICE_NAMESPACE = "{http://www.inflectra.com/SpiraTest/Services/v2.2/}ImportExport";	//$NON-NLS-1$
 	private static final String SPIRA_PLUG_IN_NAME = "Eclipse-IDE";	//$NON-NLS-1$
 	
-	public static final String REQUIREMENT_URL = "RequirementDetails.aspx?requirementId=";
-	
 	private URL serviceUrl = null;
 	private String userName = "";
 	private String password = "";

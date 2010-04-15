@@ -187,6 +187,11 @@ public class SpiraImportExport
 		this.data = data;
 	}
 	
+	public SpiraTeamClientData getData()
+	{
+		return this.data;
+	}
+	
 	/**
 	 * Authenticates the user/password and stores the cookie
 	 * for accessing future methods of the API

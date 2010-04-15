@@ -202,9 +202,35 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	public TaskData getTaskData(TaskRepository taskRepository, String taskKey,
 			IProgressMonitor monitor) throws CoreException
 	{
-		//TODO: Remove hard-coded project ID, need to store a mapping somewhere
-		//taskRepository.
-		return taskDataHandler.getTaskData(taskRepository, 1, taskKey, monitor);
+		//We need to get the project id from the cache
+		try
+		{
+			SpiraImportExport client = clientManager.getSpiraTeamClient(taskRepository);
+			if (client != null)
+			{
+				SpiraTeamClientData data = client.getData();
+				if (data != null)
+				{
+					if (data.taskToProjectMapping != null)
+					{
+						if (data.taskToProjectMapping.containsKey(taskKey))
+						{
+							int projectId = data.taskToProjectMapping.get(taskKey);
+							return taskDataHandler.getTaskData(taskRepository, projectId, taskKey, monitor);
+						}
+					}
+				}
+			}
+			return null;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (MalformedURLException ex)
+		{
+			return null;
+		}
 	}
 
 	@Override

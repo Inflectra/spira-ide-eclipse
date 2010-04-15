@@ -8,12 +8,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 
 /**
@@ -66,8 +69,26 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 	@Override
 	public Map<String, String> getOptions(TaskAttribute attribute)
 	{
+		TaskAttribute rootAttribute = attribute.getParentAttribute();
+		String rootValue = rootAttribute.getValue();
+		if (rootValue != null)
+		{
+			try
+			{
+				int projectId = Integer.parseInt(rootValue);
+				client.setStoredProjectId(projectId);
+			}
+			catch (NumberFormatException ex)
+			{
+				//Do Nothing
+			}
+		}
 		Map<String, String> options = getRepositoryOptions(client, attribute.getId());
-		return (options != null) ? options : super.getOptions(attribute);
+		if (options == null)
+		{
+			options = super.getOptions(attribute);
+		}
+		return options;
 	}
 
 	public static Map<String, String> getRepositoryOptions(SpiraImportExport client, String artifactAttributeKey)

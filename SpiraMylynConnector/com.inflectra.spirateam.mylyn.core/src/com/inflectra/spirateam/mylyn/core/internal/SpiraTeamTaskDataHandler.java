@@ -561,6 +561,11 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.OWNER_ID, artifact.getOwnerId().toString());
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.CREATION_DATE, SpiraTeamUtil.dateToString(artifact.getCreationDate()));
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.LAST_UPDATE_DATE, SpiraTeamUtil.dateToString(artifact.getLastUpdateDate()));
+
+		//Next we need to store the project id as the root value
+		//As many of the attribute options depend on project
+		data.getRoot().setValue(artifact.getProjectId() + "");
+		data.getRoot().getMetaData().putValue("projectId", artifact.getProjectId() + "");
 		
 		//Need to detect each type of artifact, for the other attributes
 		if (artifact instanceof Requirement)

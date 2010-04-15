@@ -56,8 +56,6 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 			createHyperlinks(buttonComposite, toolkit, selectedOperation);
 		}
 
-		//createOperationAttributes(buttonComposite, toolkit);
-
 		createActionButtons(buttonComposite, toolkit);
 
 		toolkit.paintBordersFor(buttonComposite);
@@ -67,7 +65,6 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 	
 	private void createActionButtons(Composite buttonComposite, FormToolkit toolkit)
 	{
-		//if (!getTaskEditorPage().needsSubmitButton()) {
 		submitButton = toolkit.createButton(buttonComposite, Messages.TaskEditorActionPart_Submit, SWT.NONE);
 		submitButton.setImage(CommonImages.getImage(TasksUiImages.REPOSITORY_SUBMIT));
 		submitButton.addListener(SWT.Selection, new Listener()
@@ -122,7 +119,8 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 	
 	public void setSubmitEnabled(boolean enabled)
 	{
-		if (submitButton != null && !submitButton.isDisposed()) {
+		if (submitButton != null && !submitButton.isDisposed())
+		{
 			submitButton.setEnabled(enabled);
 			if (enabled)
 			{
@@ -144,15 +142,13 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 		@Override
 		public void linkActivated(HyperlinkEvent arg0)
 		{
-			// TODO Auto-generated method stub
-			
+			getTaskEditorPage().doSubmit();
 		}
 
 		@Override
 		public void linkEntered(HyperlinkEvent arg0)
 		{
-			// TODO Auto-generated method stub
-			
+			//Do Nothing			
 		}
 
 		@Override

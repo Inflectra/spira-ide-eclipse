@@ -80,17 +80,13 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 			if (taskEditorPartDescriptor.getId().equals(ID_PART_ACTIONS))
 			{
 				//Requirements don't have Actions
-				//Tasks uses the default Actions
-				//Incidents uses a customized Actions Part
-				if (artifactType.equals(ArtifactType.REQUIREMENT) || artifactType.equals(ArtifactType.INCIDENT))
-				{
-					it.remove();
-				}
+				//Incidents and Tasks use a customized Actions Part
+				it.remove();
 			}
 		}
 		
 		//Add the new Actions Part
-		if (artifactType.equals(ArtifactType.INCIDENT))
+		if (artifactType.equals(ArtifactType.INCIDENT) || artifactType.equals(ArtifactType.TASK))
 		{
 			descriptors.add(new TaskEditorPartDescriptor(ID_PART_ACTIONS)
 			{

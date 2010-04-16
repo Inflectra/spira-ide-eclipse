@@ -23,6 +23,7 @@ public class Messages extends NLS
 	public static String SpiraTeamRepositorySettingsPage_Description;
 	public static String SpiraTeamRepositorySettingsPage_MissingCredentials;
 	public static String SpiraTeamRepositorySettingsPage_UnableToAuthenticate;
+	public static String SpiraTeamRepositorySettingsPage_ServerVersionTooOld;
 	
 	public static String SpiraTeamNamedFilterPage_New_Named_Query;
 	public static String SpiraTeamNamedFilterPage_Please_select_named_queries;

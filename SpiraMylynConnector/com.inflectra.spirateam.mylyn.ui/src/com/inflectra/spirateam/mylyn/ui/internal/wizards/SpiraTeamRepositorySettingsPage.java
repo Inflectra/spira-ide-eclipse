@@ -156,6 +156,14 @@ public class SpiraTeamRepositorySettingsPage extends
 					throw new CoreException(new Status(IStatus.ERROR, SpiraTeamUiPlugin.PLUGIN_ID, IStatus.OK,
 							Messages.SpiraTeamRepositorySettingsPage_UnableToAuthenticate, null));	
 				}
+				
+				//Now make sure that the version is current enough
+				boolean current = SpiraTeamUtil.ValidateServerVersion(spiraImportExport);
+				if (!current)
+				{
+					throw new CoreException(new Status(IStatus.ERROR, SpiraTeamUiPlugin.PLUGIN_ID, IStatus.OK,
+							Messages.SpiraTeamRepositorySettingsPage_ServerVersionTooOld, null));
+				}
 			}
 			catch (MalformedURLException ex)
 			{

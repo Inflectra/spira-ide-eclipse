@@ -208,6 +208,14 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 			SpiraImportExport client = clientManager.getSpiraTeamClient(taskRepository);
 			if (client != null)
 			{
+				//Now make sure that the version is current enough
+				boolean current = SpiraTeamUtil.ValidateServerVersion(client);
+				if (!current)
+				{
+					throw new CoreException(new Status(IStatus.ERROR, SpiraTeamCorePlugin.PLUGIN_ID, IStatus.OK,
+							Messages.SpiraTeamRepositoryConnector_ServerVersionTooOld, null));
+				}
+
 				SpiraTeamClientData data = client.getData();
 				if (data != null)
 				{
@@ -275,6 +283,14 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 				{
 					return RepositoryStatus.createStatus(repository, IStatus.ERROR, SpiraTeamCorePlugin.PLUGIN_ID,
 							Messages.SpiraTeamRepositoryConnector_The_SpiraTeam_query_is_invalid);
+				}
+				
+				//Now make sure that the version is current enough
+				boolean current = SpiraTeamUtil.ValidateServerVersion(client);
+				if (!current)
+				{
+					throw new CoreException(new Status(IStatus.ERROR, SpiraTeamCorePlugin.PLUGIN_ID, IStatus.OK,
+							Messages.SpiraTeamRepositoryConnector_ServerVersionTooOld, null));
 				}
 				
 				//See which types of artifact we have and get appropriate data

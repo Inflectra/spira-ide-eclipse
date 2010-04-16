@@ -26,6 +26,26 @@ public class SpiraTeamUtil
 	private static final String KEY_FILTER_ID = "FilterID"; //$NON-NLS-1$
 	private static final String KEY_FILTER_NAME = "FilterName"; //$NON-NLS-1$
 	
+	public static boolean ValidateServerVersion (SpiraImportExport spiraImportExport)
+	{
+		boolean current = false;
+		if (spiraImportExport.getProductVersionPrimary() >= 3)
+		{
+			//v3.0 or higher
+			current = true;
+		}
+		if (spiraImportExport.getProductVersionPrimary() == 2 &&
+				spiraImportExport.getProductVersionSecondary() == 3 &&
+				spiraImportExport.getProductVersionTertiary() == 1 &&
+				spiraImportExport.getPatchNumber() >= 18)
+		{
+			//v2.3.1 Patch 18 or higher
+			current = true;
+		}
+		return current;
+
+	}
+	
 	/**
 	 * Sets the passed in pre-defined filter
 	 * @param taskRepository

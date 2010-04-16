@@ -46,6 +46,11 @@ public class SpiraImportExport
 	private ImportExport service = null;
 	private ImportExportSoap soap = null;
 	private Integer storedProjectId = null;
+	private String productName = "";
+	private int patchNumber = 0;
+	private int productVersionPrimary = 0;
+	private int productVersionSecondary = 0;
+	private int productVersionTertiary = 0;
 	
 	private ArtifactField requirementField_Status = null;
 	private ArtifactField requirementField_Importance = null;
@@ -87,7 +92,7 @@ public class SpiraImportExport
 			
 			//Make sure that session is maintained
 			Map<String, Object> requestContext = ((BindingProvider)this.soap).getRequestContext();
-			requestContext.put(BindingProvider.SESSION_MAINTAIN_PROPERTY,true);
+			requestContext.put(BindingProvider.SESSION_MAINTAIN_PROPERTY,true);			
 		}
 		catch (WebServiceException ex)
 		{
@@ -132,6 +137,27 @@ public class SpiraImportExport
 		this.storedProjectId = new Integer(projectId);
 	}
 
+	public String getProductName()
+	{
+		return this.productName;
+	}
+	public int getPatchNumber()
+	{
+		return this.patchNumber;
+	}
+	public int getProductVersionPrimary()
+	{
+		return this.productVersionPrimary;
+	}
+	public int getProductVersionSecondary()
+	{
+		return this.productVersionSecondary;
+	}
+	public int getProductVersionTertiary()
+	{
+		return this.productVersionTertiary;
+	}
+	
 	/**
 	 * The user name
 	 */
@@ -205,6 +231,34 @@ public class SpiraImportExport
 		
 			//Call the appropriate method
 	        success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+	        
+	        //Now get the version and product information
+	        this.productName = soap.systemGetProductName();
+	        
+	        //Version number
+	        RemoteVersion productVersion = soap.systemGetProductVersion();
+	        String versionString = productVersion.getVersion();
+	        String[] versionElements = versionString.split("\\.");
+	        this.productVersionPrimary = 0;
+	        this.productVersionSecondary = 0;
+	        this.productVersionTertiary = 0;
+	        if (versionElements.length >= 1)
+	        {
+	        	this.productVersionPrimary = Integer.parseInt(versionElements[0]);
+	        }
+	        if (versionElements.length >= 2)
+	        {
+	        	this.productVersionSecondary = Integer.parseInt(versionElements[1]);
+	        }
+	        if (versionElements.length >= 3)
+	        {
+	        	this.productVersionTertiary = Integer.parseInt(versionElements[2]);
+	        }
+	        	
+	        //Patch Number
+	        this.patchNumber = productVersion.getPatch();
+	        
+	        
 	        return success;
 		}
 		catch (WebServiceException ex)

@@ -164,6 +164,14 @@ public class SpiraTeamRepositorySettingsPage extends
 					throw new CoreException(new Status(IStatus.ERROR, SpiraTeamUiPlugin.PLUGIN_ID, IStatus.OK,
 							Messages.SpiraTeamRepositorySettingsPage_ServerVersionTooOld, null));
 				}
+				
+				//Finally we need to reset the client instance held by the manager
+				SpiraTeamRepositoryConnector connector = (SpiraTeamRepositoryConnector)getConnector();
+				if (connector != null)
+				{
+					SpiraTeamClientManager manager = connector.getClientManager();
+					manager.repositorySettingsChanged(this.repository);
+				}
 			}
 			catch (MalformedURLException ex)
 			{

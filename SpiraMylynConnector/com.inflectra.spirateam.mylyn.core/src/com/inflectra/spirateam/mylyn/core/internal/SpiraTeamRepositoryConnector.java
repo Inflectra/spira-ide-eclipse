@@ -299,7 +299,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 				}
 				
 				//See which types of artifact we have and get appropriate data
-				if (filter.getId() == SpiraTeamCorePlugin.MY_ASSIGNED_REQUIREMENTS)
+				if (filter.getId().equals(SpiraTeamCorePlugin.MY_ASSIGNED_REQUIREMENTS))
 				{
 					List<Requirement> requirements = client.requirementRetrieveAssigned(monitor);
 
@@ -327,7 +327,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 						collector.accept(taskData);
 					}
 				}
-				if (filter.getId() == SpiraTeamCorePlugin.MY_ASSIGNED_INCIDENTS)
+				if (filter.getId().equals(SpiraTeamCorePlugin.MY_ASSIGNED_INCIDENTS))
 				{
 					List<Incident> incidents = client.incidentRetrieveAssigned(monitor);
 
@@ -355,7 +355,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 						collector.accept(taskData);
 					}
 				}
-				if (filter.getId() == SpiraTeamCorePlugin.MY_ASSIGNED_TASKS)
+				if (filter.getId().equals(SpiraTeamCorePlugin.MY_ASSIGNED_TASKS))
 				{
 					List<Task> tasks = client.taskRetrieveAssigned(monitor);
 

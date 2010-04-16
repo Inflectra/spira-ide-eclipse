@@ -22,6 +22,7 @@ import org.eclipse.mylyn.tasks.core.RepositoryStatus;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.TaskRepositoryLocationFactory;
 import org.eclipse.mylyn.tasks.core.ITask.PriorityLevel;
+import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
 import org.eclipse.mylyn.tasks.core.data.TaskMapper;
@@ -209,6 +210,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 			if (client != null)
 			{
 				//Now make sure that the version is current enough
+				client.connectionAuthenticate2();
 				boolean current = SpiraTeamUtil.ValidateServerVersion(client);
 				if (!current)
 				{
@@ -253,7 +255,8 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 		else
 		{
 			Date repositoryDate = mapper.getModificationDate();
-			Date localDate = SpiraTeamUtil.parseDate(task.getAttribute(ArtifactAttribute.LAST_UPDATE_DATE.getArtifactKey()));
+			String localDateString = task.getAttribute(ArtifactAttribute.LAST_UPDATE_DATE.getArtifactKey());
+			Date localDate = SpiraTeamUtil.parseDate(localDateString);
 			if (repositoryDate != null && repositoryDate.equals(localDate))
 			{
 				return false;
@@ -278,6 +281,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 			{
 				Map<String, ITask> taskById = null;
 				SpiraImportExport client = getClientManager().getSpiraTeamClient(repository);
+				client.updateAttributes(monitor, false);
 				PredefinedFilter filter = SpiraTeamUtil.getPredefinedFilter(repositoryQuery);
 				if (filter == null)
 				{
@@ -286,6 +290,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 				}
 				
 				//Now make sure that the version is current enough
+				client.connectionAuthenticate2();
 				boolean current = SpiraTeamUtil.ValidateServerVersion(client);
 				if (!current)
 				{
@@ -398,7 +403,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 			monitor.done();
 		}
 	}
-
+	
 	@Override
 	public SpiraTeamTaskDataHandler getTaskDataHandler()
 	{

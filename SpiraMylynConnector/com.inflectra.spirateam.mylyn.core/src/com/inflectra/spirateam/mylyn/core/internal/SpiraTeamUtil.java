@@ -116,18 +116,13 @@ public class SpiraTeamUtil
 		{
 			try
 			{
-				return SpiraTeamUtil.parseDate(Long.valueOf(time));
+				return new Date(Long.valueOf(time));
 			}
 			catch (NumberFormatException e)
 			{
 			}
 		}
 		return null;
-	}
-	
-	public static Date parseDate(long seconds)
-	{
-		return new Date(seconds * 1000l);
 	}
 	
 	public static String dateToString(Date date)

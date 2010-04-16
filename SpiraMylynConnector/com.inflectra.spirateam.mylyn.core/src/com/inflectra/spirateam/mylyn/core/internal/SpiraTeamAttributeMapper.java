@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
+import org.eclipse.mylyn.tasks.core.data.TaskAttributeMetaData;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
@@ -69,18 +70,21 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 	@Override
 	public Map<String, String> getOptions(TaskAttribute attribute)
 	{
-		TaskAttribute rootAttribute = attribute.getParentAttribute();
-		String rootValue = rootAttribute.getValue();
-		if (rootValue != null)
+		TaskAttributeMetaData metaData = attribute.getMetaData();
+		if (metaData != null)
 		{
-			try
+			String metaDataValue = metaData.getValue(SpiraTeamTaskDataHandler.ATTRIBUTE_PROJECT_ID);
+			if (metaDataValue != null)
 			{
-				int projectId = Integer.parseInt(rootValue);
-				client.setStoredProjectId(projectId);
-			}
-			catch (NumberFormatException ex)
-			{
-				//Do Nothing
+				try
+				{
+					int projectId = Integer.parseInt(metaDataValue);
+					client.setStoredProjectId(projectId);
+				}
+				catch (NumberFormatException ex)
+				{
+					//Do Nothing
+				}
 			}
 		}
 		Map<String, String> options = getRepositoryOptions(client, attribute.getId());

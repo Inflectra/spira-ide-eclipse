@@ -1107,6 +1107,19 @@ public class SpiraImportExport
 			{
 				Incident incident = new Incident(remoteIncident);
 				incidents.add(incident);
+				
+				//Add to the stored artifact-key to project mapping
+				if (data != null)
+				{
+					if (data.taskToProjectMapping == null)
+					{
+						data.taskToProjectMapping = new HashMap<String, Integer>();
+					}
+					if (!data.taskToProjectMapping.containsKey(incident.getArtifactKey()))
+					{
+						data.taskToProjectMapping.put(incident.getArtifactKey(), incident.getProjectId());
+					}
+				}
 			}
 	        return incidents;
 		}
@@ -1220,6 +1233,19 @@ public class SpiraImportExport
 			{
 				Task task = new Task(remoteTask);
 				tasks.add(task);
+				
+				//Add to the stored artifact-key to project mapping
+				if (data != null)
+				{
+					if (data.taskToProjectMapping == null)
+					{
+						data.taskToProjectMapping = new HashMap<String, Integer>();
+					}
+					if (!data.taskToProjectMapping.containsKey(task.getArtifactKey()))
+					{
+						data.taskToProjectMapping.put(task.getArtifactKey(), task.getProjectId());
+					}
+				}
 			}
 	        return tasks;
 		}

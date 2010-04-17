@@ -1130,6 +1130,28 @@ public class SpiraImportExport
 	}
 	
 	/**
+	 * Updates a task object on the server
+	 * @param task
+	 * It assumes that we have already authenticated and connected to the project
+	 */
+	public void taskUpdate(Task task)
+		throws SpiraException
+	{
+		try
+		{	
+			//Convert the local task into the SOAP version
+			RemoteTask remoteTask = task.toSoapObject();
+			
+			//Call the appropriate method
+			soap.taskUpdate(remoteTask);
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+	
+	/**
 	 * Gets a single task by its key (RQ prefix + task id)
 	 * @param artifactKey The key for the task (RQ prefix + task id)
 	 * @param monitor

@@ -5,6 +5,7 @@ package com.inflectra.spirateam.mylyn.core.internal;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.eclipse.mylyn.commons.net.Policy;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
+import org.eclipse.mylyn.tasks.core.RepositoryResponse.ResponseKind;
 import org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
@@ -401,8 +403,182 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			TaskData taskData, Set<TaskAttribute> oldAttributes,
 			IProgressMonitor monitor) throws CoreException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		try
+		{
+			SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(repository);
+			if (taskData.isNew())
+			{
+				//We don't currently support creating new tasks in Eclipse/Mylyn
+				return null;
+			}
+			else
+			{
+				String taskKey = taskData.getTaskId();
+				
+				//Get the project id for this artifact
+				SpiraTeamClientData data = client.getData();
+				if (data != null)
+				{
+					if (data.taskToProjectMapping != null)
+					{
+						if (data.taskToProjectMapping.containsKey(taskKey))
+						{
+							int projectId = data.taskToProjectMapping.get(taskKey);
+
+							//See what kind of artifact we have
+
+							//Currently only incidents and tasks can be updated
+							ArtifactType artifactType = ArtifactType.byTaskKey(taskKey);
+							if (artifactType.equals(ArtifactType.TASK))
+							{
+								updateTaskFromTaskData(client, repository, taskData, projectId);
+								return new RepositoryResponse(ResponseKind.TASK_UPDATED, taskKey); //$NON-NLS-1$
+							}			
+							if (artifactType.equals(ArtifactType.INCIDENT))
+							{
+								/*
+								updateIncidentFromTaskData(client, repository, taskData, projectId);
+								return new RepositoryResponse(ResponseKind.TASK_UPDATED, taskKey); //$NON-NLS-1$
+								String newComment = ""; //$NON-NLS-1$
+								TaskAttribute newCommentAttribute = taskData.getRoot().getMappedAttribute(TaskAttribute.COMMENT_NEW);
+								if (newCommentAttribute != null)
+								{
+									newComment = newCommentAttribute.getValue();
+								}
+								server.updateTicket(ticket, newComment, monitor);
+								return new RepositoryResponse(ResponseKind.TASK_UPDATED, taskKey); //$NON-NLS-1$
+								*/
+							}
+						}
+					}
+				}
+				
+				return null;
+			}
+		}
+		catch (OperationCanceledException e)
+		{
+			throw e;
+		}
+		catch (Exception e)
+		{
+			// TODO catch SpiraException
+			throw new CoreException(SpiraTeamCorePlugin.toStatus(repository, e));
+		}
+	}
+	
+	/**
+	 * Gets the string attribute value from a Mylyn task
+	 * @param taskData The Mylyn task object data
+	 * @param attribute The attribute we want the value of
+	 * @return The string value
+	 */
+	private String getTaskAttributeStringValue (TaskData taskData, ArtifactAttribute attribute)
+	{
+		TaskAttribute taskAttribute = taskData.getRoot().getAttribute(attribute.getArtifactKey());
+		String value = taskAttribute.getValue();
+		return value;
+	}
+	
+	private Integer getTaskAttributeIntegerValue(TaskData taskData, ArtifactAttribute attribute)
+	{
+		//First get the string value
+		String stringValue = getTaskAttributeStringValue(taskData, attribute);
+		
+		//Now parse into an Integer object
+		if (stringValue == null || stringValue.equals(""))
+		{
+			return null;
+		}
+		Integer intValue = new Integer(stringValue);
+		return intValue;
+	}
+	
+	private Integer getTaskAttributeEffortValue(TaskData taskData, ArtifactAttribute attribute)
+	{
+		//First get the string value
+		String stringValue = getTaskAttributeStringValue(taskData, attribute);
+		
+		//Now parse into a double object
+		if (stringValue == null || stringValue.equals(""))
+		{
+			return null;
+		}
+		Double doubleValue = new Double(stringValue);
+		
+		//Next we need to convert into a whole number of minutes
+		doubleValue = doubleValue * 60;
+		return doubleValue.intValue();
+	}
+	
+	private int getTaskAttributeIntValue(TaskData taskData, ArtifactAttribute attribute)
+	{
+		//First get the string value
+		String stringValue = getTaskAttributeStringValue(taskData, attribute);
+		
+		//Now parse into an Integer object
+		if (stringValue == null || stringValue.equals(""))
+		{
+			//Used by SpiraTeam for non-nullable integers
+			return -1;
+		}
+		return Integer.parseInt(stringValue);
+	}
+	
+	private Date getTaskAttributeDateValue(TaskData taskData, ArtifactAttribute attribute)
+	{
+		//First get the string value
+		String stringValue = getTaskAttributeStringValue(taskData, attribute);
+		
+		//Now parse into a Date object
+		if (stringValue == null || stringValue.equals(""))
+		{
+			return null;
+		}
+		Date dateValue = SpiraTeamUtil.parseDate(stringValue);
+		return dateValue;
+	}
+	
+	/**
+	 * Updates the Spira Task on the server from the local changes
+	 * @param client Reference to the SOAP proxy
+	 * @param repository Reference to the Mylyn Repository
+	 * @param taskData The task information
+	 */
+	private void updateTaskFromTaskData(SpiraImportExport client, TaskRepository repository, TaskData taskData, int projectId)
+		throws SpiraException
+	{	
+		//First we need to get a fresh copy of the Task from the server
+		String artifactKey = taskData.getTaskId();
+		Task task = client.taskRetrieveByKey(artifactKey, projectId, null);
+		if (task == null)
+		{
+			//Need to throw an exception because the task doesn't exist on the server anymore
+			throw new SpiraException();
+		}
+		
+		//Next we need to update the task with the values from IDE
+		
+		//First we set the cross-attribute properties
+		task.setName(getTaskAttributeStringValue(taskData, ArtifactAttribute.NAME));
+		task.setDescription(getTaskAttributeStringValue(taskData, ArtifactAttribute.DESCRIPTION));
+		task.setOwnerId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.OWNER_ID));
+		//This will be checked by the server to see if it matches the current record
+		//since the server uses optimistic concurrency
+		task.setLastUpdateDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.LAST_UPDATE_DATE));
+
+		//Now we need to set the task-specific attributes
+		task.setTaskStatusId(getTaskAttributeIntValue(taskData, ArtifactAttribute.TASK_STATUS_ID));
+		task.setReleaseId(getTaskAttributeIntValue(taskData, ArtifactAttribute.TASK_RELEASE_ID));
+		task.setTaskPriorityId(getTaskAttributeIntValue(taskData, ArtifactAttribute.TASK_PRIORITY_ID));
+		task.setStartDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.TASK_START_DATE));
+		task.setEndDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.TASK_END_DATE));
+		task.setCompletionPercent(getTaskAttributeIntValue(taskData, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE));
+		task.setEstimatedEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.TASK_ESTIMATED_EFFORT));
+		task.setActualEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.TASK_ACTUAL_EFFORT));
+		
+		//Finally we need to commit the changes on the server
+		client.taskUpdate(task);
 	}
 	
 	public TaskData createTaskDataFromRequirement(SpiraImportExport client, TaskRepository repository, Requirement requirement,

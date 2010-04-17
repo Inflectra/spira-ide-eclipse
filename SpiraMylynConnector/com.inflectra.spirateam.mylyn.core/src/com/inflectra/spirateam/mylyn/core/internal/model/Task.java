@@ -130,6 +130,57 @@ public class Task extends Artifact
         this.list10 = remoteTask.getList10();
     }
     
+    /**
+     * Converts this object into its soap equivalent
+     * @return
+     */
+    public RemoteTask toSoapObject()
+    {
+    	//Set the properties on the SOAP object
+    	RemoteTask remoteTask = new RemoteTask();
+    	remoteTask.setTaskId(this.artifactId);
+    	remoteTask.setProjectId(this.projectId);
+    	remoteTask.setOwnerId(this.ownerId);
+    	remoteTask.setReleaseId(this.releaseId);
+    	remoteTask.setName(this.name);
+    	remoteTask.setDescription(this.description);
+    	remoteTask.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(this.creationDate));
+    	remoteTask.setLastUpdateDate(SpiraTeamUtil.convertDatesJava2Xml(this.lastUpdateDate));
+    	remoteTask.setTaskStatusId(this.taskStatusId);
+    	remoteTask.setRequirementId(this.requirementId);
+    	remoteTask.setReleaseId(this.releaseId);
+    	remoteTask.setTaskPriorityId(this.taskPriorityId);
+    	remoteTask.setStartDate(SpiraTeamUtil.convertDatesJava2Xml(this.startDate));
+    	remoteTask.setEndDate(SpiraTeamUtil.convertDatesJava2Xml(this.endDate));
+    	remoteTask.setCompletionPercent(this.completionPercent);
+    	remoteTask.setEstimatedEffort(this.estimatedEffort);
+    	remoteTask.setActualEffort(this.actualEffort);
+        
+        //Now the custom properties
+    	remoteTask.setText01(this.text01);
+    	remoteTask.setText02(this.text02);
+    	remoteTask.setText03(this.text03);
+    	remoteTask.setText04(this.text04);
+    	remoteTask.setText05(this.text05);
+    	remoteTask.setText06(this.text06);
+    	remoteTask.setText07(this.text07);
+    	remoteTask.setText08(this.text08);
+    	remoteTask.setText09(this.text09);
+    	remoteTask.setText10(this.text10);
+    	remoteTask.setList01(this.list01);
+    	remoteTask.setList02(this.list02);
+    	remoteTask.setList03(this.list03);
+    	remoteTask.setList04(this.list04);
+    	remoteTask.setList05(this.list05);
+    	remoteTask.setList06(this.list06);
+    	remoteTask.setList07(this.list07);
+    	remoteTask.setList08(this.list08);
+    	remoteTask.setList09(this.list09);
+    	remoteTask.setList10(this.list10);
+        
+        return remoteTask;
+    }
+    
     @Override
     public ArtifactType getArtifactType()
     {

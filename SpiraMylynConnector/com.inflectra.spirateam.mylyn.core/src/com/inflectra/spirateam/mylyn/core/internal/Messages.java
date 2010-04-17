@@ -38,6 +38,7 @@ public class Messages extends NLS
 	
 	public static String SpiraTeamTaskDataHandler_UnableToRetrieveComments;
 	public static String SpiraTeamTaskDataHandler_UnableToRetrieveWorkflowTransitions;
+	public static String SpiraTeamTaskDataHandler_ArtifactNoLongerExists;
 	
 	public static String ArtifactAttribute_ProjectId;
 	public static String ArtifactAttribute_ArtifactKey;

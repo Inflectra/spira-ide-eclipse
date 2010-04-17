@@ -7,6 +7,8 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -108,6 +110,26 @@ public class SpiraTeamUtil
 		GregorianCalendar calendar = xmlCal.toGregorianCalendar();
 		Date date = calendar.getTime();
 		return date;
+	}
+	
+	public static XMLGregorianCalendar convertDatesJava2Xml(Date date)
+	{
+		if (date == null)
+		{
+			return null;
+		}
+		try
+		{
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(date);
+			DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
+			XMLGregorianCalendar xmlCal = datatypeFactory.newXMLGregorianCalendar(calendar);
+			return xmlCal;
+		}
+		catch (DatatypeConfigurationException ex)
+		{
+			return null;
+		}
 	}
 	
 	public static Date parseDate(String time)

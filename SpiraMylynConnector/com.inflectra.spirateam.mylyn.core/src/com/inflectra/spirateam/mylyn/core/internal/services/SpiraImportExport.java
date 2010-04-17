@@ -4,10 +4,14 @@
 package com.inflectra.spirateam.mylyn.core.internal.services;
 
 import javax.xml.namespace.QName;
+import javax.xml.soap.Detail;
+import javax.xml.soap.SOAPFault;
 import javax.xml.ws.*;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
+import org.w3c.dom.Node;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -1144,6 +1148,34 @@ public class SpiraImportExport
 			
 			//Call the appropriate method
 			soap.taskUpdate(remoteTask);
+		}
+		catch (SOAPFaultException ex)
+		{
+			//See if we have data validation exceptions or data concurrency exceptions
+			//as those need to be handled separately
+			SOAPFault fault = ex.getFault();
+			if (fault == null)
+			{
+				throw new SpiraException(ex.getMessage());				
+			}
+			Detail faultDetail = fault.getDetail();
+			if (faultDetail == null)
+			{
+				throw new SpiraException(ex.getMessage());				
+			}
+			Node exceptionTypeNode = faultDetail.getFirstChild();
+			if (exceptionTypeNode == null)
+			{
+				throw new SpiraException(ex.getMessage());				
+			}
+			Node exceptionMessageNode = exceptionTypeNode.getFirstChild();
+			if (exceptionTypeNode == null)
+			{
+				throw new SpiraException(ex.getMessage());				
+			}
+			String exceptionType = exceptionTypeNode.getLocalName();
+			String exceptionMessage = exceptionMessageNode.getTextContent();
+			throw new SpiraException(exceptionMessage);
 		}
 		catch (WebServiceException ex)
 		{

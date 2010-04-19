@@ -1175,7 +1175,20 @@ public class SpiraImportExport
 			}
 			String exceptionType = exceptionTypeNode.getLocalName();
 			String exceptionMessage = exceptionMessageNode.getTextContent();
-			throw new SpiraException(exceptionMessage);
+			
+			//See if we have a known exception type
+			if (exceptionType.equals("DataAccessConcurrencyException"))	//$NON-NLS-1$
+			{
+				throw new SpiraDataConcurrencyException(exceptionMessage);
+			}
+			if (exceptionType.equals("DataValidationException"))	//$NON-NLS-1$
+			{
+				throw new SpiraDataValidationException(exceptionMessage);
+			}
+			else
+			{
+				throw new SpiraException(exceptionMessage);
+			}
 		}
 		catch (WebServiceException ex)
 		{

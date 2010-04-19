@@ -17,6 +17,8 @@ import org.eclipse.osgi.util.NLS;
 
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraAuthenticationException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataConcurrencyException;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataValidationException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 
 /**
@@ -121,6 +123,14 @@ public class SpiraTeamCorePlugin extends Plugin
 		else if (e instanceof SpiraConnectionException)
 		{
 			return new RepositoryStatus(url, IStatus.ERROR, PLUGIN_ID, RepositoryStatus.ERROR_IO, e.getMessage(), e);
+		}
+		else if (e instanceof SpiraDataValidationException)
+		{
+			return new RepositoryStatus(url, IStatus.ERROR, PLUGIN_ID, RepositoryStatus.ERROR_REPOSITORY, e.getMessage(), e);
+		}
+		else if (e instanceof SpiraDataConcurrencyException)
+		{
+			return new RepositoryStatus(url, IStatus.ERROR, PLUGIN_ID, RepositoryStatus.ERROR_REPOSITORY, Messages.SpiraTeamCorePlugin_DataConcurrencyError, e);
 		}
 		else if (e instanceof SpiraException)
 		{

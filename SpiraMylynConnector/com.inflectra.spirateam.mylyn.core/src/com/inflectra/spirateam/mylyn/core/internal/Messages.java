@@ -23,6 +23,7 @@ public class Messages extends NLS
 	
 	public static String SpiraTeamCorePlugin_SpiraTeam_description;
 	public static String SpiraTeamCorePlugin_UnexpectedError;
+	public static String SpiraTeamCorePlugin_DataConcurrencyError;
 
 	public static String SpiraTeam_PredefinedFilter_MyRequirements;
 	public static String SpiraTeam_PredefinedFilter_MyIncidents;

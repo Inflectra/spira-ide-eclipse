@@ -27,6 +27,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
+import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowField;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransition;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
@@ -791,6 +792,57 @@ public class SpiraImportExport
 			throw new SpiraException(ex.getMessage());
 		}
 	}
+	
+	public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int currentIncidentTypeId, int currentIncidentStatusId)
+	throws SpiraException
+{
+	//Don't return fields if we have no project set
+	if (this.storedProjectId == null)
+	{
+		return null;
+	}
+	int projectId = this.storedProjectId.intValue();
+	return this.incidentRetrieveWorkflowFields(projectId, currentIncidentTypeId, currentIncidentStatusId);
+}
+
+public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId, int currentIncidentTypeId, int currentIncidentStatusId)
+	throws SpiraException
+{
+	try
+	{
+		//Get the list of incident statuses from the SOAP API
+		//First we need to re-authenticate
+		boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+		if (!success)
+		{
+			//throw new SpiraException (this.userName + "/" + this.password);
+			throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+		}
+
+		//Next we need to connect to the appropriate project
+		success = soap.connectionConnectToProject(projectId);
+		if (!success)
+		{
+			//throw new SpiraException (this.userName + "/" + this.password);
+			throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+		}
+			
+		//Get the list of workflow fields (active/required)
+		List<RemoteWorkflowIncidentFields> remoteFields = soap.incidentRetrieveWorkflowFields(currentIncidentTypeId, currentIncidentStatusId).getRemoteWorkflowIncidentFields();
+		
+		//Convert the SOAP workflow fields into local versions
+		ArrayList<IncidentWorkflowField> fields = new ArrayList<IncidentWorkflowField>();
+		for (RemoteWorkflowIncidentFields remoteField : remoteFields)
+		{
+			fields.add(new IncidentWorkflowField(remoteField));
+		}		
+		return fields;
+	}
+	catch (WebServiceException ex)
+	{
+		throw new SpiraException(ex.getMessage());
+	}
+}
 	
 	public ArtifactField incidentGetStatus()
 	{

@@ -490,7 +490,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			String stringValue = getTaskAttributeStringValue(taskData, attribute);
 			
 			//Now parse into an Integer object
-			if (stringValue == null || stringValue.equals(""))
+			if (stringValue == null || stringValue.equals("null") || stringValue.equals(""))
 			{
 				return null;
 			}

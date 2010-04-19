@@ -39,6 +39,8 @@ public class Artifact
     protected Integer list09;
     protected Integer list10;
     
+    protected boolean dataChanged = false;
+    
     public enum Key
     {
     	//Common attributes
@@ -82,6 +84,11 @@ public class Artifact
 			return key;
 		}
 	}
+    
+    public boolean isDataChanged()
+    {
+    	return this.dataChanged;
+    }
     
     /**
      * Gets the value of the artifactId property.
@@ -169,7 +176,12 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public void setOwnerId(Integer value) {
+	    public void setOwnerId(Integer value)
+	    {
+	    	if (!this.ownerId.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.ownerId = value;
 	    }
 	    
@@ -193,7 +205,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setName(String value) {
+	    public void setName(String value)
+	    {
+	    	if (!this.name.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.name = value;
 	    }
 
@@ -217,7 +234,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setDescription(String value) {
+	    public void setDescription(String value)
+	    {
+	    	if (!this.description.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.description = value;
 	    }
 
@@ -241,7 +263,12 @@ public class Artifact
 	     *     {@link Date }
 	     *     
 	     */
-	    public void setCreationDate(Date value) {
+	    public void setCreationDate(Date value)
+	    {
+	    	if (!this.creationDate.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.creationDate = value;
 	    }
 	    
@@ -265,7 +292,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setText01(String value) {
+	    public void setText01(String value)
+	    {
+	    	if (!this.text01.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.text01 = value;
 	    }
 
@@ -289,7 +321,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setText02(String value) {
+	    public void setText02(String value)
+	    {
+	    	if (!this.text02.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.text02 = value;
 	    }
 
@@ -313,7 +350,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setText03(String value) {
+	    public void setText03(String value)
+	    {
+	    	if (!this.text03.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.text03 = value;
 	    }
 
@@ -337,7 +379,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setText04(String value) {
+	    public void setText04(String value)
+	    {
+	    	if (!this.text04.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.text04 = value;
 	    }
 
@@ -361,7 +408,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setText05(String value) {
+	    public void setText05(String value)
+	    {
+	    	if (!this.text05.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.text05 = value;
 	    }
 
@@ -385,7 +437,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setText06(String value) {
+	    public void setText06(String value)
+	    {
+	    	if (!this.text06.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.text06 = value;
 	    }
 
@@ -409,7 +466,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setText07(String value) {
+	    public void setText07(String value)
+	    {
+	    	if (!this.text07.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.text07 = value;
 	    }
 
@@ -421,7 +483,8 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public String getText08() {
+	    public String getText08()
+	    {
 	        return text08;
 	    }
 
@@ -433,7 +496,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setText08(String value) {
+	    public void setText08(String value)
+	    {
+	    	if (!this.text08.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.text08 = value;
 	    }
 
@@ -457,7 +525,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setText09(String value) {
+	    public void setText09(String value)
+	    {
+	    	if (!this.text09.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.text09 = value;
 	    }
 
@@ -481,7 +554,12 @@ public class Artifact
 	     *     {@link String }
 	     *     
 	     */
-	    public void setText10(String value) {
+	    public void setText10(String value)
+	    {
+	    	if (!this.text10.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.text10 = value;
 	    }
 
@@ -505,7 +583,12 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public void setList01(Integer value) {
+	    public void setList01(Integer value)
+	    {
+	    	if (!this.list01.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.list01 = value;
 	    }
 
@@ -529,7 +612,12 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public void setList02(Integer value) {
+	    public void setList02(Integer value)
+	    {
+	    	if (!this.list02.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.list02 = value;
 	    }
 
@@ -553,7 +641,12 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public void setList03(Integer value) {
+	    public void setList03(Integer value)
+	    {
+	    	if (!this.list03.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.list03 = value;
 	    }
 
@@ -577,7 +670,12 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public void setList04(Integer value) {
+	    public void setList04(Integer value)
+	    {
+	    	if (!this.list04.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.list04 = value;
 	    }
 
@@ -589,7 +687,8 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public Integer getList05() {
+	    public Integer getList05()
+	    {
 	        return list05;
 	    }
 
@@ -601,7 +700,12 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public void setList05(Integer value) {
+	    public void setList05(Integer value)
+	    {
+	    	if (!this.list05.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.list05 = value;
 	    }
 
@@ -625,7 +729,12 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public void setList06(Integer value) {
+	    public void setList06(Integer value)
+	    {
+	    	if (!this.list06.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.list06 = value;
 	    }
 
@@ -649,7 +758,12 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public void setList07(Integer value) {
+	    public void setList07(Integer value)
+	    {
+	    	if (!this.list07.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.list07 = value;
 	    }
 
@@ -673,7 +787,12 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public void setList08(Integer value) {
+	    public void setList08(Integer value)
+	    {
+	    	if (!this.list08.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.list08 = value;
 	    }
 
@@ -697,7 +816,12 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public void setList09(Integer value) {
+	    public void setList09(Integer value)
+	    {
+	    	if (!this.list09.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.list09 = value;
 	    }
 
@@ -721,7 +845,12 @@ public class Artifact
 	     *     {@link Integer }
 	     *     
 	     */
-	    public void setList10(Integer value) {
+	    public void setList10(Integer value)
+	    {
+	    	if (!this.list10.equals(value))
+	    	{
+	    		this.dataChanged = true;
+	    	}
 	        this.list10 = value;
 	    }
 	    
@@ -748,6 +877,7 @@ public class Artifact
 	     */
 	    public void setLastUpdateDate(Date value)
 	    {
+	    	//We don't update the data-changed flag for this field
 	        this.lastUpdateDate = value;
 	    }
 }

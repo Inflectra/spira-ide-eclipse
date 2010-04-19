@@ -623,7 +623,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		task.setActualEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.TASK_ACTUAL_EFFORT));
 		
 		//Finally we need to commit the changes on the server
-		client.taskUpdate(task);
+		if (task.isDataChanged())
+		{
+			client.taskUpdate(task);
+		}
 	}
 	
 	public TaskData createTaskDataFromRequirement(SpiraImportExport client, TaskRepository repository, Requirement requirement,

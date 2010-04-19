@@ -84,6 +84,7 @@ public class Task extends Artifact
     public Task(RemoteTask remoteTask)
     {
     	//Set the various member variables
+    	this.dataChanged = false;
         this.artifactId = remoteTask.getTaskId();
         this.projectId = remoteTask.getProjectId();
         this.ownerId = remoteTask.getOwnerId();
@@ -209,8 +210,13 @@ public class Task extends Artifact
      * Sets the value of the taskStatusId property.
      * 
      */
-    public void setTaskStatusId(int value) {
-        this.taskStatusId = value;
+    public void setTaskStatusId(int value)
+    {
+    	if (this.taskStatusId != value)
+    	{
+    		this.dataChanged = true;
+    	}
+    	this.taskStatusId = value;
     }
 
     /**
@@ -233,7 +239,12 @@ public class Task extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setRequirementId(Integer value) {
+    public void setRequirementId(Integer value)
+    {
+    	if (this.requirementId != value)
+    	{
+    		this.dataChanged = true;
+    	}
         this.requirementId = value;
     }
 
@@ -257,7 +268,12 @@ public class Task extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setReleaseId(Integer value) {
+    public void setReleaseId(Integer value)
+    {
+    	if (!this.releaseId.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.releaseId = value;
     }
 
@@ -281,7 +297,12 @@ public class Task extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setTaskPriorityId(Integer value) {
+    public void setTaskPriorityId(Integer value)
+    {
+    	if (!this.taskPriorityId.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.taskPriorityId = value;
     }
 
@@ -305,8 +326,13 @@ public class Task extends Artifact
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setStartDate(Date value) {
-        this.startDate = value;
+    public void setStartDate(Date value)
+    {
+    	if (!this.startDate.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
+    	this.startDate = value;
     }
 
     /**
@@ -329,8 +355,13 @@ public class Task extends Artifact
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setEndDate(Date value) {
-        this.endDate = value;
+    public void setEndDate(Date value)
+    {
+    	if (!this.endDate.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
+    	this.endDate = value;
     }
 
     /**
@@ -345,7 +376,12 @@ public class Task extends Artifact
      * Sets the value of the completionPercent property.
      * 
      */
-    public void setCompletionPercent(int value) {
+    public void setCompletionPercent(int value)
+    {
+    	if (this.completionPercent != value)
+    	{
+    		this.dataChanged = true;
+    	}
         this.completionPercent = value;
     }
 
@@ -369,7 +405,12 @@ public class Task extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setEstimatedEffort(Integer value) {
+    public void setEstimatedEffort(Integer value)
+    {
+    	if (!this.estimatedEffort.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.estimatedEffort = value;
     }
 
@@ -393,7 +434,12 @@ public class Task extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setActualEffort(Integer value) {
+    public void setActualEffort(Integer value)
+    {
+    	if (!this.actualEffort.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.actualEffort = value;
     }
 

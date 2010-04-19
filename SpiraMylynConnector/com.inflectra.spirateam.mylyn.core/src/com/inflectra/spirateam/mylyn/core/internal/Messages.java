@@ -40,6 +40,10 @@ public class Messages extends NLS
 	public static String SpiraTeamTaskDataHandler_UnableToRetrieveComments;
 	public static String SpiraTeamTaskDataHandler_UnableToRetrieveWorkflowTransitions;
 	public static String SpiraTeamTaskDataHandler_ArtifactNoLongerExists;
+	public static String SpiraTeamTaskDataHandler_FieldIsRequired;
+	public static String SpiraTeamTaskDataHandler_FieldIsNotValidInteger;
+	public static String SpiraTeamTaskDataHandler_FieldIsNotValidEffort;
+	public static String SpiraTeamTaskDataHandler_FieldIsNotValidDate;
 	
 	public static String ArtifactAttribute_ProjectId;
 	public static String ArtifactAttribute_ArtifactKey;

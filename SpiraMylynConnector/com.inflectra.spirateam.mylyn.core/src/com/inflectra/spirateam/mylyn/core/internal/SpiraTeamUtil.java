@@ -133,16 +133,11 @@ public class SpiraTeamUtil
 	}
 	
 	public static Date parseDate(String time)
+		throws NumberFormatException
 	{
 		if (time != null)
 		{
-			try
-			{
-				return new Date(Long.valueOf(time));
-			}
-			catch (NumberFormatException e)
-			{
-			}
+			return new Date(Long.valueOf(time));
 		}
 		return null;
 	}

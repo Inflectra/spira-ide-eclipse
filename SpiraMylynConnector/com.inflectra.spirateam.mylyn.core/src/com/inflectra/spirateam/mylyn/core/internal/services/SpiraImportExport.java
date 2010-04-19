@@ -1136,13 +1136,28 @@ public class SpiraImportExport
 	/**
 	 * Updates a task object on the server
 	 * @param task
-	 * It assumes that we have already authenticated and connected to the project
 	 */
 	public void taskUpdate(Task task)
 		throws SpiraException
 	{
 		try
 		{	
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+			
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(task.getProjectId());
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, task.getProjectId()));
+			}
+
 			//Convert the local task into the SOAP version
 			RemoteTask remoteTask = task.toSoapObject();
 			

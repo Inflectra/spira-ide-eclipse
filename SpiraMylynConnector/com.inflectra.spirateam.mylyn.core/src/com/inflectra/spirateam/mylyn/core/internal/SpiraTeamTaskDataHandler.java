@@ -27,6 +27,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskAttributeMetaData;
 import org.eclipse.mylyn.tasks.core.data.TaskCommentMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskOperation;
+import org.eclipse.osgi.util.NLS;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
@@ -35,6 +36,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransition;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataValidationException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 
@@ -481,62 +483,98 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	}
 	
 	private Integer getTaskAttributeIntegerValue(TaskData taskData, ArtifactAttribute attribute)
+		throws SpiraDataValidationException
 	{
-		//First get the string value
-		String stringValue = getTaskAttributeStringValue(taskData, attribute);
-		
-		//Now parse into an Integer object
-		if (stringValue == null || stringValue.equals(""))
+		try
 		{
-			return null;
+			//First get the string value
+			String stringValue = getTaskAttributeStringValue(taskData, attribute);
+			
+			//Now parse into an Integer object
+			if (stringValue == null || stringValue.equals(""))
+			{
+				return null;
+			}
+			Integer intValue = new Integer(stringValue);
+			return intValue;
 		}
-		Integer intValue = new Integer(stringValue);
-		return intValue;
+		catch (NumberFormatException ex)
+		{
+			//Convert into data validation exception
+			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsNotValidInteger, attribute.toString()));
+		}
 	}
 	
 	private Integer getTaskAttributeEffortValue(TaskData taskData, ArtifactAttribute attribute)
+	throws SpiraDataValidationException
 	{
-		//First get the string value
-		String stringValue = getTaskAttributeStringValue(taskData, attribute);
-		
-		//Now parse into a double object
-		if (stringValue == null || stringValue.equals(""))
+		try
 		{
-			return null;
+			//First get the string value
+			String stringValue = getTaskAttributeStringValue(taskData, attribute);
+			
+			//Now parse into a double object
+			if (stringValue == null || stringValue.equals(""))
+			{
+				return null;
+			}
+			Double doubleValue = new Double(stringValue);
+			
+			//Next we need to convert into a whole number of minutes
+			doubleValue = doubleValue * 60;
+			return doubleValue.intValue();
 		}
-		Double doubleValue = new Double(stringValue);
-		
-		//Next we need to convert into a whole number of minutes
-		doubleValue = doubleValue * 60;
-		return doubleValue.intValue();
+		catch (NumberFormatException ex)
+		{
+			//Convert into data validation exception
+			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsNotValidEffort, attribute.toString()));
+		}
 	}
 	
 	private int getTaskAttributeIntValue(TaskData taskData, ArtifactAttribute attribute)
+		throws SpiraDataValidationException
 	{
-		//First get the string value
-		String stringValue = getTaskAttributeStringValue(taskData, attribute);
-		
-		//Now parse into an Integer object
-		if (stringValue == null || stringValue.equals(""))
+		try
 		{
-			//Used by SpiraTeam for non-nullable integers
-			return -1;
+			//First get the string value
+			String stringValue = getTaskAttributeStringValue(taskData, attribute);
+			
+			//Now parse into an Integer object
+			if (stringValue == null || stringValue.equals(""))
+			{
+				//Used by SpiraTeam for non-nullable integers
+				return -1;
+			}
+			return Integer.parseInt(stringValue);
 		}
-		return Integer.parseInt(stringValue);
+		catch (NumberFormatException ex)
+		{
+			//Convert into data validation exception
+			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsNotValidInteger, attribute.toString()));
+		}
 	}
 	
 	private Date getTaskAttributeDateValue(TaskData taskData, ArtifactAttribute attribute)
+		throws SpiraDataValidationException
 	{
-		//First get the string value
-		String stringValue = getTaskAttributeStringValue(taskData, attribute);
-		
-		//Now parse into a Date object
-		if (stringValue == null || stringValue.equals(""))
+		try
 		{
-			return null;
+			//First get the string value
+			String stringValue = getTaskAttributeStringValue(taskData, attribute);
+			
+			//Now parse into a Date object
+			if (stringValue == null || stringValue.equals(""))
+			{
+				return null;
+			}
+			Date dateValue = SpiraTeamUtil.parseDate(stringValue);
+			return dateValue;
 		}
-		Date dateValue = SpiraTeamUtil.parseDate(stringValue);
-		return dateValue;
+		catch (NumberFormatException ex)
+		{
+			//Convert into data validation exception
+			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsNotValidDate, attribute.toString()));
+		}
 	}
 	
 	/**
@@ -554,9 +592,16 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		if (task == null)
 		{
 			//Need to throw an exception because the task doesn't exist on the server anymore
-			throw new SpiraException();
+			throw new SpiraException(Messages.SpiraTeamTaskDataHandler_ArtifactNoLongerExists);
 		}
 		
+		//Next we need to validate that required fields are populated
+		String valueToTest = getTaskAttributeStringValue(taskData, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE);
+		if (valueToTest == null || valueToTest.equals(""))
+		{
+			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE.toString()));
+		}
+				
 		//Next we need to update the task with the values from IDE
 		
 		//First we set the cross-attribute properties

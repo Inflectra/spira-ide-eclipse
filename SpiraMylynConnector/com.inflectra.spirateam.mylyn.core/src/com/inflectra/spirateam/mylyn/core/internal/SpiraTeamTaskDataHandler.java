@@ -613,8 +613,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 
 		//Now we need to set the task-specific attributes
 		task.setTaskStatusId(getTaskAttributeIntValue(taskData, ArtifactAttribute.TASK_STATUS_ID));
-		task.setReleaseId(getTaskAttributeIntValue(taskData, ArtifactAttribute.TASK_RELEASE_ID));
-		task.setTaskPriorityId(getTaskAttributeIntValue(taskData, ArtifactAttribute.TASK_PRIORITY_ID));
+		task.setReleaseId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.TASK_RELEASE_ID));
+		task.setTaskPriorityId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.TASK_PRIORITY_ID));
 		task.setStartDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.TASK_START_DATE));
 		task.setEndDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.TASK_END_DATE));
 		task.setCompletionPercent(getTaskAttributeIntValue(taskData, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE));

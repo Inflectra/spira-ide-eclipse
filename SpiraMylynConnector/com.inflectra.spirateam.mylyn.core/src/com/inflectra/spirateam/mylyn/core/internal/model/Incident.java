@@ -257,7 +257,7 @@ public class Incident extends Artifact
      */
     public void setPriorityId(Integer value)
     {
-    	if (!this.priorityId.equals(value))
+    	if (hasChanged(this.priorityId, value))
     	{
     		this.dataChanged = true;
     	}
@@ -287,7 +287,7 @@ public class Incident extends Artifact
      */
     public void setSeverityId(Integer value)
     {
-    	if (!this.severityId.equals(value))
+    	if (hasChanged(this.severityId, value))
     	{
     		this.dataChanged = true;
     	}
@@ -379,7 +379,7 @@ public class Incident extends Artifact
      */
     public void setTestRunStepId(Integer value)
     {
-    	if (!this.testRunStepId.equals(value))
+    	if (hasChanged(this.testRunStepId, value))
     	{
     		this.dataChanged = true;
     	}
@@ -408,7 +408,7 @@ public class Incident extends Artifact
      */
     public void setDetectedReleaseId(Integer value)
     {
-    	if (!this.detectedReleaseId.equals(value))
+    	if (hasChanged(this.detectedReleaseId, value))
     	{
     		this.dataChanged = true;
     	}
@@ -437,7 +437,7 @@ public class Incident extends Artifact
      */
     public void setResolvedReleaseId(Integer value)
     {
-    	if (!this.resolvedReleaseId.equals(value))
+    	if (hasChanged(this.resolvedReleaseId, value))
     	{
     		this.dataChanged = true;
     	}
@@ -466,7 +466,7 @@ public class Incident extends Artifact
      */
     public void setVerifiedReleaseId(Integer value)
     {
-    	if (!this.verifiedReleaseId.equals(value))
+    	if (hasChanged(this.verifiedReleaseId, value))
     	{
     		this.dataChanged = true;
     	}
@@ -495,7 +495,7 @@ public class Incident extends Artifact
      */
     public void setStartDate(Date value)
     {
-    	if (!this.startDate.equals(value))
+    	if (hasChanged(this.startDate, value))
     	{
     		this.dataChanged = true;
     	}
@@ -524,7 +524,7 @@ public class Incident extends Artifact
      */
     public void setClosedDate(Date value)
     {
-    	if (!this.closedDate.equals(value))
+    	if (hasChanged(this.closedDate, value))
     	{
     		this.dataChanged = true;
     	}
@@ -574,7 +574,7 @@ public class Incident extends Artifact
      */
     public void setEstimatedEffort(Integer value)
     {
-    	if (!this.estimatedEffort.equals(value))
+    	if (hasChanged(this.estimatedEffort, value))
     	{
     		this.dataChanged = true;
     	}
@@ -603,7 +603,7 @@ public class Incident extends Artifact
      */
     public void setActualEffort(Integer value)
     {
-    	if (!this.actualEffort.equals(value))
+    	if (hasChanged(this.actualEffort, value))
     	{
     		this.dataChanged = true;
     	}

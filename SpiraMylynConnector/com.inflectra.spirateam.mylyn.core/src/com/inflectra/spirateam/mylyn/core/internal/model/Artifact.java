@@ -90,6 +90,66 @@ public class Artifact
     	return this.dataChanged;
     }
     
+    protected boolean hasChanged (String newValue, String oldValue)
+    {
+    	if (newValue == null)
+    	{
+    		return (oldValue == null);
+    	}
+    	if (oldValue == null)
+    	{
+    		return (newValue == null);
+    	}
+    	if (!newValue.equals(oldValue))
+    	{
+    		return true;
+    	}
+    	return false;
+    }
+    
+    protected boolean hasChanged (Integer newValue, Integer oldValue)
+    {
+    	if (newValue == null)
+    	{
+    		return (oldValue == null);
+    	}
+    	if (oldValue == null)
+    	{
+    		return (newValue == null);
+    	}
+    	if (!newValue.equals(oldValue))
+    	{
+    		return true;
+    	}
+    	return false;
+    }
+    
+    protected boolean hasChanged (Date newValue, Date oldValue)
+    {
+    	if (newValue == null)
+    	{
+    		return (oldValue == null);
+    	}
+    	if (oldValue == null)
+    	{
+    		return (newValue == null);
+    	}
+    	if (!newValue.equals(oldValue))
+    	{
+    		return true;
+    	}
+    	return false;
+    }
+    
+    protected boolean hasChanged (int newValue, int oldValue)
+    {
+    	if (newValue != oldValue)
+    	{
+    		return true;
+    	}
+    	return false;
+    }
+    
     /**
      * Gets the value of the artifactId property.
      * 
@@ -178,7 +238,7 @@ public class Artifact
 	     */
 	    public void setOwnerId(Integer value)
 	    {
-	    	if (!this.ownerId.equals(value))
+	    	if (hasChanged(this.ownerId, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -207,7 +267,7 @@ public class Artifact
 	     */
 	    public void setName(String value)
 	    {
-	    	if (!this.name.equals(value))
+	    	if (hasChanged(this.name, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -236,7 +296,7 @@ public class Artifact
 	     */
 	    public void setDescription(String value)
 	    {
-	    	if (!this.description.equals(value))
+	    	if (hasChanged(this.description, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -265,7 +325,7 @@ public class Artifact
 	     */
 	    public void setCreationDate(Date value)
 	    {
-	    	if (!this.creationDate.equals(value))
+	    	if (hasChanged(this.creationDate, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -294,7 +354,7 @@ public class Artifact
 	     */
 	    public void setText01(String value)
 	    {
-	    	if (!this.text01.equals(value))
+	    	if (hasChanged(this.text01, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -323,7 +383,7 @@ public class Artifact
 	     */
 	    public void setText02(String value)
 	    {
-	    	if (!this.text02.equals(value))
+	    	if (hasChanged(this.text02, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -352,7 +412,7 @@ public class Artifact
 	     */
 	    public void setText03(String value)
 	    {
-	    	if (!this.text03.equals(value))
+	    	if (hasChanged(this.text03, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -381,7 +441,7 @@ public class Artifact
 	     */
 	    public void setText04(String value)
 	    {
-	    	if (!this.text04.equals(value))
+	    	if (hasChanged(this.text04, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -410,7 +470,7 @@ public class Artifact
 	     */
 	    public void setText05(String value)
 	    {
-	    	if (!this.text05.equals(value))
+	    	if (hasChanged(this.text05, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -439,7 +499,7 @@ public class Artifact
 	     */
 	    public void setText06(String value)
 	    {
-	    	if (!this.text06.equals(value))
+	    	if (hasChanged(this.text06, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -468,7 +528,7 @@ public class Artifact
 	     */
 	    public void setText07(String value)
 	    {
-	    	if (!this.text07.equals(value))
+	    	if (hasChanged(this.text07, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -498,7 +558,7 @@ public class Artifact
 	     */
 	    public void setText08(String value)
 	    {
-	    	if (!this.text08.equals(value))
+	    	if (hasChanged(this.text08, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -527,7 +587,7 @@ public class Artifact
 	     */
 	    public void setText09(String value)
 	    {
-	    	if (!this.text09.equals(value))
+	    	if (hasChanged(this.text09, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -556,7 +616,7 @@ public class Artifact
 	     */
 	    public void setText10(String value)
 	    {
-	    	if (!this.text10.equals(value))
+	    	if (hasChanged(this.text10, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -585,7 +645,7 @@ public class Artifact
 	     */
 	    public void setList01(Integer value)
 	    {
-	    	if (!this.list01.equals(value))
+	    	if (hasChanged(this.list01, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -614,7 +674,7 @@ public class Artifact
 	     */
 	    public void setList02(Integer value)
 	    {
-	    	if (!this.list02.equals(value))
+	    	if (hasChanged(this.list02, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -643,7 +703,7 @@ public class Artifact
 	     */
 	    public void setList03(Integer value)
 	    {
-	    	if (!this.list03.equals(value))
+	    	if (hasChanged(this.list03, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -672,7 +732,7 @@ public class Artifact
 	     */
 	    public void setList04(Integer value)
 	    {
-	    	if (!this.list04.equals(value))
+	    	if (hasChanged(this.list04, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -702,7 +762,7 @@ public class Artifact
 	     */
 	    public void setList05(Integer value)
 	    {
-	    	if (!this.list05.equals(value))
+	    	if (hasChanged(this.list05, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -731,7 +791,7 @@ public class Artifact
 	     */
 	    public void setList06(Integer value)
 	    {
-	    	if (!this.list06.equals(value))
+	    	if (hasChanged(this.list06, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -760,7 +820,7 @@ public class Artifact
 	     */
 	    public void setList07(Integer value)
 	    {
-	    	if (!this.list07.equals(value))
+	    	if (hasChanged(this.list07, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -789,7 +849,7 @@ public class Artifact
 	     */
 	    public void setList08(Integer value)
 	    {
-	    	if (!this.list08.equals(value))
+	    	if (hasChanged(this.list08, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -818,7 +878,7 @@ public class Artifact
 	     */
 	    public void setList09(Integer value)
 	    {
-	    	if (!this.list09.equals(value))
+	    	if (hasChanged(this.list09, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}
@@ -847,7 +907,7 @@ public class Artifact
 	     */
 	    public void setList10(Integer value)
 	    {
-	    	if (!this.list10.equals(value))
+	    	if (hasChanged(this.list10, value))
 	    	{
 	    		this.dataChanged = true;
 	    	}

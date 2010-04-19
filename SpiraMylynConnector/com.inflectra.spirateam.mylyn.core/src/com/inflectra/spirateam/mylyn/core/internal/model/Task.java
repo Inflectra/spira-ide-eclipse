@@ -270,7 +270,7 @@ public class Task extends Artifact
      */
     public void setReleaseId(Integer value)
     {
-    	if (!this.releaseId.equals(value))
+    	if (hasChanged(this.releaseId, value))
     	{
     		this.dataChanged = true;
     	}
@@ -299,7 +299,7 @@ public class Task extends Artifact
      */
     public void setTaskPriorityId(Integer value)
     {
-    	if (!this.taskPriorityId.equals(value))
+    	if (hasChanged(this.taskPriorityId, value))
     	{
     		this.dataChanged = true;
     	}
@@ -328,7 +328,7 @@ public class Task extends Artifact
      */
     public void setStartDate(Date value)
     {
-    	if (!this.startDate.equals(value))
+    	if (hasChanged(this.startDate, value))
     	{
     		this.dataChanged = true;
     	}
@@ -357,7 +357,7 @@ public class Task extends Artifact
      */
     public void setEndDate(Date value)
     {
-    	if (!this.endDate.equals(value))
+    	if (hasChanged(this.endDate, value))
     	{
     		this.dataChanged = true;
     	}
@@ -407,7 +407,7 @@ public class Task extends Artifact
      */
     public void setEstimatedEffort(Integer value)
     {
-    	if (!this.estimatedEffort.equals(value))
+    	if (hasChanged(this.estimatedEffort, value))
     	{
     		this.dataChanged = true;
     	}
@@ -436,7 +436,7 @@ public class Task extends Artifact
      */
     public void setActualEffort(Integer value)
     {
-    	if (!this.actualEffort.equals(value))
+    	if (hasChanged(this.actualEffort, value))
     	{
     		this.dataChanged = true;
     	}

@@ -156,6 +156,10 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 
 	private static Map<String, String> getOptions(ArtifactField artifactField, boolean allowEmpty)
 	{
+		if (artifactField == null || artifactField.getValues() == null)
+		{
+			return null;
+		}
 		ArtifactFieldValue[] values = artifactField.getValues();
 		if (values != null && values.length > 0)
 		{

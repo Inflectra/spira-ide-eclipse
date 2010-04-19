@@ -45,6 +45,8 @@ public class Messages extends NLS
 	public static String SpiraTeamTaskDataHandler_FieldIsNotValidEffort;
 	public static String SpiraTeamTaskDataHandler_FieldIsNotValidDate;
 	
+	public static String SpiraTeamAttributeMapper_UnableToRetrieveOptions;
+	
 	public static String ArtifactAttribute_ProjectId;
 	public static String ArtifactAttribute_ArtifactKey;
 	public static String ArtifactAttribute_Name;

@@ -22,6 +22,7 @@ import java.util.Map;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
+import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
@@ -1166,44 +1167,7 @@ public class SpiraImportExport
 		}
 		catch (SOAPFaultException ex)
 		{
-			//See if we have data validation exceptions or data concurrency exceptions
-			//as those need to be handled separately
-			SOAPFault fault = ex.getFault();
-			if (fault == null)
-			{
-				throw new SpiraException(ex.getMessage());				
-			}
-			Detail faultDetail = fault.getDetail();
-			if (faultDetail == null)
-			{
-				throw new SpiraException(ex.getMessage());				
-			}
-			Node exceptionTypeNode = faultDetail.getFirstChild();
-			if (exceptionTypeNode == null)
-			{
-				throw new SpiraException(ex.getMessage());				
-			}
-			Node exceptionMessageNode = exceptionTypeNode.getFirstChild();
-			if (exceptionTypeNode == null)
-			{
-				throw new SpiraException(ex.getMessage());				
-			}
-			String exceptionType = exceptionTypeNode.getLocalName();
-			String exceptionMessage = exceptionMessageNode.getTextContent();
-			
-			//See if we have a known exception type
-			if (exceptionType.equals("DataAccessConcurrencyException"))	//$NON-NLS-1$
-			{
-				throw new SpiraDataConcurrencyException(exceptionMessage);
-			}
-			if (exceptionType.equals("DataValidationException"))	//$NON-NLS-1$
-			{
-				throw new SpiraDataValidationException(exceptionMessage);
-			}
-			else
-			{
-				throw new SpiraException(exceptionMessage);
-			}
+			throw SpiraTeamUtil.convertSoapFaults(ex);
 		}
 		catch (WebServiceException ex)
 		{
@@ -1270,17 +1234,29 @@ public class SpiraImportExport
 			Task task = new Task(remoteTask);
 			
 			//We need to also get the requirement if one is set to get the name
-			if (task.getRequirementId() != null)
-			{					
-				//Call the appropriate method
-				RemoteRequirement remoteRequirement = soap.requirementRetrieveById(task.getRequirementId());
-				if (remoteRequirement != null)
-				{
-					task.setRequirementName(remoteRequirement.getName() + " [RQ" + task.getRequirementId() + "]");
+			try
+			{
+				if (task.getRequirementId() != null)
+				{					
+					//Call the appropriate method
+					RemoteRequirement remoteRequirement = soap.requirementRetrieveById(task.getRequirementId());
+					if (remoteRequirement != null)
+					{
+						task.setRequirementName(remoteRequirement.getName() + " [RQ:" + task.getRequirementId() + "]");
+					}
 				}
+			}
+			catch (WebServiceException ex)
+			{
+				//The user might not have permissions so just use the ID in that case
+				task.setRequirementName("[RQ:" + task.getRequirementId() + "]");
 			}
 			
 	        return task;
+		}
+		catch (SOAPFaultException ex)
+		{
+			throw SpiraTeamUtil.convertSoapFaults(ex);
 		}
 		catch (WebServiceException ex)
 		{

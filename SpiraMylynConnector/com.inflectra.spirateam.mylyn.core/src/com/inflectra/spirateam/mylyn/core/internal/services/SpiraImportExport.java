@@ -1176,6 +1176,47 @@ public class SpiraImportExport
 	}
 	
 	/**
+	 * Updates an incident object on the server
+	 * @param task
+	 */
+	public void incidentUpdate(Incident incident)
+		throws SpiraException
+	{
+		try
+		{	
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+			
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(incident.getProjectId());
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, incident.getProjectId()));
+			}
+
+			//Convert the local incident into the SOAP version
+			RemoteIncident remoteIncident = incident.toSoapObject();
+			
+			//Call the appropriate method
+			soap.incidentUpdate(remoteIncident);
+		}
+		catch (SOAPFaultException ex)
+		{
+			throw SpiraTeamUtil.convertSoapFaults(ex);
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+	
+	/**
 	 * Gets a single task by its key (RQ prefix + task id)
 	 * @param artifactKey The key for the task (RQ prefix + task id)
 	 * @param monitor

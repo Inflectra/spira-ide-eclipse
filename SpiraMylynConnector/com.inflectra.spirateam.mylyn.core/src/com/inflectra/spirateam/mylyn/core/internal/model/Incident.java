@@ -6,6 +6,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteIncident;
+import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteTask;
 /**
  * Represents a single incident in SpiraTeam
  *
@@ -150,6 +151,73 @@ public class Incident extends Artifact
         this.list10 = remoteIncident.getList10();
     }
     
+    /**
+     * Converts this object into its soap equivalent
+     * @return
+     */
+    public RemoteIncident toSoapObject()
+    {
+    	//Set the properties on the SOAP object
+    	RemoteIncident remoteIncident = new RemoteIncident();
+    	remoteIncident.setIncidentId(this.artifactId);
+    	remoteIncident.setProjectId(this.projectId);
+    	remoteIncident.setOwnerId(this.ownerId);
+    	remoteIncident.setName(this.name);
+    	remoteIncident.setDescription(this.description);
+    	remoteIncident.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(this.creationDate));
+    	remoteIncident.setLastUpdateDate(SpiraTeamUtil.convertDatesJava2Xml(this.lastUpdateDate));
+
+    	remoteIncident.setPriorityId(this.priorityId);
+    	remoteIncident.setSeverityId(this.severityId);
+    	remoteIncident.setIncidentStatusId(this.incidentStatusId);
+    	remoteIncident.setIncidentTypeId(this.incidentTypeId);
+    	remoteIncident.setOpenerId(this.openerId);
+    	remoteIncident.setTestRunStepId(this.testRunStepId);
+    	remoteIncident.setDetectedReleaseId(this.detectedReleaseId);
+    	remoteIncident.setResolvedReleaseId(this.resolvedReleaseId);
+    	remoteIncident.setVerifiedReleaseId(this.verifiedReleaseId);
+    	remoteIncident.setStartDate(SpiraTeamUtil.convertDatesJava2Xml(this.startDate));
+    	remoteIncident.setClosedDate(SpiraTeamUtil.convertDatesJava2Xml(this.closedDate));
+    	remoteIncident.setCompletionPercent(this.completionPercent);
+    	remoteIncident.setEstimatedEffort(this.estimatedEffort);
+    	remoteIncident.setActualEffort(this.actualEffort);
+    	remoteIncident.setPriorityName(this.priorityName);
+    	remoteIncident.setSeverityName(this.severityName);
+    	remoteIncident.setIncidentStatusName(this.incidentStatusName);
+    	remoteIncident.setIncidentTypeName(this.incidentTypeName);
+    	remoteIncident.setOpenerName(this.openerName);
+    	remoteIncident.setOwnerName(this.ownerName);
+    	remoteIncident.setProjectName(this.projectName);
+    	remoteIncident.setDetectedReleaseVersionNumber(this.detectedReleaseVersionNumber);
+    	remoteIncident.setResolvedReleaseVersionNumber(this.resolvedReleaseVersionNumber);
+    	remoteIncident.setVerifiedReleaseVersionNumber(this.verifiedReleaseVersionNumber);
+    	remoteIncident.setIncidentStatusOpenStatus(this.incidentStatusOpenStatus);
+        
+        //Now the custom properties
+    	remoteIncident.setText01(this.text01);
+    	remoteIncident.setText02(this.text02);
+    	remoteIncident.setText03(this.text03);
+    	remoteIncident.setText04(this.text04);
+    	remoteIncident.setText05(this.text05);
+    	remoteIncident.setText06(this.text06);
+    	remoteIncident.setText07(this.text07);
+    	remoteIncident.setText08(this.text08);
+    	remoteIncident.setText09(this.text09);
+    	remoteIncident.setText10(this.text10);
+    	remoteIncident.setList01(this.list01);
+    	remoteIncident.setList02(this.list02);
+    	remoteIncident.setList03(this.list03);
+    	remoteIncident.setList04(this.list04);
+    	remoteIncident.setList05(this.list05);
+    	remoteIncident.setList06(this.list06);
+    	remoteIncident.setList07(this.list07);
+    	remoteIncident.setList08(this.list08);
+    	remoteIncident.setList09(this.list09);
+    	remoteIncident.setList10(this.list10);
+        
+        return remoteIncident;
+    }
+    
     @Override
     public ArtifactType getArtifactType()
     {
@@ -174,7 +242,8 @@ public class Incident extends Artifact
      *     {@link Integer }
      *     
      */
-    public Integer getPriorityId() {
+    public Integer getPriorityId()
+    {
         return priorityId;
     }
 
@@ -186,7 +255,12 @@ public class Incident extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setPriorityId(Integer value) {
+    public void setPriorityId(Integer value)
+    {
+    	if (!this.priorityId.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.priorityId = value;
     }
 
@@ -198,7 +272,8 @@ public class Incident extends Artifact
      *     {@link Integer }
      *     
      */
-    public Integer getSeverityId() {
+    public Integer getSeverityId()
+    {
         return severityId;
     }
 
@@ -210,7 +285,12 @@ public class Incident extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setSeverityId(Integer value) {
+    public void setSeverityId(Integer value)
+    {
+    	if (!this.severityId.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.severityId = value;
     }
 
@@ -226,7 +306,12 @@ public class Incident extends Artifact
      * Sets the value of the incidentStatusId property.
      * 
      */
-    public void setIncidentStatusId(int value) {
+    public void setIncidentStatusId(int value)
+    {
+    	if (this.incidentStatusId != value)
+    	{
+    		this.dataChanged = true;
+    	}
         this.incidentStatusId = value;
     }
 
@@ -242,7 +327,12 @@ public class Incident extends Artifact
      * Sets the value of the incidentTypeId property.
      * 
      */
-    public void setIncidentTypeId(int value) {
+    public void setIncidentTypeId(int value)
+    {
+    	if (this.incidentTypeId != value)
+    	{
+    		this.dataChanged = true;
+    	}
         this.incidentTypeId = value;
     }
 
@@ -258,7 +348,12 @@ public class Incident extends Artifact
      * Sets the value of the openerId property.
      * 
      */
-    public void setOpenerId(int value) {
+    public void setOpenerId(int value)
+    {
+    	if (this.openerId != value)
+    	{
+    		this.dataChanged = true;
+    	}
         this.openerId = value;
     }
 
@@ -282,7 +377,12 @@ public class Incident extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setTestRunStepId(Integer value) {
+    public void setTestRunStepId(Integer value)
+    {
+    	if (!this.testRunStepId.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.testRunStepId = value;
     }
 
@@ -306,7 +406,12 @@ public class Incident extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setDetectedReleaseId(Integer value) {
+    public void setDetectedReleaseId(Integer value)
+    {
+    	if (!this.detectedReleaseId.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.detectedReleaseId = value;
     }
 
@@ -330,7 +435,12 @@ public class Incident extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setResolvedReleaseId(Integer value) {
+    public void setResolvedReleaseId(Integer value)
+    {
+    	if (!this.resolvedReleaseId.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.resolvedReleaseId = value;
     }
 
@@ -354,7 +464,12 @@ public class Incident extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setVerifiedReleaseId(Integer value) {
+    public void setVerifiedReleaseId(Integer value)
+    {
+    	if (!this.verifiedReleaseId.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.verifiedReleaseId = value;
     }
 
@@ -378,7 +493,12 @@ public class Incident extends Artifact
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setStartDate(Date value) {
+    public void setStartDate(Date value)
+    {
+    	if (!this.startDate.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.startDate = value;
     }
 
@@ -402,7 +522,12 @@ public class Incident extends Artifact
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setClosedDate(Date value) {
+    public void setClosedDate(Date value)
+    {
+    	if (!this.closedDate.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.closedDate = value;
     }
 
@@ -418,7 +543,12 @@ public class Incident extends Artifact
      * Sets the value of the completionPercent property.
      * 
      */
-    public void setCompletionPercent(int value) {
+    public void setCompletionPercent(int value)
+    {
+    	if (this.completionPercent != value)
+    	{
+    		this.dataChanged = true;
+    	}
         this.completionPercent = value;
     }
 
@@ -442,7 +572,12 @@ public class Incident extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setEstimatedEffort(Integer value) {
+    public void setEstimatedEffort(Integer value)
+    {
+    	if (!this.estimatedEffort.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.estimatedEffort = value;
     }
 
@@ -466,7 +601,12 @@ public class Incident extends Artifact
      *     {@link Integer }
      *     
      */
-    public void setActualEffort(Integer value) {
+    public void setActualEffort(Integer value)
+    {
+    	if (!this.actualEffort.equals(value))
+    	{
+    		this.dataChanged = true;
+    	}
         this.actualEffort = value;
     }
 

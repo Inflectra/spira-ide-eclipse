@@ -438,10 +438,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 							}			
 							if (artifactType.equals(ArtifactType.INCIDENT))
 							{
-								/*
 								updateIncidentFromTaskData(client, repository, taskData, projectId);
 								return new RepositoryResponse(ResponseKind.TASK_UPDATED, taskKey); //$NON-NLS-1$
-								String newComment = ""; //$NON-NLS-1$
+								/*String newComment = ""; //$NON-NLS-1$
 								TaskAttribute newCommentAttribute = taskData.getRoot().getMappedAttribute(TaskAttribute.COMMENT_NEW);
 								if (newCommentAttribute != null)
 								{
@@ -626,6 +625,73 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		if (task.isDataChanged())
 		{
 			client.taskUpdate(task);
+		}
+	}
+	
+	/**
+	 * Updates the Spira Incident on the server from the local changes
+	 * @param client Reference to the SOAP proxy
+	 * @param repository Reference to the Mylyn Repository
+	 * @param taskData The task information
+	 */
+	private void updateIncidentFromTaskData(SpiraImportExport client, TaskRepository repository, TaskData taskData, int projectId)
+		throws SpiraException
+	{	
+		//First we need to get a fresh copy of the Incident from the server
+		String artifactKey = taskData.getTaskId();
+		Incident incident = client.incidentRetrieveByKey(artifactKey, projectId, null);
+		if (incident == null)
+		{
+			//Need to throw an exception because the incident doesn't exist on the server anymore
+			throw new SpiraException(Messages.SpiraTeamTaskDataHandler_ArtifactNoLongerExists);
+		}
+		
+		//Next we need to validate that non-workflow required fields are populated
+		//% Complete
+		String valueToTest = getTaskAttributeStringValue(taskData, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE);
+		if (valueToTest == null || valueToTest.equals(""))
+		{
+			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE.toString()));
+		}
+		valueToTest = getTaskAttributeStringValue(taskData, ArtifactAttribute.NAME);
+		if (valueToTest == null || valueToTest.equals(""))
+		{
+			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, ArtifactAttribute.NAME.toString()));
+		}
+		valueToTest = getTaskAttributeStringValue(taskData, ArtifactAttribute.DESCRIPTION);
+		if (valueToTest == null || valueToTest.equals(""))
+		{
+			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, ArtifactAttribute.DESCRIPTION.toString()));
+		}
+				
+		//Next we need to update the incident with the values from IDE
+		
+		//First we set the cross-attribute properties
+		incident.setName(getTaskAttributeStringValue(taskData, ArtifactAttribute.NAME));
+		incident.setDescription(getTaskAttributeStringValue(taskData, ArtifactAttribute.DESCRIPTION));
+		incident.setOwnerId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.OWNER_ID));
+		//This will be checked by the server to see if it matches the current record
+		//since the server uses optimistic concurrency
+		incident.setLastUpdateDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.LAST_UPDATE_DATE));
+
+		//Now we need to set the incident-specific attributes
+		incident.setPriorityId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.INCIDENT_PRIORITY_ID));
+		incident.setSeverityId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.INCIDENT_SEVERITY_ID));
+		incident.setIncidentStatusId(getTaskAttributeIntValue(taskData, ArtifactAttribute.INCIDENT_STATUS_ID));
+		incident.setIncidentTypeId(getTaskAttributeIntValue(taskData, ArtifactAttribute.INCIDENT_TYPE_ID));
+		incident.setDetectedReleaseId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.INCIDENT_DETECTED_RELEASE_ID));
+		incident.setResolvedReleaseId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.INCIDENT_RESOLVED_RELEASE_ID));
+		incident.setVerifiedReleaseId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.INCIDENT_VERIFIED_RELEASE_ID));
+		incident.setStartDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.INCIDENT_START_DATE));
+		incident.setClosedDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.INCIDENT_CLOSED_DATE));
+		incident.setCompletionPercent(getTaskAttributeIntValue(taskData, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE));
+		incident.setEstimatedEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT));
+		incident.setActualEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT));
+		
+		//Finally we need to commit the changes on the server
+		if (incident.isDataChanged())
+		{
+			client.incidentUpdate(incident);
 		}
 	}
 	

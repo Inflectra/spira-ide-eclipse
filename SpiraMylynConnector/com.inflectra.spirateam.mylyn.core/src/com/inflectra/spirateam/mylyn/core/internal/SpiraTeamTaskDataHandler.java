@@ -33,6 +33,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
+import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowField;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransition;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
@@ -362,7 +363,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT);
-			
+					
 			// Workflow Transitions
 			data.getRoot().createAttribute(TaskAttribute.OPERATION).getMetaData().setType(TaskAttribute.TYPE_OPERATION);
 		}
@@ -892,6 +893,39 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE, incident.getCompletionPercent() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT, SpiraTeamUtil.effortValuesToString(incident.getEstimatedEffort()), projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT, SpiraTeamUtil.effortValuesToString(incident.getActualEffort()), projectId);
+			
+			//Get the workflow field status for the current type and status
+			//updateAttributesForWorkflow(client, projectId, incident.getIncidentTypeId(), incident.getIncidentStatusId());
+			List<IncidentWorkflowField> workflowFields = client.incidentRetrieveWorkflowFields(projectId, incident.getIncidentTypeId(), incident.getIncidentStatusId());
+			for (String attributeKey : data.getRoot().getAttributes().keySet())
+			{
+				ArtifactAttribute artifactAttribute = ArtifactAttribute.getByArtifactKey(attributeKey);
+				if (artifactAttribute != null)
+				{
+					//See if we have a workflow controlled field
+					String workflowFieldName = artifactAttribute.getWorkflowField();
+					if (!workflowFieldName.equals(""))
+					{
+						//See if we have this in the field list
+						boolean matched = false;
+						for(IncidentWorkflowField workflowField : workflowFields)
+						{
+							//We only care about the active flag (i.e. state = 1)
+							if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_ACTIVE && workflowFieldName.equals(workflowField.getFieldName()))
+							{
+								matched = true;
+							}
+						}
+						TaskAttribute taskAttribute = data.getRoot().getAttributes().get(attributeKey);
+						if (taskAttribute != null)
+						{
+							//If we didn't find a match in the workflow, we need to
+							//make the field Read-Only
+							taskAttribute.getMetaData().setReadOnly(!matched);
+						}
+					}
+				}
+			}
 			
 			// Handle SpiraTeam comments/resolutions if we have an incident
 			try

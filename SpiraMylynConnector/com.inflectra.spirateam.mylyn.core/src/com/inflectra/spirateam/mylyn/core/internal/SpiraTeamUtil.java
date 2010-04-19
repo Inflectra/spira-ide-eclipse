@@ -37,6 +37,9 @@ public class SpiraTeamUtil
 	private static final String KEY_FILTER_ID = "FilterID"; //$NON-NLS-1$
 	private static final String KEY_FILTER_NAME = "FilterName"; //$NON-NLS-1$
 	
+	public static final int WORKFLOW_FIELD_STATE_ACTIVE = 1;
+	public static final int WORKFLOW_FIELD_STATE_REQUIRED = 2;
+	
 	public static boolean ValidateServerVersion (SpiraImportExport spiraImportExport)
 	{
 		boolean current = false;

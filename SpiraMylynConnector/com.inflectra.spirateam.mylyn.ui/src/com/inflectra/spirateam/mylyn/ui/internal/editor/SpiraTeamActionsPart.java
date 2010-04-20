@@ -3,9 +3,13 @@ package com.inflectra.spirateam.mylyn.ui.internal.editor;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.mylyn.internal.provisional.commons.ui.CommonImages;
+import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
+import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskOperation;
 import org.eclipse.mylyn.tasks.ui.TasksUiImages;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPart;
@@ -16,6 +20,10 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.*;
+
+import com.inflectra.spirateam.mylyn.core.internal.ArtifactAttribute;
+import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamRepositoryConnector;
+import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamTaskDataHandler;
 
 
 public class SpiraTeamActionsPart extends AbstractTaskEditorPart
@@ -142,7 +150,25 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 		@Override
 		public void linkActivated(HyperlinkEvent arg0)
 		{
-			getTaskEditorPage().doSubmit();
+			//Get the operation name
+			String operationName = (String)arg0.data;
+			
+			//When an action hyperlink is clicked we need to call the function that handles this
+			TaskData taskData = getTaskData();
+			SpiraTeamTaskEditorPage taskEditorPage = (SpiraTeamTaskEditorPage)getTaskEditorPage();
+			TaskRepository repository = taskEditorPage.getTaskRepository();
+			SpiraTeamRepositoryConnector connector = (SpiraTeamRepositoryConnector) taskEditorPage.getConnector();
+			SpiraTeamTaskDataHandler taskDataHandler = connector.getTaskDataHandler();
+			
+			//Need to extract the operation information
+			TaskOperation operation = (TaskOperation) hyperlink.getData(KEY_OPERATION);
+			Set<TaskAttribute> changedAttributes = taskDataHandler.executeOperation(repository, taskData, operation);
+			
+			//Now we need to make the editor know that the attributes have changed
+			for (TaskAttribute changedAttribute : changedAttributes)
+			{
+				taskEditorPage.getModel().attributeChanged(changedAttribute);
+			}
 		}
 
 		@Override

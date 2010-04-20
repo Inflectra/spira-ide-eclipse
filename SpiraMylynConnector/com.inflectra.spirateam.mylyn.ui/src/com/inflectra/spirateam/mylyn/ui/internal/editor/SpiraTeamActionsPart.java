@@ -29,6 +29,7 @@ import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamTaskDataHandler;
 public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 {	
 	private static final String KEY_OPERATION = "operation"; //$NON-NLS-1$
+	private static final String KEY_HIDE_TRANSITIONS = "hideTransitions"; //$NON-NLS-1$
 	
 	private TaskAttribute selectedOperationAttribute;
 	private Button submitButton;
@@ -39,12 +40,18 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 	{
 		setPartName(Messages.SpiraTeamActionsPart_PartName);
 	}
+
+	@Override
+	public void refresh()
+	{
+		super.refresh();
+	}
 	
 	@Override
 	public void createControl(Composite parent, FormToolkit toolkit)
 	{
 		Section section = createSection(parent, toolkit, true);
-
+	
 		Composite buttonComposite = toolkit.createComposite(section);
 		GridLayout buttonLayout = new GridLayout();
 		buttonLayout.numColumns = 1;
@@ -69,22 +76,6 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 		toolkit.paintBordersFor(buttonComposite);
 		section.setClient(buttonComposite);
 		setSection(toolkit, section);
-	}
-	
-	private void enableActionButtons()
-	{
-		for (Hyperlink operationButton : operationButtons)
-		{
-			operationButton.setEnabled(true);
-		}
-	}
-	
-	private void disableActionButtons()
-	{
-		for (Hyperlink operationButton : operationButtons)
-		{
-			operationButton.setEnabled(false);
-		}
 	}
 	
 	private void createActionButtons(Composite buttonComposite, FormToolkit toolkit)
@@ -185,10 +176,12 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 			{
 				taskEditorPage.getModel().attributeChanged(changedAttribute);
 			}
-			taskEditorPage.refreshFormContent();
 			
-			//Also make the hyperlinks part inactive
-			disableActionButtons();			
+			//We need to disable the operations since we can't execute another until submit clicked
+			//TODO: Need to set a flag on a special attribute
+			
+			//Finally force a refesh so that the workflow field state changes take effect
+			taskEditorPage.refreshFormContent();
 		}
 
 		@Override

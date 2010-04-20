@@ -19,6 +19,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskDataModelListener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 
+import com.inflectra.spirateam.mylyn.core.internal.ArtifactAttribute;
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 
@@ -67,9 +68,6 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 	public void init(IEditorSite site, IEditorInput input)
 	{
 		super.init(site, input);
-		
-		//Add a new listener for changes in attributes
-		//getModel().addModelListener(new SpiraTeamModelListener(this));
 	}
 	
 	@Override
@@ -122,15 +120,7 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 	@Override
 	protected AttributeEditorFactory createAttributeEditorFactory()
 	{
-		AttributeEditorFactory factory = new AttributeEditorFactory(getModel(), getTaskRepository(), getEditorSite())
-		{
-			@Override
-			public AbstractAttributeEditor createEditor(String type, TaskAttribute taskAttribute)
-			{
-				AbstractAttributeEditor attributeEditor = super.createEditor(type, taskAttribute);
-				return attributeEditor;
-			}
-		};
+		AttributeEditorFactory factory = new SpiraTeamAttributeEditorFactory(getModel(), getTaskRepository(), this);
 		return factory;
 	}
 }

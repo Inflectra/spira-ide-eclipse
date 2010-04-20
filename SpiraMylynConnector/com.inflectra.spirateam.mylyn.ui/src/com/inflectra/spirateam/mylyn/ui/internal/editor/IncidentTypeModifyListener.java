@@ -4,63 +4,64 @@ import java.util.Set;
 
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
+import org.eclipse.mylyn.tasks.core.data.TaskDataModel;
 import org.eclipse.mylyn.tasks.core.data.TaskDataModelEvent;
 import org.eclipse.mylyn.tasks.core.data.TaskDataModelListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactAttribute;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamRepositoryConnector;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamTaskDataHandler;
 
-public class SpiraTeamModelListener extends TaskDataModelListener
+public class IncidentTypeModifyListener implements ModifyListener
 {
-	private SpiraTeamTaskEditorPage editorPage;
+	private IncidentTypeAttributeEditor attributeEditor;
 	
-	public SpiraTeamModelListener(SpiraTeamTaskEditorPage editorPage)
+	public IncidentTypeModifyListener(IncidentTypeAttributeEditor attributeEditor)
 	{
-		this.editorPage = editorPage;
+		this.attributeEditor = attributeEditor;
 	}
 	
-	public SpiraTeamTaskEditorPage getEditorPage()
+	public IncidentTypeAttributeEditor getAttributeEditor()
 	{
-		return this.editorPage;
+		return this.attributeEditor;
 	}
 	
 	/**
-	 * Called when an attribute changes
+	 * Called when the incident type attribute changes
 	 */
 	@Override
-	public void attributeChanged(TaskDataModelEvent event)
-	{	
+	public void modifyText(ModifyEvent arg0)
+	{
 		try
 		{
-			//See if the Incident Type Changes
-			event.getKind();
-			TaskAttribute attribute = event.getTaskAttribute();
-			if (attribute != null && attribute.getId().equals(ArtifactAttribute.INCIDENT_TYPE_ID.getArtifactKey()))
-			{			
-				//Tell the data-handler that we've changed incident type
-				//and that we need to update the workflow and fields accordingly
-				SpiraTeamRepositoryConnector connector = (SpiraTeamRepositoryConnector) getEditorPage().getConnector();
-				TaskRepository repository = getEditorPage().getTaskRepository();
+			//Tell the data-handler that we've changed incident type
+			//and that we need to update the workflow and fields accordingly
+			SpiraTeamTaskEditorPage editorPage = attributeEditor.getEditorPage();
+			if (editorPage != null)
+			{
+				SpiraTeamRepositoryConnector connector = (SpiraTeamRepositoryConnector) editorPage.getConnector();
+				TaskRepository repository = editorPage.getTaskRepository();
 				if (connector != null)
 				{
 					SpiraTeamTaskDataHandler dataHandler = connector.getTaskDataHandler();
 					if (dataHandler != null)
 					{
-						Set<TaskAttribute> changedAttributes = dataHandler.changeIncidentType(repository, attribute.getTaskData());
-
+						Set<TaskAttribute> changedAttributes = dataHandler.changeIncidentType(repository, attributeEditor.getTaskAttribute().getTaskData());
+	
 						//Now we need to make the editor know that the attributes have changed
 						for (TaskAttribute changedAttribute : changedAttributes)
 						{
 							//Don't send a changed event for Type or we'll get into an infinite loop
 							if (!changedAttribute.getId().equals(ArtifactAttribute.INCIDENT_TYPE_ID.getArtifactKey()))
 							{
-								getEditorPage().getModel().attributeChanged(changedAttribute);
+								editorPage.getModel().attributeChanged(changedAttribute);
 							}
 						}
 									
 						//Finally force a refresh so that the workflow field state changes take effect
-						getEditorPage().refreshFormContent();
+						editorPage.refreshFormContent();
 					}
 				}
 			}
@@ -70,5 +71,4 @@ public class SpiraTeamModelListener extends TaskDataModelListener
 			//Ignore and leave fields alone
 		}
 	}
-
 }

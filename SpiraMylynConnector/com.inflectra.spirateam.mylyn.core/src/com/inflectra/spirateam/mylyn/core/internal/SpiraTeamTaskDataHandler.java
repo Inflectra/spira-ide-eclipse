@@ -1108,6 +1108,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		{
 			TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_OPERATION + transition.getTransitionID());
 			TaskOperation.applyTo(attribute, transition.getTransitionID() + "", label);
+			attribute.getMetaData().setReadOnly(false);
 		}
 	}
 

@@ -436,7 +436,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	/**
 	 * Called when the typeof the incident is changed
 	 */
-	public Set<TaskAttribute> changeIncidentType(TaskRepository repository, TaskData taskData)
+	public Set<TaskAttribute> changeIncidentType(TaskRepository repository, TaskData taskData, String newIncidentTypeName)
 	{
 		try
 		{
@@ -460,16 +460,31 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 						ArtifactType artifactType = ArtifactType.byTaskKey(taskKey);
 						if (artifactType.equals(ArtifactType.INCIDENT))
 						{
-							//We need to get the type and status of the incident
-							int currentStatusId = getTaskAttributeIntValue(taskData, ArtifactAttribute.INCIDENT_STATUS_ID);
-							int currentTypeId = getTaskAttributeIntValue(taskData, ArtifactAttribute.INCIDENT_TYPE_ID);
-
-							//Need to change the attributes read-only state for the new type
-							updateAttributesForWorkflow(client, taskData, projectId, currentTypeId, currentStatusId, changedAttributes);
-							
-							//Finally we need to disable the transition operations
-							//as the type has changed and we need to submit to server first
-							updateTaskAttribute(taskData, changedAttributes, ArtifactAttribute.INCIDENT_TRANSITION_STATUS, SpiraTeamUtil.WORKFLOW_TRANSITION_STATUS_EXECUTED, projectId);
+							//Need to match the incident type id that was selected
+							TaskAttribute attribute = taskData.getRoot().getAttribute(ArtifactAttribute.INCIDENT_TYPE_ID.getArtifactKey());
+							Set<String> types = attribute.getOptions().keySet();
+							int newIncidentTypeId = -1;
+							for (String typeKey : types)
+							{
+								String incidentType = attribute.getOptions().get(typeKey);
+								if (incidentType.equals(newIncidentTypeName))
+								{
+									newIncidentTypeId = Integer.parseInt(typeKey);
+									break;
+								}
+							}
+							if (newIncidentTypeId != -1)
+							{
+								//We need to get the current status of the incident
+								int currentStatusId = getTaskAttributeIntValue(taskData, ArtifactAttribute.INCIDENT_STATUS_ID);
+	
+								//Need to change the attributes read-only state for the new type
+								updateAttributesForWorkflow(client, taskData, projectId, newIncidentTypeId, currentStatusId, changedAttributes);
+								
+								//Finally we need to disable the transition operations
+								//as the type has changed and we need to submit to server first
+								updateTaskAttribute(taskData, changedAttributes, ArtifactAttribute.INCIDENT_TRANSITION_STATUS, SpiraTeamUtil.WORKFLOW_TRANSITION_STATUS_EXECUTED, projectId);
+							}
 						}
 					}
 				}

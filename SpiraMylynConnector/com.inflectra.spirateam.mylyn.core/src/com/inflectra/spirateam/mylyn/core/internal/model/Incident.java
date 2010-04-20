@@ -54,7 +54,8 @@ public class Incident extends Artifact
 		CLOSED_DATE("incident.closedDate"),
 		COMPLETION_PERCENTAGE("incident.completionPercentage"),
 		ESTIMATED_EFFORT("incident.estimatedEffort"),
-		ACTUAL_EFFORT("incident.actualEffort");
+		ACTUAL_EFFORT("incident.actualEffort"),
+		TRANSITION_STATUS("incident.internal.transitionStatus");
 
 		public static Key fromKey(String name)
 		{

@@ -54,6 +54,7 @@ public enum ArtifactAttribute
 	INCIDENT_COMPLETION_PERCENTAGE(Incident.Key.COMPLETION_PERCENTAGE, Messages.IncidentAttribute_CompletionPercentage, null, TaskAttribute.TYPE_SHORT_TEXT, "", Flag.ATTRIBUTE),
 	INCIDENT_ESTIMATED_EFFORT(Incident.Key.ESTIMATED_EFFORT, Messages.IncidentAttribute_EstimatedEffort, null, TaskAttribute.TYPE_SHORT_TEXT, "EstimatedEffort", Flag.ATTRIBUTE),
 	INCIDENT_ACTUAL_EFFORT(Incident.Key.ACTUAL_EFFORT, Messages.IncidentAttribute_ActualEffort, null, TaskAttribute.TYPE_SHORT_TEXT, "ActualEffort", Flag.ATTRIBUTE),
+	INCIDENT_TRANSITION_STATUS(Incident.Key.TRANSITION_STATUS, null, null, TaskAttribute.TYPE_SHORT_TEXT, ""),
 	
 	//Task attributes
 	TASK_TYPE(Task.Key.TYPE, Messages.TaskAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT),

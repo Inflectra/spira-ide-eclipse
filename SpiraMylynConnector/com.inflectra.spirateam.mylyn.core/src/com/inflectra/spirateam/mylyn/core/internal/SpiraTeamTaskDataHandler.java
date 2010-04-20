@@ -363,6 +363,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_TRANSITION_STATUS);
 					
 			// Workflow Transitions
 			data.getRoot().createAttribute(TaskAttribute.OPERATION).getMetaData().setType(TaskAttribute.TYPE_OPERATION);
@@ -450,6 +451,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 
 								//Need to change the attributes read-only state for the new status
 								updateAttributesForWorkflow(client, taskData, projectId, currentTypeId, destinationIncidentStatusId, changedAttributes);
+								
+								//Finally we need to change the transition status to executed
+								updateTaskAttribute(taskData, changedAttributes, ArtifactAttribute.INCIDENT_TRANSITION_STATUS, SpiraTeamUtil.WORKFLOW_TRANSITION_STATUS_EXECUTED, projectId);
 							}
 						}
 					}
@@ -967,6 +971,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE, incident.getCompletionPercent() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT, SpiraTeamUtil.effortValuesToString(incident.getEstimatedEffort()), projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT, SpiraTeamUtil.effortValuesToString(incident.getActualEffort()), projectId);
+
+			//Used to denote that we have not yet executed a transition
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_TRANSITION_STATUS, SpiraTeamUtil.WORKFLOW_TRANSITION_STATUS_ACTIVE, projectId);
 			
 			//Get the workflow field status for the current type and status
 			updateAttributesForWorkflow(client, data, projectId, incident.getIncidentTypeId(), incident.getIncidentStatusId(), changedAttributes);

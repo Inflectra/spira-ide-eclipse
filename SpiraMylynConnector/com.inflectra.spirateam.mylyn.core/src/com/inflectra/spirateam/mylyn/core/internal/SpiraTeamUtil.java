@@ -38,6 +38,9 @@ public class SpiraTeamUtil
 	
 	public static final int WORKFLOW_FIELD_STATE_ACTIVE = 1;
 	public static final int WORKFLOW_FIELD_STATE_REQUIRED = 2;
+
+	public static final String WORKFLOW_TRANSITION_STATUS_ACTIVE = "active";
+	public static final String WORKFLOW_TRANSITION_STATUS_EXECUTED = "executed";
 	
 	public static boolean ValidateServerVersion (SpiraImportExport spiraImportExport)
 	{

@@ -447,10 +447,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 							if (destinationIncidentStatusId != -1)
 							{
 								updateTaskAttribute(taskData, changedAttributes, ArtifactAttribute.INCIDENT_STATUS_ID, destinationIncidentStatusId + "", projectId);
+
+								//Need to change the attributes read-only state for the new status
+								updateAttributesForWorkflow(client, taskData, projectId, currentTypeId, destinationIncidentStatusId, changedAttributes);
 							}
-							
-							//Need to change the attributes read-only state for the new status
-							updateAttributesForWorkflow(client, taskData, projectId, currentTypeId, currentStatusId, changedAttributes);
 						}
 					}
 				}
@@ -1094,7 +1094,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 						//If we didn't find a match in the workflow, we need to
 						//make the field Read-Only
 						taskAttribute.getMetaData().setReadOnly(!matched);
-						changedAttributes.add(taskAttribute);
+						changedAttributes.add(taskAttribute);						
 					}
 				}
 			}

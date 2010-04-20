@@ -123,6 +123,20 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 			part.refresh();
 		}
 		
+		//Now refresh the summary
+		part = getPart(ID_PART_SUMMARY);
+		if (part != null)
+		{
+			part.refresh();
+		}
+
+		//Now refresh the description
+		part = getPart(ID_PART_SUMMARY);
+		if (part != null)
+		{
+			part.refresh();
+		}
+		
 		//Now refresh all attributes
 		part = getPart(ID_PART_ATTRIBUTES);
 		if (part != null)

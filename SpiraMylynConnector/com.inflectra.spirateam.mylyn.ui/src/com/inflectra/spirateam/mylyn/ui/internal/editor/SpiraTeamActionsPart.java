@@ -183,12 +183,10 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 			//Now we need to make the editor know that the attributes have changed
 			for (TaskAttribute changedAttribute : changedAttributes)
 			{
+				//We can only change root attributes
 				taskEditorPage.getModel().attributeChanged(changedAttribute);
 			}
-			
-			//We need to disable the operations since we can't execute another until submit clicked
-			//TODO: Need to set a flag on a special attribute
-			
+						
 			//Finally force a refesh so that the workflow field state changes take effect
 			taskEditorPage.refreshFormContent();
 		}

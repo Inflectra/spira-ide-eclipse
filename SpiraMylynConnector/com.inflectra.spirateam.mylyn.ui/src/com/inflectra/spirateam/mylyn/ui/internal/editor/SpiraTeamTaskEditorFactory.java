@@ -7,7 +7,6 @@ import org.eclipse.mylyn.tasks.ui.ITasksUiConstants;
 import org.eclipse.mylyn.tasks.ui.TasksUiImages;
 import org.eclipse.mylyn.tasks.ui.TasksUiUtil;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPageFactory;
-import org.eclipse.mylyn.tasks.ui.editors.BrowserFormPage;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditorInput;
 import org.eclipse.swt.graphics.Image;
@@ -15,7 +14,6 @@ import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.mylyn.internal.provisional.commons.ui.CommonImages;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamRepositoryConnector;
 import com.inflectra.spirateam.mylyn.ui.internal.SpiraTeamImages;
 
 /**

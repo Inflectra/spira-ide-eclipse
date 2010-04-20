@@ -466,6 +466,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 
 							//Need to change the attributes read-only state for the new type
 							updateAttributesForWorkflow(client, taskData, projectId, currentTypeId, currentStatusId, changedAttributes);
+							
+							//Finally we need to disable the transition operations
+							//as the type has changed and we need to submit to server first
+							updateTaskAttribute(taskData, changedAttributes, ArtifactAttribute.INCIDENT_TRANSITION_STATUS, SpiraTeamUtil.WORKFLOW_TRANSITION_STATUS_EXECUTED, projectId);
 						}
 					}
 				}

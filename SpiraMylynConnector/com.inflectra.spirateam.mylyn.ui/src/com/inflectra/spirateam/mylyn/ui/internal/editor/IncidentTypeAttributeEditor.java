@@ -28,12 +28,15 @@ public class IncidentTypeAttributeEditor extends AbstractAttributeEditor
 	private TaskDataModel taskDataModel;
 	private TaskAttribute taskAttribute;
 	private SpiraTeamTaskEditorPage editorPage;
+	IncidentTypeModifyListener modifyListener = null;
 	
 	private final TaskDataModelListener modelListener = new TaskDataModelListener()
 	{
 		@Override
-		public void attributeChanged(TaskDataModelEvent event) {
-			if (getTaskAttribute().equals(event.getTaskAttribute())) {
+		public void attributeChanged(TaskDataModelEvent event)
+		{
+			if (getTaskAttribute().equals(event.getTaskAttribute()))
+			{
 				refresh();
 			}
 		}
@@ -86,9 +89,11 @@ public class IncidentTypeAttributeEditor extends AbstractAttributeEditor
 				@Override
 				public void widgetSelected(SelectionEvent event)
 				{
-					if (!ignoreNotification) {
+					if (!ignoreNotification)
+					{
 						int index = combo.getSelectionIndex();
-						if (index > -1) {
+						if (index > -1)
+						{
 							Assert.isNotNull(values);
 							Assert.isLegal(index >= 0 && index <= values.length - 1);
 							setValue(values[index]);
@@ -97,26 +102,42 @@ public class IncidentTypeAttributeEditor extends AbstractAttributeEditor
 				}
 			});
 			EditorUtil.addScrollListener(combo);
-			combo.addModifyListener(new IncidentTypeModifyListener(this));
 			setControl(combo);
 		}
 		refresh();
 
-		getControl().addDisposeListener(new DisposeListener() {
-
-			public void widgetDisposed(DisposeEvent e) {
+		getControl().addDisposeListener(new DisposeListener()
+		{
+			public void widgetDisposed(DisposeEvent e)
+			{
 				getModel().removeModelListener(modelListener);
 			}
 
 		});
 		getModel().addModelListener(modelListener);
+		enableModifyListener();
+	}
+	
+	public void enableModifyListener()
+	{
+		this.modifyListener = new IncidentTypeModifyListener(this);
+		combo.addModifyListener(this.modifyListener);
+	}
+	public void disableModifyListener()
+	{
+		if (this.modifyListener != null)
+		{
+			combo.removeModifyListener(this.modifyListener);
+		}
 	}
 
-	public String getValue() {
+	public String getValue()
+	{
 		return getAttributeMapper().getValue(getTaskAttribute());
 	}
 
-	public String getValueLabel() {
+	public String getValueLabel()
+	{
 		return getAttributeMapper().getValueLabel(getTaskAttribute());
 	}
 

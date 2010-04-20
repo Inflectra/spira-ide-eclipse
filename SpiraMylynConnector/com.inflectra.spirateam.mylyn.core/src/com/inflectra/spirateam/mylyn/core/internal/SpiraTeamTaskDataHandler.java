@@ -401,11 +401,12 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	/**
 	 * Called when a workflow operation is activated
 	 */
-	public void executeOperation(TaskRepository repository, TaskData taskData, TaskOperation operation)
+	public Set<TaskAttribute> executeOperation(TaskRepository repository, TaskData taskData, TaskOperation operation)
 	{
 		try
 		{
 			String taskKey = taskData.getTaskId();
+			Set<TaskAttribute> changedAttributes = new HashSet<TaskAttribute>();
 			
 			//Get the project id for this artifact
 			SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(repository);
@@ -434,31 +435,27 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 							//Doesn't matter that we have more, since we already know the ID we want
 							List<IncidentWorkflowTransition> transitions = client.incidentRetrieveWorkflowTransitions(currentTypeId, currentStatusId, true, true);
 							int destinationIncidentStatusId = -1;
-							String destinationIncidentStatusName = null;
 							for (IncidentWorkflowTransition transition : transitions)
 							{
 								if (transition.getTransitionID() == workflowTransitionId)
 								{
 									destinationIncidentStatusId = transition.getIncidentStatusIDOutput();
-									destinationIncidentStatusName = transition.getIncidentStatusNameOutput();
 								}
 							}
 							
 							//Need to change the status of the Incident
 							if (destinationIncidentStatusId != -1)
 							{
-								//The changedattributes set is not actually needed, but it is required
-								//by the updateTaskAttribute method
-								Set<TaskAttribute> changedAttributes = new HashSet<TaskAttribute>();
 								updateTaskAttribute(taskData, changedAttributes, ArtifactAttribute.INCIDENT_STATUS_ID, destinationIncidentStatusId + "", projectId);
 							}
 							
 							//Need to change the attributes read-only state for the new status
-							//TODO: Implement
+							updateAttributesForWorkflow(client, taskData, projectId, currentTypeId, currentStatusId, changedAttributes);
 						}
 					}
 				}
 			}
+			return changedAttributes;
 		}
 		catch (MalformedURLException ex)
 		{
@@ -972,7 +969,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT, SpiraTeamUtil.effortValuesToString(incident.getActualEffort()), projectId);
 			
 			//Get the workflow field status for the current type and status
-			updateAttributesForWorkflow(client, data, projectId, incident.getIncidentTypeId(), incident.getIncidentStatusId());
+			updateAttributesForWorkflow(client, data, projectId, incident.getIncidentTypeId(), incident.getIncidentStatusId(), changedAttributes);
 			
 			// Handle SpiraTeam comments/resolutions if we have an incident
 			try
@@ -1068,7 +1065,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		return changedAttributes;
 	}
 	
-	private static void updateAttributesForWorkflow(SpiraImportExport client, TaskData data, int projectId, int currentIncidentTypeId, int currentIncidentStatusId)
+	private static void updateAttributesForWorkflow(SpiraImportExport client, TaskData data, int projectId, int currentIncidentTypeId, int currentIncidentStatusId, Set<TaskAttribute> changedAttributes)
 		throws SpiraException
 	{
 		List<IncidentWorkflowField> workflowFields = client.incidentRetrieveWorkflowFields(projectId, currentIncidentTypeId, currentIncidentStatusId);
@@ -1097,6 +1094,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 						//If we didn't find a match in the workflow, we need to
 						//make the field Read-Only
 						taskAttribute.getMetaData().setReadOnly(!matched);
+						changedAttributes.add(taskAttribute);
 					}
 				}
 			}

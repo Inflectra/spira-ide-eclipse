@@ -71,6 +71,22 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 		setSection(toolkit, section);
 	}
 	
+	private void enableActionButtons()
+	{
+		for (Hyperlink operationButton : operationButtons)
+		{
+			operationButton.setEnabled(true);
+		}
+	}
+	
+	private void disableActionButtons()
+	{
+		for (Hyperlink operationButton : operationButtons)
+		{
+			operationButton.setEnabled(false);
+		}
+	}
+	
 	private void createActionButtons(Composite buttonComposite, FormToolkit toolkit)
 	{
 		submitButton = toolkit.createButton(buttonComposite, Messages.TaskEditorActionPart_Submit, SWT.NONE);
@@ -169,6 +185,10 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 			{
 				taskEditorPage.getModel().attributeChanged(changedAttribute);
 			}
+			taskEditorPage.refreshFormContent();
+			
+			//Also make the hyperlinks part inactive
+			disableActionButtons();			
 		}
 
 		@Override

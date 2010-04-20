@@ -1,7 +1,5 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
-import javax.xml.bind.annotation.XmlElement;
-
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteWorkflowIncidentTransition;
 
 public class IncidentWorkflowTransition

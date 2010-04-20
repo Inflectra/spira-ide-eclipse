@@ -4,15 +4,11 @@
 package com.inflectra.spirateam.mylyn.core.internal.services;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.Detail;
-import javax.xml.soap.SOAPFault;
 import javax.xml.ws.*;
 import javax.xml.ws.soap.SOAPFaultException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
-import org.w3c.dom.Node;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;

@@ -2,14 +2,11 @@ package com.inflectra.spirateam.mylyn.core.internal;
 
 import java.util.Date;
 
-import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.mylyn.tasks.core.ITask.PriorityLevel;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskMapper;
 
-import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
-import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 
 public class SpiraTeamTaskMapper extends TaskMapper

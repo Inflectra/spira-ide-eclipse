@@ -22,7 +22,6 @@ import org.eclipse.mylyn.tasks.core.RepositoryStatus;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.TaskRepositoryLocationFactory;
 import org.eclipse.mylyn.tasks.core.ITask.PriorityLevel;
-import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
 import org.eclipse.mylyn.tasks.core.data.TaskMapper;
@@ -37,8 +36,6 @@ import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 
 public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 {
-	private static final boolean TRACE_ENABLED = Boolean.valueOf(Platform.getDebugOption("com.inflectra.spirateam.mylyn.core/debug/connector")); //$NON-NLS-1$
-
 	private SpiraTeamClientManager clientManager;
 	private File repositoryConfigurationCacheFile;
 	private final SpiraTeamTaskDataHandler taskDataHandler = new SpiraTeamTaskDataHandler(this);
@@ -436,14 +433,6 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 		}
 	}
 	
-	private void trace(IStatus status)
-	{
-		if (TRACE_ENABLED)
-		{
-			StatusHandler.log(status);
-		}
-	}
-
 	@Override
 	public void updateTaskFromTaskData(TaskRepository taskRepository,
 			ITask task, TaskData taskData)

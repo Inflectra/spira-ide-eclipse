@@ -2,6 +2,11 @@ package com.inflectra.spirateam.mylyn.core.internal.services;
 
 public class SpiraAuthorizationException extends SpiraException
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4590763197431308522L;
+
 	public SpiraAuthorizationException()
 	{
 	}

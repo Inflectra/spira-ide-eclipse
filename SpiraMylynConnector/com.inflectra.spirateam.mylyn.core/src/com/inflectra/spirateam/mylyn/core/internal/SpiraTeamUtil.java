@@ -14,7 +14,6 @@ import javax.xml.soap.Detail;
 import javax.xml.soap.SOAPFault;
 import javax.xml.ws.soap.SOAPFaultException;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.w3c.dom.Node;

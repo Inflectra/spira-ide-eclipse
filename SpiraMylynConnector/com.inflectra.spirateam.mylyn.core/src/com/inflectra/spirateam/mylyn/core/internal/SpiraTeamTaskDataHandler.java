@@ -398,6 +398,93 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 		}*/
 	}
+
+	public static void addWorkflowTransitions(SpiraImportExport client, Incident incident, TaskRepository repository, TaskData data)
+		throws SpiraException
+	{
+		try
+		{
+			boolean isOwner = true;	//Always TRUE
+			boolean isDetector = false;
+			if (incident.getOwnerId() != null)
+			{
+				//Since we have to be the owner; we are the detector if both are the same
+				if (incident.getOpenerId() == incident.getOwnerId().intValue())
+				{
+					isDetector = true;
+				}
+			}
+			int currentTypeId = incident.getIncidentTypeId();
+			int currentStatusId = incident.getIncidentStatusId();
+			List<IncidentWorkflowTransition> transitions = client.incidentRetrieveWorkflowTransitions(currentTypeId, currentStatusId, isDetector, isOwner);
+			if (transitions != null)
+			{
+				// add transitions and set first as default
+				for (IncidentWorkflowTransition transition : transitions)
+				{
+					addOperation(repository, data, incident, transition);
+				}
+			}
+		}
+		catch (SpiraException ex)
+		{
+			//Let the user know
+			throw new SpiraException(Messages.SpiraTeamTaskDataHandler_UnableToRetrieveWorkflowTransitions);
+		}
+	}
+	
+	/**
+	 * Called when the typeof the incident is changed
+	 */
+	public Set<TaskAttribute> changeIncidentType(TaskRepository repository, TaskData taskData)
+	{
+		try
+		{
+			String taskKey = taskData.getTaskId();
+			Set<TaskAttribute> changedAttributes = new HashSet<TaskAttribute>();
+			
+			//Get the project id for this artifact
+			SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(repository);
+			SpiraTeamClientData data = client.getData();
+			if (data != null)
+			{
+				if (data.taskToProjectMapping != null)
+				{
+					if (data.taskToProjectMapping.containsKey(taskKey))
+					{
+						int projectId = data.taskToProjectMapping.get(taskKey);
+	
+						//See what kind of artifact we have
+	
+						//Currently only incidents support workflow operations
+						ArtifactType artifactType = ArtifactType.byTaskKey(taskKey);
+						if (artifactType.equals(ArtifactType.INCIDENT))
+						{
+							//We need to get the type and status of the incident
+							int currentStatusId = getTaskAttributeIntValue(taskData, ArtifactAttribute.INCIDENT_STATUS_ID);
+							int currentTypeId = getTaskAttributeIntValue(taskData, ArtifactAttribute.INCIDENT_TYPE_ID);
+
+							//Need to change the attributes read-only state for the new type
+							updateAttributesForWorkflow(client, taskData, projectId, currentTypeId, currentStatusId, changedAttributes);
+						}
+					}
+				}
+			}
+			return changedAttributes;
+		}
+		catch (MalformedURLException ex)
+		{
+			throw new RuntimeException (ex.getMessage());
+		}
+		catch (SpiraException ex)
+		{
+			throw new RuntimeException (ex.getMessage());
+		}
+		catch (RuntimeException ex)
+		{
+			throw ex;
+		}
+	}
 	
 	/**
 	 * Called when a workflow operation is activated
@@ -1011,27 +1098,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 			
 			//Workflow Transitions
-			try
-			{
-				boolean isOwner = true;	//Always TRUE
-				boolean isDetector = false;	//TODO: Need to check
-				int currentTypeId = incident.getIncidentTypeId();
-				int currentStatusId = incident.getIncidentStatusId();
-				List<IncidentWorkflowTransition> transitions = client.incidentRetrieveWorkflowTransitions(currentTypeId, currentStatusId, isDetector, isOwner);
-				if (transitions != null)
-				{
-					// add transitions and set first as default
-					for (IncidentWorkflowTransition transition : transitions)
-					{
-						addOperation(repository, data, incident, transition);
-					}
-				}
-			}
-			catch (SpiraException ex)
-			{
-				//Let the user know
-				throw new SpiraException(Messages.SpiraTeamTaskDataHandler_UnableToRetrieveWorkflowTransitions);
-			}
+			addWorkflowTransitions(client, incident, repository, data);
 		}
 		
 		if (artifact instanceof Task)

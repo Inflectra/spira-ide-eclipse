@@ -24,6 +24,7 @@ import org.eclipse.ui.forms.widgets.*;
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactAttribute;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamRepositoryConnector;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamTaskDataHandler;
+import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 
 
 public class SpiraTeamActionsPart extends AbstractTaskEditorPart
@@ -45,6 +46,14 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 	public void refresh()
 	{
 		super.refresh();
+		
+		//Make the hyperlinks enabled or disabled based on the workflow status field
+		TaskData taskData = getTaskData();
+		String workflowFieldStatus = taskData.getRoot().getAttribute(ArtifactAttribute.INCIDENT_TRANSITION_STATUS.getArtifactKey()).getValue();
+		for (Hyperlink button : operationButtons)
+		{
+			button.setEnabled(workflowFieldStatus.equals(SpiraTeamUtil.WORKFLOW_TRANSITION_STATUS_ACTIVE));
+		}
 	}
 	
 	@Override

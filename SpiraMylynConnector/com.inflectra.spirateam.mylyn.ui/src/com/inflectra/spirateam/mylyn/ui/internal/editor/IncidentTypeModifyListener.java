@@ -7,6 +7,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskDataModel;
 import org.eclipse.mylyn.tasks.core.data.TaskDataModelEvent;
 import org.eclipse.mylyn.tasks.core.data.TaskDataModelListener;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 
@@ -36,6 +37,10 @@ public class IncidentTypeModifyListener implements ModifyListener
 	{
 		try
 		{
+			//Get the new value of the data
+			CCombo combo = (CCombo) arg0.getSource();
+			String newIncidentTypeName = combo.getText();
+						
 			//Tell the data-handler that we've changed incident type
 			//and that we need to update the workflow and fields accordingly
 			SpiraTeamTaskEditorPage editorPage = attributeEditor.getEditorPage();
@@ -48,7 +53,7 @@ public class IncidentTypeModifyListener implements ModifyListener
 					SpiraTeamTaskDataHandler dataHandler = connector.getTaskDataHandler();
 					if (dataHandler != null)
 					{
-						Set<TaskAttribute> changedAttributes = dataHandler.changeIncidentType(repository, attributeEditor.getTaskAttribute().getTaskData());
+						Set<TaskAttribute> changedAttributes = dataHandler.changeIncidentType(repository, attributeEditor.getTaskAttribute().getTaskData(), newIncidentTypeName);
 	
 						//Now we need to make the editor know that the attributes have changed
 						for (TaskAttribute changedAttribute : changedAttributes)
@@ -61,7 +66,7 @@ public class IncidentTypeModifyListener implements ModifyListener
 						}
 									
 						//Finally force a refresh so that the workflow field state changes take effect
-						editorPage.refreshFormContent();
+						editorPage.refreshAfterTypeChange();
 					}
 				}
 			}

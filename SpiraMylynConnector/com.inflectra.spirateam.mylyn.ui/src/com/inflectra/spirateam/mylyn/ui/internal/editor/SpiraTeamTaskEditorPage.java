@@ -111,6 +111,26 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 		return descriptors;
 	}
 
+	/**
+	 * Refreshes just the parts affected by a change in incident type
+	 */
+	public void refreshAfterTypeChange()
+	{
+		//Refresh the actions part
+		AbstractTaskEditorPart part = getPart(ID_PART_ACTIONS);
+		if (part != null)
+		{
+			part.refresh();
+		}
+		
+		//Now refresh all attributes
+		part = getPart(ID_PART_ATTRIBUTES);
+		if (part != null)
+		{
+			part.refresh();
+		}
+	}
+	
 	@Override
 	protected void createParts()
 	{

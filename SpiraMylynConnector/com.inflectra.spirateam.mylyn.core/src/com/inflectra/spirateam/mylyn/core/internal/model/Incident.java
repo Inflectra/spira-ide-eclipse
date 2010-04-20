@@ -105,7 +105,7 @@ public class Incident extends Artifact
         this.priorityId = remoteIncident.getPriorityId();
         this.severityId = remoteIncident.getSeverityId();
         this.incidentStatusId = remoteIncident.getIncidentStatusId();
-        this.incidentTypeId = remoteIncident.getIncidentStatusId();
+        this.incidentTypeId = remoteIncident.getIncidentTypeId();
         this.openerId = remoteIncident.getOpenerId();
         this.testRunStepId = remoteIncident.getTestRunStepId();
         this.detectedReleaseId = remoteIncident.getDetectedReleaseId();

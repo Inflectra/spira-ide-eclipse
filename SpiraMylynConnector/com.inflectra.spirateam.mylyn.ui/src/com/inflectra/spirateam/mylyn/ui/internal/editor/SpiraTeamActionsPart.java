@@ -110,7 +110,9 @@ public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 
 		if (!getTaskData().isNew())
 		{
-			addAttachContextButton(buttonComposite, toolkit);
+			//We are not able to support attaching context
+			//until the connector supports Attachments
+			//addAttachContextButton(buttonComposite, toolkit);
 		}
 	}
 	

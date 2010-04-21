@@ -12,6 +12,7 @@ import org.eclipse.osgi.util.NLS;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1225,9 +1226,10 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 	
 	/**
 	 * Updates an incident object on the server
-	 * @param task
+	 * @param incident The incident object
+	 * @param newComment A new comment to be added
 	 */
-	public void incidentUpdate(Incident incident)
+	public void incidentUpdate(Incident incident, String newComment)
 		throws SpiraException
 	{
 		try
@@ -1251,8 +1253,30 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			//Convert the local incident into the SOAP version
 			RemoteIncident remoteIncident = incident.toSoapObject();
 			
-			//Call the appropriate method
+			//Call the appropriate method to update the incident
 			soap.incidentUpdate(remoteIncident);
+			
+			//See if we need to add a new comment/resolution as well
+			if (newComment != null)
+			{
+				//Add the new resolution
+				Date date = new Date();	//Defaults to now
+				RemoteIncidentResolution remoteIncidentResolution = new RemoteIncidentResolution();
+				remoteIncidentResolution.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(date));
+				//TODO: When the API is capable of setting to the authenticated user as default
+				//we can remove this code
+				int creatorId = incident.getOpenerId();
+				if (incident.getOwnerId() != null)
+				{
+					creatorId = incident.getOwnerId().intValue();
+				}
+				remoteIncidentResolution.setCreatorId(creatorId);
+				remoteIncidentResolution.setIncidentId(incident.getArtifactId());
+				remoteIncidentResolution.setResolution(newComment);
+				ArrayOfRemoteIncidentResolution remoteIncidentResolutions = new ArrayOfRemoteIncidentResolution();
+				remoteIncidentResolutions.getRemoteIncidentResolution().add(remoteIncidentResolution);
+				soap.incidentAddResolutions(remoteIncidentResolutions);
+			}
 		}
 		catch (SOAPFaultException ex)
 		{

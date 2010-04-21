@@ -364,6 +364,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_TRANSITION_STATUS);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_NEW_RESOLUTION);
 					
 			// Workflow Transitions
 			data.getRoot().createAttribute(TaskAttribute.OPERATION).getMetaData().setType(TaskAttribute.TYPE_OPERATION);
@@ -624,16 +625,6 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 							{
 								updateIncidentFromTaskData(client, repository, taskData, projectId);
 								return new RepositoryResponse(ResponseKind.TASK_UPDATED, taskKey); //$NON-NLS-1$
-								
-								/*String newComment = ""; //$NON-NLS-1$
-								TaskAttribute newCommentAttribute = taskData.getRoot().getMappedAttribute(TaskAttribute.COMMENT_NEW);
-								if (newCommentAttribute != null)
-								{
-									newComment = newCommentAttribute.getValue();
-								}
-								server.updateTicket(ticket, newComment, monitor);
-								return new RepositoryResponse(ResponseKind.TASK_UPDATED, taskKey); //$NON-NLS-1$
-								*/
 							}
 						}
 					}
@@ -877,11 +868,19 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		incident.setCompletionPercent(getTaskAttributeIntValue(taskData, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE));
 		incident.setEstimatedEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT));
 		incident.setActualEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT));
-		
-		//Finally we need to commit the changes on the server
-		if (incident.isDataChanged())
+
+		//Now we need to see if any new comments were submitted
+		TaskAttribute newCommentAttribute = taskData.getRoot().getAttribute(ArtifactAttribute.INCIDENT_NEW_RESOLUTION.getArtifactKey());
+		String newComment = null;
+		if (newCommentAttribute != null)
 		{
-			client.incidentUpdate(incident);
+			newComment = newCommentAttribute.getValue();
+		}
+
+		//Finally we need to commit the changes on the server
+		if (incident.isDataChanged() || newComment != null)
+		{
+			client.incidentUpdate(incident, newComment);
 		}
 	}
 	

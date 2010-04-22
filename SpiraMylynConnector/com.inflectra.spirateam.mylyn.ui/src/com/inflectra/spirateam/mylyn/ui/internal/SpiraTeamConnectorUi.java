@@ -1,5 +1,8 @@
 package com.inflectra.spirateam.mylyn.ui.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
@@ -7,6 +10,7 @@ import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.mylyn.tasks.core.ITaskMapping;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.ui.AbstractRepositoryConnectorUi;
+import org.eclipse.mylyn.tasks.ui.LegendElement;
 import org.eclipse.mylyn.tasks.ui.wizards.ITaskRepositoryPage;
 import org.eclipse.mylyn.tasks.ui.wizards.RepositoryQueryWizard;
 
@@ -50,6 +54,20 @@ public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 	{
 		//The SpiraTeam connector doesn't currently allow addition of new tasks
 		return null;
+	}
+	
+
+	/**
+	 * Adds SpiraTeam legend elements to the list of task icons
+	 */
+	@Override
+	public List<LegendElement> getLegendElements()
+	{
+		List<LegendElement> legendItems = new ArrayList<LegendElement>();
+		legendItems.add(LegendElement.createTask(ArtifactType.REQUIREMENT.toString(), SpiraTeamImages.OVERLAY_REQUIREMENT));
+		legendItems.add(LegendElement.createTask(ArtifactType.TASK.toString(), SpiraTeamImages.OVERLAY_TASK));
+		legendItems.add(LegendElement.createTask(ArtifactType.INCIDENT.toString(), SpiraTeamImages.OVERLAY_INCIDENT));
+		return legendItems;
 	}
 
 	@Override

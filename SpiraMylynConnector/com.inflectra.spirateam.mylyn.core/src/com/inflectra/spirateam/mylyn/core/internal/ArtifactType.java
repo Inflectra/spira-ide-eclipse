@@ -59,4 +59,10 @@ public enum ArtifactType
 	{
 		return this.baseUrl;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return this.displayName;
+	}
 }

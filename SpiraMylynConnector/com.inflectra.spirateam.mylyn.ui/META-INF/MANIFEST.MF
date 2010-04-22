@@ -17,6 +17,6 @@ Require-Bundle: org.eclipse.ui,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Eclipse-AutoStart: true
 Import-Package: org.eclipse.mylyn.internal.provisional.commons.ui
-Export-Package: com.inflectra.spirateam.mylyn.ui.internal,
- com.inflectra.spirateam.mylyn.ui.internal.editor,
- com.inflectra.spirateam.mylyn.ui.internal.wizards
+Export-Package: com.inflectra.spirateam.mylyn.ui.internal;x-internal:=true,
+ com.inflectra.spirateam.mylyn.ui.internal.editor;x-internal:=true,
+ com.inflectra.spirateam.mylyn.ui.internal.wizards;x-internal:=true

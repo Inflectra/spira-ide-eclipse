@@ -15,7 +15,6 @@ import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.ui.internal.wizards.SpiraTeamNamedFilterPage;
 import com.inflectra.spirateam.mylyn.ui.internal.wizards.SpiraTeamRepositorySettingsPage;
 
-@SuppressWarnings("restriction")
 public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 {
 

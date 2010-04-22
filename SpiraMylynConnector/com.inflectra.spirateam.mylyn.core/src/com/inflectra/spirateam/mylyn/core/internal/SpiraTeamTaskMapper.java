@@ -116,4 +116,9 @@ public class SpiraTeamTaskMapper extends TaskMapper
 		}
 		return super.getCompletionDate();
 	}
+
+	public SpiraImportExport getClient()
+	{
+		return client;
+	}
 }

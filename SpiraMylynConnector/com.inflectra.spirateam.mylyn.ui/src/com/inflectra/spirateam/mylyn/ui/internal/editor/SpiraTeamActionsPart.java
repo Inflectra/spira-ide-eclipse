@@ -30,7 +30,6 @@ import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 public class SpiraTeamActionsPart extends AbstractTaskEditorPart
 {	
 	private static final String KEY_OPERATION = "operation"; //$NON-NLS-1$
-	private static final String KEY_HIDE_TRANSITIONS = "hideTransitions"; //$NON-NLS-1$
 	
 	private TaskAttribute selectedOperationAttribute;
 	private Button submitButton;

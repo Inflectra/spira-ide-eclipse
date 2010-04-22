@@ -6,7 +6,6 @@ package com.inflectra.spirateam.mylyn.ui.internal.editor;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.eclipse.mylyn.tasks.ui.editors.AbstractAttributeEditor;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPage;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPart;
 import org.eclipse.mylyn.tasks.ui.editors.AttributeEditorFactory;
@@ -14,12 +13,9 @@ import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditorInput;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditorPartDescriptor;
 import org.eclipse.mylyn.tasks.core.ITask;
-import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
-import org.eclipse.mylyn.tasks.core.data.TaskDataModelListener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 
-import com.inflectra.spirateam.mylyn.core.internal.ArtifactAttribute;
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 

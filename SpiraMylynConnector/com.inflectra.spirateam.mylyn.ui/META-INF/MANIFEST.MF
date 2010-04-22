@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: SpiraTeam Mylyn Connector Ui
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.inflectra.spirateam.mylyn.ui;singleton:=true
 Bundle-Version: 2.3.1.qualifier
 Bundle-Activator: com.inflectra.spirateam.mylyn.ui.internal.SpiraTeamUiPlugin
-Bundle-Vendor: Inflectra Corporation
+Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.forms;bundle-version="3.4.1",
  org.eclipse.core.runtime,

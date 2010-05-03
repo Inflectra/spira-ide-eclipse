@@ -50,6 +50,7 @@ public class SpiraImportExport
 	private ImportExportSoap soap = null;
 	private Integer storedProjectId = null;
 	private String productName = "";
+	private Integer authenticatedUserId = null;
 	private int patchNumber = 0;
 	private int productVersionPrimary = 0;
 	private int productVersionSecondary = 0;
@@ -160,6 +161,10 @@ public class SpiraImportExport
 	{
 		return this.productVersionTertiary;
 	}
+	public Integer getAuthenticatedUserId()
+	{
+		return this.authenticatedUserId;
+	}
 	
 	/**
 	 * The user name
@@ -261,6 +266,12 @@ public class SpiraImportExport
 	        //Patch Number
 	        this.patchNumber = productVersion.getPatch();
 	        
+	        //Get the ID of the currently authenticated user
+	        RemoteUser remoteUser = soap.userRetrieveByUserName(userName);
+	        if (remoteUser != null)
+	        {
+	        	this.authenticatedUserId = remoteUser.getUserId();
+	        }
 	        
 	        return success;
 		}
@@ -1264,11 +1275,12 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 				RemoteIncidentResolution remoteIncidentResolution = new RemoteIncidentResolution();
 				remoteIncidentResolution.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(date));
 				//TODO: When the API is capable of setting to the authenticated user as default
-				//we can remove this code
+				//we can remove this code, and save on having to get the info from the web
+				//service in the first place
 				int creatorId = incident.getOpenerId();
-				if (incident.getOwnerId() != null)
+				if (this.authenticatedUserId != null)
 				{
-					creatorId = incident.getOwnerId().intValue();
+					creatorId = this.authenticatedUserId.intValue();
 				}
 				remoteIncidentResolution.setCreatorId(creatorId);
 				remoteIncidentResolution.setIncidentId(incident.getArtifactId());

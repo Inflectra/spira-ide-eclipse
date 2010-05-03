@@ -4,6 +4,8 @@
 package com.inflectra.spirateam.mylyn.core.internal;
 
 import java.net.MalformedURLException;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -693,13 +695,16 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			{
 				return null;
 			}
-			Double doubleValue = new Double(stringValue);
+			NumberFormat fmt = NumberFormat.getInstance();
+			Number number = fmt.parse(stringValue);
+
+			double doubleValue = number.doubleValue();
 			
 			//Next we need to convert into a whole number of minutes
 			doubleValue = doubleValue * 60;
-			return doubleValue.intValue();
+			return new Double(doubleValue).intValue();
 		}
-		catch (NumberFormatException ex)
+		catch (ParseException ex)
 		{
 			//Convert into data validation exception
 			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsNotValidEffort, attribute.toString()));

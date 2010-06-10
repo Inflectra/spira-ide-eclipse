@@ -19,7 +19,7 @@ public class SpiraTeamImages
 	public static final ImageDescriptor OVERLAY_REQUIREMENT = create(PREFIX_OVERLAYS, "requirement.gif"); //$NON-NLS-1$
 	public static final ImageDescriptor OVERLAY_TASK = create(PREFIX_OVERLAYS, "task.gif"); //$NON-NLS-1$
 	public static final ImageDescriptor OVERLAY_INCIDENT = create(PREFIX_OVERLAYS, "incident.gif"); //$NON-NLS-1$
-	public static final ImageDescriptor OVERLAY_SPIRA = create(PREFIX_OVERLAYS, "spira.gif"); //$NON-NLS-1$
+	public static final ImageDescriptor OVERLAY_SPIRA = create(PREFIX_OVERLAYS, "smarteqm.gif"); //$NON-NLS-1$
 	
 	private static ImageDescriptor create(String prefix, String name)
 	{

@@ -7,15 +7,15 @@
          point="org.eclipse.mylyn.tasks.ui.repositories">
       <connectorCore
             class="com.smartesoft.smarteqm.mylyn.core.internal.SpiraTeamRepositoryConnector"
-            id="spira"
+            id="smarteqm"
             name="%connectorCore.name">
       </connectorCore>
       <connectorUi
-            brandingIcon="icons/spira.gif"
+            brandingIcon="icons/smarteqm.gif"
             class="com.smartesoft.smarteqm.mylyn.ui.internal.SpiraTeamConnectorUi"
-            id="spira"
+            id="smarteqm"
             name="%connectorUi.name"
-            overlayIcon="icons/overlays/spira.gif">
+            overlayIcon="icons/overlays/smarteqm.gif">
       </connectorUi>
    </extension>
    <extension

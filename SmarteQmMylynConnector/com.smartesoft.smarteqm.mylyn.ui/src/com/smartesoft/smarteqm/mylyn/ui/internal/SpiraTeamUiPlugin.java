@@ -9,7 +9,7 @@ import org.osgi.framework.BundleContext;
 public class SpiraTeamUiPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "com.inflectra.spirateam.mylyn.ui"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = "com.smartesoft.smarteqm.mylyn.ui"; //$NON-NLS-1$
 
 	// The shared instance
 	private static SpiraTeamUiPlugin plugin;

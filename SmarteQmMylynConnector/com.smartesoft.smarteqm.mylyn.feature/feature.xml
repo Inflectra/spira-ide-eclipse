@@ -1,445 +1,224 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="com.inflectra.spirateam.mylyn.feature"
-      label="SpiraTeam Feature"
+      id="com.smartesoft.smarteqm.mylyn.feature"
+      label="SmarteQM Feature"
       version="2.3.1.qualifier"
-      provider-name="Inflectra Corporation"
-      plugin="com.inflectra.spirateam.mylyn.ui">
+      provider-name="SmarteSoft, Inc."
+      plugin="com.smartesoft.smarteqm.mylyn.ui">
 
-   <description url="http://www.inflectra.com/SpiraTeam/Downloads">
-      This feature integrates SpiraTeam with Eclipse using the Mylyn
+   <description url="http://www.smartesoft.com/SmarteQM/Downloads">
+      This feature integrates SmarteQM with Eclipse using the Mylyn
 task-focused interface. Useful for developers who want to be
 able to review requirements, complete tasks and fix incidents
 from within their existing Eclipse IDE user interface.
    </description>
 
-   <copyright url="http://www.inflectra.com/SpiraTeam/Downloads">
-      Copyright (C) 2006-2010 Inflectra Corporation
+   <copyright url="http://www.smartesoft.com/SmarteQM">
+      Copyright (C) 2006-2010 SmarteSoft Inc
    </copyright>
 
-   <license url="http://www.inflectra.com/Company/Legal%20Notices.aspx">
-      End User License Agreement
-INFLECTRA SOFTWARE END USER LICENSE AGREEMENT
-IMPORTANT: THIS SOFTWARE END USER LICENSE AGREEMENT (“EULA”)
-IS A LEGAL AGREEMENT BETWEEN YOU AND INFLECTRA. READ IT CAREFULLY
-BEFORE COMPLETING THE INSTALLATION PROCESS AND USING THE SOFTWARE.
-IT PROVIDES A LICENSE TO USE THE SOFTWARE AND CONTAINS WARRANTY
-INFORMATION AND LIABILITY DISCLAIMERS. BY INSTALLING AND USING
-THE SOFTWARE, YOU ARE CONFIRMING YOUR ACCEPTANCE OF THE SOFTWARE
-AND AGREEING TO BECOME BOUND BY THE TERMS OF THIS AGREEMENT.
-IF YOU DO NOT AGREE TO BE BOUND BY THESE TERMS, THEN DO NOT INSTALL
-THE SOFTWARE AND RETURN THE SOFTWARE TO YOUR PLACE OF PURCHASE
-FOR A FULL REFUND.
-THIS EULA SHALL APPLY ONLY TO THE SOFTWARE SUPPLIED BY INFLECTRA
-HEREWITH REGARDLESS OF WHETHER OTHER SOFTWARE IS REFERRED TO
-OR DESCRIBED HEREIN.
-1. Definitions
-(a) “Bundle” means the Software, together with such other Inflectra
-software product, if any, distributed with the Software that
-may be operated on the same type of computer on which the Software
-is operated. 
-(b) “Commercial Version” means a version of the Software that
-is neither a Developer Version, an Academic Version, Government
-Version, a Not For Resale Version, nor a Trial Version. 
-(c) “Concurrent-User-Based Software” means, if applicable, SpiraTest
-Express, Economy, Standard, and Professional editions 
-(d) “Developer Version” means a version of the Software, so identified,
-to be used internally only and solely for the purposes of design,
-development and evaluation. 
-(e) “CPU-Based Software” means, if applicable, a Software that
-is neither a Server-Based Software nor a Concurrent-User-Based
-Software.
-(r) &quot;Academic Version&quot; means a version of the Software, so identified,
-for use by qualified academic educational institutions, including
-the students and faculty thereof, only. 
-(g) &quot;Government Version&quot; means a version of the Software, so
-identified, for use by qualified U.S. Government Agencies, including
-any supporting contractors, only.  In this instance, the Software
-is provided to the U.S. Government as commercial computer software
-under FAR 12.212 and DFARS 227.7202, or an equivalent provision
-(e.g., in supplements of various U.S. government agencies, as
-applicable).
-(h) &quot;Not For Resale (NFR) Version&quot; means a version, so identified,
-of the Software to be used to review and evaluate the Software,
-only.
-(i) &quot;Inflectra&quot; means Inflectra Corporation and its licensors
-or affiliates, if any. 
-(j) “Sample Application Code” shall have the meaning ascribed
-to it in Section 2(d) of this Agreement. 
-(k) “Server-Based Software” means, if applicable a Software that
-is to be installed solely on one server within an organization.
-(l) “Enterprise-Based Software” means, if applicable a Software
-that is to be installed solely within an organization and its
-legal subsidiaries, but not at any third-parties (including but
-not limited to customers, vendors, partners or clients). SpiraTest
-Enterprise edition is an example of this.
-(m) &quot;Software&quot; means only the Inflectra software program(s) and
-third party software programs, in each case, supplied by Inflectra
-herewith, and corresponding documentation, associated media,
-printed materials, and online or electronic documentation. 
-(n) &quot;Trial Version&quot; means a version of the Software, so identified,
-to be used only to review, demonstrate and evaluate the Software
-for a limited time period. The Trial Version may have limited
-features, may lack the ability for the end-user to save the end
-product, and will cease operating after a predetermined amount
-of time due to an internal mechanism within the Trial Version.
-(o) “Organization” means the legal entity purchasing the software.
-In the case of local, state, territory or federal governments,
-organization will be limited to the specific department or statutory
-agency of Government purchasing the license.
-2. License Grants 
-The licenses granted in this Section 2 are subject to the terms
-and conditions set forth in this EULA:
-(a) If the Software is (i) a Developer Version, (ii) a Trial
-Version, or (iii) any version of a Server-Based Software, this
-Section 2(a), and not Section 2(b) nor Section 2(c), shall apply:
-Subject to the terms and conditions of this Agreement, Inflectra
-hereby grants, and you accept, the right and license to install
-and use the Software on a single computer. A license for the
-Software may not be shared, installed nor used concurrently on
-different computers. 
-(b) If the Software is a (i) Commercial Version, (ii) Academic
-Version, (iii) Government Version or (iv) Not For Resale Version,
-in each case, of a CPU-Based Software, this Section 2(b), and
-not Section 2(a) nor Section 2(c), shall apply: Subject to the
-terms and conditions of this Agreement, Inflectra hereby grants,
-and you accept, the right and license to install and use the
-Software on one or more computers, provided, however, that the
-total number of CPUs from all of the computers in which the Software
-is installed does not exceed the total number of CPU licenses
-purchased for such installation and use. 
-(c) If the Software is a (i) Commercial Version, (ii) Academic
-Version, (iii) Government Version or (iv) Not For Resale Version,
-in each case, of a Concurrent-User-Based Software, this Section
-2(c), and not Section 2(a) nor Section 2(b), shall apply: Subject
-to the terms and conditions of this Agreement, Inflectra hereby
-grants, and you accept, the right and license to install and
-use the Software on one or more computers, provided, however,
-that the total number of individuals who may simultaneously access
-the Software, or the presentation, information, or content displayed
-or delivered using the Software, may not exceed the concurrent-user
-licenses purchased for such installation and use. 
-(d) If the Software is any version of an Enterprise-Based Software,
-this Section 2(d), and not the preceding Sections 2(a), 2(b)
-nor Section 2(c), shall apply: Subject to the terms and conditions
-of this Agreement, Inflectra hereby grants, and you accept, the
-right and license to install and use the Software on an unlimited
-number of computers within a legal organization and its wholly
-owned subsidiaries.. A license for the Software may not be shared,
-installed nor used concurrently with third-parties including
-but not limited to customers, vendors, partners or clients. 
-(e) For Sample Application Code, if any, only: You may modify
-the HTML, ASPX, C#, JavaScript, DHTML, XSLT, or similar sample
-application code form of those portions of the Software that
-are identified, if any, as sample application code in the documentation
-(the &quot;Sample Application Code&quot;) solely for the purposes of designing,
-developing and testing your own software applications. However,
-you are permitted to use, copy and redistribute your modified
-sample code only if all of the following conditions are met:
-(A) you include Inflectra’s copyright notice (if any) with your
-application, including every location in which any other copyright
-notice appears in your application; (B) you do not otherwise
-use Inflectra&apos;s name, logos or other Inflectra trademarks to
-market your application; (C) there is installed and running on
-each server in conjunction with which your application is running
-one or more duly licensed copies, as required, of the Commercial
-Version, Government Version or, if applicable and subject to
-Section 3(f) hereof, Academic Version; and (D) such modified
-sample code is designed to operate only in connection with the
-Software. You agree to indemnify, hold harmless and defend Inflectra
-from and against any loss, damage, claims or lawsuits, including
-attorney&apos;s fees that arise or result from the use or distribution
-of your application. 
-(f) You may make one copy of the Software in machine-readable
-form solely for backup purposes. You must reproduce on any such
-copy all copyright notices and any other proprietary legends
-on the original copy of the Software.
-(g) You agree that Inflectra may audit your use of the Software
-for compliance with these terms at any time, upon reasonable
-notice. In the event that such audit reveals any use of the Software
-by you other than in full compliance with the terms of this Agreement,
-you shall reimburse Inflectra for all reasonable expenses related
-to such audit in addition to any other liabilities you may incur
-as a result of such non-compliance. 
-(h) Your license rights under this EULA are non-exclusive.
-3. License Restrictions
-Except to the extent contrary to applicable law:
-(a) Other than as expressly set forth in Section 2, you may not
-make or distribute copies of the Software, or electronically
-transfer the Software from one computer to another or over a
-network. 
-(b) You may not alter, merge, adapt or translate the Software,
-or decompile, reverse engineer, disassemble, or otherwise reduce
-the Software to a human-perceivable form. 
-(c) Unless otherwise provided herein, you may not rent, lease,
-or sublicense the Software. Unless otherwise expressly authorized
-in a separate written agreement between, and executed by, you
-and Inflectra, you may not use, or permit the use of, the Software
-on a timeshare or service bureau basis. In addition, unless otherwise
-expressly authorized in a separate written agreement between,
-and executed by, you and Inflectra, you may not host, on a subscription
-basis or otherwise, the Software (1) to permit a third party
-to use the Software to create any content, or (2) to conduct
-conferences or on-line meeting services for a third party. 
-(d) Other than with respect to a Trial Version, Developer Version
-or a Not For Resale Version of the Software, you may permanently
-transfer all of your rights under this EULA only as part of a
-sale or transfer, provided you retain no copies, you transfer
-all of the Software (including all component parts, the media
-and printed materials, any upgrades, this EULA, the serial numbers,
-and, if applicable, all other software products provided together
-with the Software), and the recipient agrees to the terms of
-this EULA. If the Software is an upgrade, any transfer must include
-all prior versions of the Software from which you are upgrading.
-If the copy of the Software is licensed as part of the Bundle,
-the Software shall be transferred only with and as part of the
-sale or transfer of the whole Bundle and not separately. You
-may retain no copies of the Software. You may not sell or transfer
-any Software purchased under a volume discount. You may not sell
-or transfer any Trial Version, Developer Version or Not For Resale
-Version of the Software. 
-(e) Other than as expressly set forth in Section 2(d) hereof,
-you may not modify the Software or create derivative works based
-upon the Software. 
-(f) Academic Versions may not be used for, or distributed to
-any party for, any commercial purpose. 
-(g) Unless otherwise provided herein, you shall not (A) in the
-aggregate, install or use more than one copy of the Trial Version
-of the Software, (B) download the Trial Version of the Software
-under more than one username, (C) alter the contents of a hard
-drive or computer system to enable the use of the Trial Version
-of the Software for an aggregate period in excess of the trial
-period for one license to such Trial Version, (D) disclose the
-results of software performance benchmarks obtained using the
-Trial Version to any third party without Inflectra’s prior written
-consent, (E) use the Trial Version for any application deployment
-or ultimate production purpose, or (F) use the Trial Version
-of the Software for a purpose other than the sole purpose of
-determining whether to purchase a license to a commercial or
-academic version of the software; provided, however, notwithstanding
-the foregoing, you are strictly prohibited from installing or
-using the Trial Version of the Software for any commercial training
-purpose. 
-(h) You shall not (A) use the Developer Version for any application
-deployment in a live or stand-by production environment or staging
-environment, in each case, including, without limitation, in
-any environment accessed by application end-users including but
-not limited to servers, workstations, kiosks, and mobile computers
-, (B) use or deploy the Developer Version other than internally
-for the sole purpose of designing, developing, and evaluating
-applications pursuant to the terms and conditions set forth in
-this EULA, (C) access the Developer Version from more than five
-IP addresses at any given time, or (D) use the Developer Version
-to deploy applications that are accessed by end users. 
-(i) You shall not use the Software to develop any application
-having the same primary function as the Software. 
-(j) You may only use the Not for Resale Version of the Software
-to review and evaluate the Software. 
-(k) You may not export the Software into any country prohibited
-by the United States Export Administration Act and the regulations
-thereunder. 
-(l) You may receive the Software in more than one medium but
-you shall only install or use one medium. Regardless of the number
-of media you receive, you may use only the medium that is appropriate
-for the computer on which the Software is to be installed. 
-(m) The license of the Bundle is licensed as a single product
-and none of the products in the Bundle, including the Software,
-may be separated for installation or use on more than one computer.
-(n) In the event that you fail to comply with this EULA, Inflectra
-may terminate the license and you must destroy all copies of
-the Software (with all other rights of both parties and all other
-provisions of this EULA surviving any such termination).
-4. Upgrades and Bundles
-If this copy of the Software is an upgrade from an earlier version
-of the Software, it is provided to you on a license exchange
-basis. You agree by your installation and use of such copy of
-the Software to voluntarily terminate your earlier EULA and that
-you will not continue to use the earlier version of the Software
-or transfer it to another person or entity unless such transfer
-is pursuant to Section 3(d). If this copy of the Software is
-licensed as part of the Bundle, and you have a prior license
-to the same version of the Software, and the Bundle was licensed
-to you with a discount based, in whole or in part, on your prior
-license to the same version of the Software, the Software is
-provided to you on a license exchange basis. You agree by your
-installation and use of this copy of the Software to voluntarily
-terminate your EULA with respect to such prior license to the
-Software and that you will not continue to install or use such
-prior license of the Software or transfer it to another person
-or entity.
-5. Ownership
-The foregoing grants of rights give you limited license to use
-the Software. Except as expressly provided in this Agreement,
-Inflectra and its suppliers retain all right, title and interest,
-including all copyright and intellectual property rights, in
-and to, the Software (as an independent work and as an underlying
-work serving as a basis for any improvements, modifications,
-derivative works, and applications you may develop), and all
-copies thereof. All rights not specifically granted in this EULA,
-including Federal and International Copyrights, are reserved
-by Inflectra and its suppliers.
-6. LIMITED WARRANTY AND DISCLAIMER
-(a) Except with respect to the Sample Application Code and the
-Trial Version, the Developer Version and Not For Resale Version
-of the Software, Inflectra warrants that, for a period of ninety
-(90) days from the date of delivery (as evidenced by a copy of
-your receipt): (i) when used with a recommended hardware configuration,
-the Software will perform in substantial conformance with the
-documentation supplied with the Software; and (ii) the physical
-media on which the Software is furnished will be free from defects
-in materials and workmanship under normal use. 
-(b) INFLECTRA PROVIDES NO REMEDIES OR WARRANTIES, WHETHER EXPRESS
-OR IMPLIED, FOR THE SAMPLE APPLICATION CODE OR THE TRIAL VERSION,
-THE DEVELOPER VERSION AND THE NOT FOR RESALE VERSION OF THE SOFTWARE.
-THE SAMPLE APPLICATION CODE AND THE TRIAL VERSION, THE DEVELOPER
-VERSION AND THE NOT FOR RESALE VERSION OF THE SOFTWARE ARE PROVIDED
-“AS IS”. 
-(c) EXCEPT AS SET FORTH IN THE FOREGOING LIMITED WARRANTY WITH
-RESPECT TO SOFTWARE OTHER THAN THE SAMPLE APPLICATION CODE AND
-THE TRIAL VERSION, THE DEVELOPER VERSION AND NOT FOR RESALE VERSION,
-INFLECTRA AND ITS SUPPLIERS DISCLAIM ALL OTHER WARRANTIES AND
-REPRESENTATIONS, WHETHER EXPRESS, IMPLIED, OR OTHERWISE, INCLUDING
-THE WARRANTIES OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR
-PURPOSE. ALSO, THERE IS NO WARRANTY OF NON-INFRINGEMENT AND TITLE
-OR QUIET ENJOYMENT. INFLECTRA DOES NOT WARRANT THAT THE SOFTWARE
-IS ERROR-FREE OR WILL OPERATE WITHOUT INTERRUPTION. NO RIGHTS
-OR REMEDIES REFERRED TO IN ARTICLE 2A OF THE UCC WILL BE CONFERRED
-ON YOU UNLESS EXPRESSLY GRANTED HEREIN. THE SOFTWARE IS NOT DESIGNED,
-INTENDED OR LICENSED FOR USE IN HAZARDOUS ENVIRONMENTS REQUIRING
-FAIL-SAFE CONTROLS, INCLUDING WITHOUT LIMITATION, THE DESIGN,
-CONSTRUCTION, MAINTENANCE OR OPERATION OF NUCLEAR FACILITIES,
-AIRCRAFT NAVIGATION OR COMMUNICATION SYSTEMS, AIR TRAFFIC CONTROL,
-AND LIFE SUPPORT OR WEAPONS SYSTEMS. INFLECTRA SPECIFICALLY DISCLAIMS
-ANY EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR SUCH PURPOSES.
-(d) IF APPLICABLE LAW REQUIRES ANY WARRANTIES WITH RESPECT TO
-THE SOFTWARE, ALL SUCH WARRANTIES ARE LIMITED IN DURATION TO
-NINETY (90) DAYS FROM THE DATE OF DELIVERY. 
-(e) NO ORAL OR WRITTEN INFORMATION OR ADVICE GIVEN BY INFLECTRA,
-ITS DEALERS, DISTRIBUTORS, AFFILIATES, AGENTS OR EMPLOYEES SHALL
-CREATE A WARRANTY OR IN ANY WAY INCREASE THE SCOPE OF ANY WARRANTY
-PROVIDED HEREIN.
-(f) SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OF IMPLIED
-WARRANTIES, SO THE ABOVE EXCLUSION MAY NOT APPLY TO YOU. THIS
-WARRANTY GIVES YOU SPECIFIC LEGAL RIGHTS AND YOU MAY ALSO HAVE
-OTHER LEGAL RIGHTS THAT VARY FROM STATE TO STATE.
-7. Exclusive Remedy
-Your exclusive remedy under the preceding is to return the Software
-to the place you acquired it, with a copy of your receipt and
-a description of the problem. Provided that any non-compliance
-with the above warranty is reported in writing to Inflectra no
-more than ninety (90) days following delivery to you, Inflectra
-will use reasonable commercial efforts to supply you with a replacement
-copy of the Software that substantially conforms to the documentation,
-provide a replacement for defective media, or refund to you your
-purchase price for the Software, at its option. Inflectra shall
-have no responsibility if the Software has been altered in any
-way, if the media has been damaged by misuse, accident, abuse,
-modification or misapplication, or if the failure arises out
-of use of the Software with other than a recommended hardware
-configuration. Any such misuse, accident, abuse, modification
-or misapplication of the Software will void the warranty above.
-THIS REMEDY IS THE SOLE AND EXCLUSIVE REMEDY AVAILABLE TO YOU
-FOR BREACH OF EXPRESS OR IMPLIED WARRANTIES WITH RESPECT TO THE
-SOFTWARE AND RELATED DOCUMENTATION.
-8. LIMITATION OF LIABILITY
-(a) NEITHER INFLECTRA NOR ITS SUPPLIERS SHALL BE LIABLE TO YOU
-OR ANY THIRD PARTY FOR ANY INDIRECT, SPECIAL, INCIDENTAL, PUNITIVE,
-COVER OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-DAMAGES FOR THE INABILITY TO USE EQUIPMENT OR ACCESS DATA, LOSS
-OF BUSINESS, LOSS OF PROFITS, BUSINESS INTERRUPTION OR THE LIKE),
-ARISING OUT OF THE USE OF, OR INABILITY TO USE, THE SOFTWARE
-AND BASED ON ANY THEORY OF LIABILITY INCLUDING BREACH OF CONTRACT,
-BREACH OF WARRANTY, TORT (INCLUDING NEGLIGENCE), PRODUCT LIABILITY
-OR OTHERWISE, EVEN IF INFLECTRA OR ITS REPRESENTATIVES HAVE BEEN
-ADVISED OF THE POSSIBILITY OF SUCH DAMAGES AND EVEN IF A REMEDY
-SET FORTH HEREIN IS FOUND TO HAVE FAILED OF ITS ESSENTIAL PURPOSE.
-(b) INFLECTRA’S TOTAL LIABILITY TO YOU FOR ACTUAL DAMAGES FOR
-ANY CAUSE WHATSOEVER WILL BE LIMITED TO THE GREATER OF $500 OR
-THE AMOUNT PAID BY YOU FOR THE SOFTWARE THAT CAUSED SUCH DAMAGE.
-(c) SOME JURISDICTIONS DO NOT ALLOW THE LIMITATION OR EXCLUSION
-OF LIABILITY FOR INCIDENTAL OR CONSEQUENTIAL DAMAGES, SO THE
-ABOVE LIMITATION OR EXCLUSION MAY NOT APPLY TO YOU AND YOU MAY
-ALSO HAVE OTHER LEGAL RIGHTS THAT VARY FROM STATE TO STATE. 
-(d) THE FOREGOING LIMITATIONS ON LIABILITY ARE INTENDED TO APPLY
-TO THE WARRANTIES AND DISCLAIMERS ABOVE AND ALL OTHER ASPECTS
-OF THIS EULA.
-9. Basis of Bargain
-The Limited Warranty and Disclaimer, Exclusive Remedies and Limitation
-of Liability set forth above are fundamental elements of the
-basis of the agreement between Inflectra and you. Inflectra would
-not be able to provide the Software on an economic basis without
-such limitations. Such Limited Warranty and Disclaimer, Exclusive
-Remedies and Limitation of Liability inure to the benefit of
-Inflectra’s licensors.
-10. U.S. GOVERNMENT RESTRICTED RIGHTS LEGEND
-This Software and the documentation are provided with &quot;RESTRICTED
-RIGHTS” applicable to private and public licenses alike. Without
-limiting the foregoing, use, duplication, or disclosure by the
-U.S. Government is subject to restrictions as set forth in this
-EULA and as provided in DFARS 227.7202-1(a) and 227.7202-3(a)
-(1995), DFARS 252.227-7013 (c)(1)(ii)(OCT 1988), FAR 12.212(a)(1995),
-FAR 52.227-19, or FAR 52.227-14, as applicable. Manufacturer:
-Inflectra Corporation, 10301 Julep Avenue, Silver Spring, MD
-20902.
-11. (Outside of the USA) Consumer End Users Only
-The limitations or exclusions of warranties and liability contained
-in this EULA do not affect or prejudice the statutory rights
-of a consumer, i.e., a person acquiring goods otherwise than
-in the course of a business.
-The limitations or exclusions of warranties, remedies or liability
-contained in this EULA shall apply to you only to the extent
-such limitations or exclusions are permitted under the laws of
-the jurisdiction where you are located. 
-12. Third Party Software
-The Software may contain third party software which requires
-notices and/or additional terms and conditions. Such required
-third party software notices and/or additional terms and conditions
-are located at http://www.inflectra.com/Company/Legal%20Notices.aspx
-and are made a part of and incorporated by reference into this
-EULA. By accepting this EULA, you are also accepting the additional
-terms and conditions, if any, set forth therein.
-13. General
-This EULA shall be governed by the internal laws of the State
-of Maryland, without giving effect to principles of conflict
-of laws. You hereby consent to the exclusive jurisdiction and
-venue of the state courts sitting in the Sixth (6) Judicial Circuit,
-Maryland or the federal courts in the Federal Judicial District
-of Maryland to resolve any disputes arising under this EULA.
-In each case this EULA shall be construed and enforced without
-regard to the United Nations Convention on the International
-Sale of Goods. 
-This EULA contains the complete agreement between the parties
-with respect to the subject matter hereof, and supersedes all
-prior or contemporaneous agreements or understandings, whether
-oral or written. You agree that any varying or additional terms
-contained in any purchase order or other written notification
-or document issued by you in relation to the Software licensed
-hereunder shall be of no effect. The failure or delay of Inflectra
-to exercise any of its rights under this EULA or upon any breach
-of this EULA shall not be deemed a waiver of those rights or
-of the breach.
-No Inflectra dealer, agent, affiliate or employee is authorized
-to make any amendment to this EULA.
-If any provision of this Agreement shall be held by a court of
-competent jurisdiction to be contrary to law, that provision
-will be enforced to the maximum extent permissible, and the remaining
-provisions of this Agreement will remain in full force and effect.
-All questions concerning this EULA shall be directed to: Inflectra
-Corporation, 10301 Julep Avenue, Silver Spring, MD 20902, Attention:
-General Counsel.
-Inflectra, SpiraTest and other trademarks contained in the Software
-are trademarks or registered trademarks of Inflectra Corporation
-in the United States and/or other countries. Third party trademarks,
-trade names, product names and logos may be the trademarks or
-registered trademarks of their respective owners. You may not
-remove or alter any trademark, trade names, product names, logo,
-copyright or other proprietary notices, legends, symbols or labels
-in the Software. This EULA does not authorize you to use Inflectra’s
-or its licensors’ names or any of their respective trademarks.
+   <license url="http://www.smartesoft.com/SmarteQM">
+ SMARTESOFT SOFTWARE EVALUATION AGREEMENT
+
+The Products (defined below) are subject to the terms and conditions of this Software Evaluation Agreement
+(“Agreement”). Accordingly, You (defined below) automatically accept the Products under the terms and conditions of this
+Agreement (and are bound hereunder) when You click “Accept” (“Effective Date”), as You download a Product from
+SmarteSoft, Inc. (“SmarteSoft”) or install a Product on a computer system. If You do not want to accept the Products
+under the terms and conditions of this Agreement, then: (a) do not click “Accept”; (b) before installing a Product on a
+computer system, destroy all originals and copies of the Products in Your possession, custody or control; and (c) certify in
+writing to SmarteSoft that all such originals and copies have been so destroyed before such installation. Under this
+Agreement, You and SmarteSoft are each a “party” and collectively the “parties.”
+
+“You” means the person who downloads a software product from SmarteSoft or installs a software product from
+SmarteSoft on a computer system. Any such software product is referenced herein as a “Product.” If You download or
+install any revision or revised version of a Product, the definition of Products will automatically include such revision or
+revised version.
+
+1. LICENSE
+SmarteSoft hereby grants You a nonexclusive, nontransferable, nonsublicensable, revocable license under SmarteSoft’s
+intellectual property rights to: (a) install and use the Products, but only for the Purpose (defined below), on one (1) server
+that has one (1) concurrent user; and (b) reproduce the Products, but only for the Purpose, as reasonably necessary for
+such installation or use.
+
+“Purpose” means Your personal testing, for only a non-commercial non-profit purpose, of: (a) software in which You own
+the intellectual property rights; or (b) software for which You receive SmarteSoft’s prior written consent to such testing on
+a software-by-software basis.
+
+2. PAYMENTS
+
+2.1 Taxes. You are responsible for, and will pay, all taxes, duties, levies and similar charges (including any related
+interest and penalties), irrespective of how designated, in connection with the existence of (or activity under) this
+Agreement. You will reimburse and indemnify SmarteSoft and hold SmarteSoft harmless for all such taxes, duties, levies
+and charges that SmarteSoft is required to collect or remit to applicable authorities.
+
+2.2 Costs & Expenses. You will bear all of Your own costs and expenses in performing Your activity under this
+Agreement (including, but not limited to, costs and expenses for supplies, facilities, utilities, management, employees,
+travel, accommodation, and non-party intellectual property rights).
+
+3. TERM & TERMINATION
+
+3.1 Term. The term of this Agreement will begin on the Effective Date and will continue in effect until it is terminated
+under Section 3.2.
+
+3.2 Breach. SmarteSoft may terminate this Agreement, effective immediately upon SmarteSoft informing You of
+such termination.
+
+3.3 Effect. Immediately upon termination of this Agreement: (a) all licenses to You under this Agreement are
+automatically revoked; and (b) except as specified in Section 3.3(a), all other provisions of this Agreement will survive
+beyond such termination in accordance with their terms and conditions.
+
+3.4 Return of Products & Material. Promptly after termination of this Agreement, You will: (a) either deliver to
+SmarteSoft or destroy all originals and copies (irrespective of whether complete or partial) of Products in Your possession,
+custody or control; (b) certify in writing to SmarteSoft that all such originals and copies have been so delivered or
+destroyed; and (c) cease Your activity with Products.
+
+4. INDEMNIFICATION
+
+If a non-party’s claim against SmarteSoft arises from Your breach of this Agreement, You will indemnify SmarteSoft for all
+amounts (e.g., damages and costs) owed by SmarteSoft to such non-party as a result of: (a) such claim; or (b) settlement
+of such claim. Under this Section 4, You will also promptly reimburse SmarteSoft for its reasonable attorneys’ fees in
+defending such claim and in conducting settlement negotiations.
+
+5. REPRESENTATIONS, DISCLAIMERS, LIMITATIONS & RESTRICTIONS
+
+5.1 Disclaimer. EXCEPT AS EXPRESSLY STATED TO THE CONTRARY ELSEWHERE IN THIS AGREEMENT,
+SMARTESOFT AND ITS NON-PARTY LICENSORS HEREBY EXPRESSLY DISCLAIM ALL REPRESENTATIONS AND
+WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO ANY WARRANTY OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NONINFRINGEMENT.
+
+5.2 Limitation of Liability. TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL
+SMARTESOFT OR ITS NON-PARTY LICENSORS BE LIABLE UNDER THIS AGREEMENT FOR ANY DIRECT,
+SPECIAL, INDIRECT, INCIDENTAL, CONSEQUENTIAL, PUNITIVE OR EXEMPLARY DAMAGES OF ANY KIND, EVEN
+IF IT WAS AWARE OF THE POSSIBILITY OF SUCH DAMAGES, AND NOTWITHSTANDING FAILURE OF ESSENTIAL
+PURPOSE OF ANY REMEDY.
+
+5.3 Aggregate Liability. IN NO EVENT WILL THE AGGREGATE LIABILITY OF SMARTESOFT (AND ITS NONPARTY
+LICENSORS) UNDER THIS AGREEMENT EXCEED ONE DOLLAR ($1.00), IRRESPECTIVE OF THE THEORY
+OF LIABILITY, AND IRRESPECTIVE OF THE TYPE OF ACTION OR NUMBER OF CLAIMS.
+
+5.4 High Risk Activity. You acknowledge, agree and understand that the Products are not fault-tolerant and that
+You will not (and will neither cause nor permit any non-party to) use any Product for hazardous environments requiring
+fail-safe performance, such as in the design, construction, operation or maintenance of any nuclear facility, aircraft control
+or aircraft navigation systems, air traffic control, mass transit, direct life support machines, or weapons systems, in which
+the failure of a Product could lead directly to death, personal injury, or severe physical or environmental damage (“High
+Risk Activity”). Accordingly, SMARTESOFT AND ITS NON-PARTY LICENSORS SPECIFICALLY DISCLAIM ANY
+EXPRESS OR IMPLIED WARRANTY OF FITNESS FOR HIGH RISK ACTIVITY.
+
+5.5 Restriction. Notwithstanding anything to the contrary in Section 1 or elsewhere in this Agreement, You
+represent, warrant and covenant that, even while exercising Your license under Section 1: (a) except as expressly
+permitted elsewhere in this Agreement, You will not (and will neither cause nor contractually permit any non-party to) use
+or reproduce any Product; (b) except as expressly permitted by applicable law that cannot be waived, You will not (and
+will neither cause nor contractually permit any non-party to) disassemble, decompile, decrypt, extract, or reverse engineer
+any Product, nor otherwise apply any procedure or process to any Product in a manner that ascertains, derives, reveals
+and/or appropriates the source code or source listings for any Product or for any algorithm, procedure, process or other
+information contained in any Product; and (c) You will not (and will neither cause nor contractually permit any non-party
+to) modify (e.g., prepare a derivative work based upon), sell, publish, or time share any Product, nor distribute (e.g.,
+import, export) nor sublicense any Product, nor use or examine any Product for the purpose of patent assertion.
+SmarteSoft will have no obligation to provide any service under this Agreement.
+
+5.6 Consideration. YOU RECOGNIZE AND HEREBY AGREE THAT THE WARRANTY DISCLAIMERS AND
+LIABILITY AND REMEDY LIMITATIONS IN THIS AGREEMENT ARE MATERIAL BARGAINED-FOR BASES OF THIS
+AGREEMENT AND HAVE BEEN TAKEN INTO ACCOUNT AND REFLECTED IN DETERMINING THE
+CONSIDERATION TO BE GIVEN BY EACH PARTY UNDER THIS AGREEMENT AND IN THE DECISION BY EACH
+PARTY TO ENTER INTO THIS AGREEMENT.
+
+6. MISCELLANEOUS
+
+6.1 Assignment. You must not assign or transfer any right or obligation under this Agreement without SmarteSoft’s
+written consent. A change in control is deemed an assignment subject to this Section. Any assignment, transfer, or
+attempted assignment or transfer, in violation of this Section, is null and void. SmarteSoft may assign or transfer this
+Agreement to any non-party, with or without Your consent. This Agreement inures to the benefit of SmarteSoft’s direct
+and indirect successors, assignees and transferees.
+
+6.2 Waiver. No breach of a provision of this Agreement will be deemed waived or excused, unless such waiver or
+excuse is in writing and signed by SmarteSoft. Under this Agreement, SmarteSoft’s consents and approvals may be
+withheld, delayed, conditioned or withdrawn at any time, for any or no reason, in SmarteSoft’s sole discretion.
+
+6.3 Legal Fees. All remedies are cumulative and may be exercised concurrently or separately. If any action is
+brought to enforce any provision of this Agreement or to declare a breach thereof, the prevailing party is entitled to
+recover, in addition to any other amounts awarded, actual reasonable legal and other related costs and expenses,
+including attorneys’ fees, incurred thereby.
+
+6.4 Governing Law. This Agreement is governed by and construed and interpreted under the laws of the State of
+Texas, USA, without reference to any rule of choice (or conflict) of laws. The United Nations Convention on Contracts for
+the International Sale of Goods will not apply to this Agreement.
+
+6.5 Dispute Resolution. Without diminishing either party’s rights under Section 6.6, any action involving any
+dispute, controversy or claim arising out of or relating to this Agreement or the subject matter thereof, including any
+question regarding its existence, validity, breach or termination, will be finally settled by binding arbitration in Austin,
+Texas, USA, under the then-current commercial arbitration rules of the American Arbitration Association (“Rules“) by three
+arbitrators in accordance with such Rules, as the sole dispute resolution mechanism. You and SmarteSoft will
+respectively nominate one arbitrator for confirmation by the competent authority under the applicable Rules (“Appointing
+Authority”). Both of such nominated arbitrators will agree on the third arbitrator within thirty (30) days; provided, however,
+that if such nominated arbitrators fail to reach such agreement within such thirty (30) days, then the Appointing Authority
+will appoint such third arbitrator. The procedural law of Texas will apply where the Rules are silent. The language to be
+used in the arbitration proceeding will be English. Judgment upon any award made in such arbitration may be entered
+and enforced in any court of competent jurisdiction.
+
+6.6 Equitable Relief. Notwithstanding anything to the contrary in this Agreement, in the event of a breach or
+threatened breach by You of any provision of this Agreement, You hereby acknowledge and agree that SmarteSoft has
+the right to seek immediate temporary or permanent injunctive relief, specific performance or other equitable relief, without
+prejudice to any other rights and remedies available to SmarteSoft under this Agreement.
+
+6.7 Headings. Titles and headings of paragraphs and sections within this Agreement are provided merely for
+convenience and will not be used or relied upon in construing this Agreement or the parties’ intentions with respect
+thereto.
+
+6.8 Enforceability. If any portion of this Agreement is determined to be or becomes unenforceable or illegal, then
+such portion will be reformed or eliminated to the minimum extent necessary for this Agreement to be enforceable and
+legal, and this Agreement will remain in effect in accordance with its provisions as modified by such reformation or
+elimination.
+
+6.9 Ownership. As between You and SmarteSoft, You acknowledge and agree that SmarteSoft is the sole owner
+throughout the world of all right, title and interest in and to the Products (including any copies thereof), together with all
+patents, copyrights, trade secrets and other intellectual property rights available therein, resulting therefrom, or granted
+pursuant thereto.
+
+6.10 Compliance. In performing Your activity under this Agreement, You will comply at all times with all then-current
+laws (including, but not limited to, foreign export laws and the United States export laws).
+
+6.11 Audit. You will maintain accurate and complete books and records of Your activity under this Agreement for a
+period of at least three (3) years after such activity, reasonably sufficient for SmarteSoft to verify Your compliance with this
+Agreement. SmarteSoft may audit such books and records and Your activity with the Products (e.g., Your installations
+and use of the Products) to verify Your compliance with this Agreement. You will reasonably cooperate in good faith with
+such audit. If any such audit reveals that You have materially breached this Agreement, You will reimburse SmarteSoft
+for its expenses incurred in conducting such audit. In conducting such audit, SmarteSoft may be assisted by its non-party
+consultants.
+
+6.12 Ordering Document. The terms and conditions of any ordering document (e.g., purchase order, order
+acknowledgement form) that originates from You in connection with this Agreement will not be binding on SmarteSoft.
+
+6.13 Restricted Rights. If a Product is being acquired by or on behalf of the U.S. Government or by a U.S.
+Government prime contractor or subcontractor (at any tier), then the Government’s rights in the Product are only
+“Restricted Rights” set forth in this Agreement, in accordance with 48 CFR 227.7201 through 227.7202-4 (for Department
+of Defense (“DOD”) acquisitions) and with 48 CFR 2.101 and 12.212 (for non-DOD acquisitions). Under this Section, the
+contractor and manufacturer is SmarteSoft, Inc., 400 West 15th Street, Suite 225, Austin, TX 78701.
+
+6.14 Non-party Modules. Notwithstanding anything to the contrary in this Agreement, if a software module of a
+Product is governed under a non-party copyright license that conflicts with this Agreement (“Non-party Module”), then
+such license (“Governing License”): (a) is identified, to SmarteSoft’s knowledge, within such Non-party Module or its
+documentation; (b) is neither limited, expanded, preempted, nor otherwise modified by this Agreement; and (c) will prevail
+over any conflicting provision of this Agreement (e.g., in governing Your permitted activity with such Non-party Module,
+and in governing any non-party’s obligation or liability concerning such Non-party Module). The parties hereby
+acknowledge and agree that no fee under this Agreement is attributable to any Non-party Module, notwithstanding
+anything to the contrary elsewhere in this Agreement.
+
+6.15 Order of Precedence. Notwithstanding anything to the contrary in this Agreement, if the parties have entered
+into a prior written agreement that was mutually signed by their respectively authorized representatives, and if this
+Agreement conflicts with such prior written agreement, then such prior written agreement will prevail to the extent of such
+conflict.
+
+6.16 Entire Agreement. This Agreement constitutes the sole and exclusive terms and conditions between the
+parties relating to the subject matter hereof, and supersedes all prior discussions, writings, negotiations, understandings
+and agreements with respect thereto, and will not be amended except by a written amendment that is accepted and
+agreed by each party. By accepting the Products under the terms and conditions of this Agreement, You acknowledge
+that You have read, understand and agree to this Agreement as being effective for all purposes as of the Effective Date,
+notwithstanding any other date set forth elsewhere.
+
    </license>
 
    <url>
-      <update label="Inflectra Download Site" url="http://www.inflectra.com/Downloads/Eclipse"/>
+      <update label="SmarteSoft Download Site" url="http://www.smartesoft.com/Downloads/Eclipse"/>
    </url>
 
    <requires>
@@ -447,14 +226,14 @@ or its licensors’ names or any of their respective trademarks.
    </requires>
 
    <plugin
-         id="com.inflectra.spirateam.mylyn.core"
+         id="com.smartesoft.smarteqm.mylyn.core"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="com.inflectra.spirateam.mylyn.ui"
+         id="com.smartesoft.smarteqm.mylyn.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"

@@ -1,4 +1,4 @@
-package com.inflectra.spirateam.mylyn.ui.internal.editor;
+package com.smartesoft.smarteqm.mylyn.ui.internal.editor;
 
 import java.util.Set;
 
@@ -8,9 +8,9 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 
-import com.inflectra.spirateam.mylyn.core.internal.ArtifactAttribute;
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamRepositoryConnector;
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamTaskDataHandler;
+import com.smartesoft.smarteqm.mylyn.core.internal.ArtifactAttribute;
+import com.smartesoft.smarteqm.mylyn.core.internal.SpiraTeamRepositoryConnector;
+import com.smartesoft.smarteqm.mylyn.core.internal.SpiraTeamTaskDataHandler;
 
 public class IncidentTypeModifyListener implements ModifyListener
 {

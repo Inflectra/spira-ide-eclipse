@@ -1,4 +1,4 @@
-package com.inflectra.spirateam.mylyn.ui.internal.wizards;
+package com.smartesoft.smarteqm.mylyn.ui.internal.wizards;
 
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
@@ -12,8 +12,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
-import com.inflectra.spirateam.mylyn.core.internal.model.PredefinedFilter;
+import com.smartesoft.smarteqm.mylyn.core.internal.SpiraTeamUtil;
+import com.smartesoft.smarteqm.mylyn.core.internal.model.PredefinedFilter;
 
 /**
  * Wizard page that allows the user to select a predefined SpiraTeam filter.

@@ -1,4 +1,4 @@
-package com.inflectra.spirateam.mylyn.ui.internal;
+package com.smartesoft.smarteqm.mylyn.ui.internal;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.inflectra.spirateam.mylyn.ui.internal.editor;
+package com.smartesoft.smarteqm.mylyn.ui.internal.editor;
 
 import org.eclipse.mylyn.tasks.ui.ITasksUiConstants;
 import org.eclipse.mylyn.tasks.ui.TasksUiImages;
@@ -13,8 +13,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.forms.editor.FormPage;
 import org.eclipse.mylyn.internal.provisional.commons.ui.CommonImages;
 
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
-import com.inflectra.spirateam.mylyn.ui.internal.SpiraTeamImages;
+import com.smartesoft.smarteqm.mylyn.core.internal.SpiraTeamCorePlugin;
+import com.smartesoft.smarteqm.mylyn.ui.internal.SpiraTeamImages;
 
 /**
  * @author Inflectra Corporation

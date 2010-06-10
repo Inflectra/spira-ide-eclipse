@@ -1,4 +1,4 @@
-package com.inflectra.spirateam.mylyn.ui.internal.editor;
+package com.smartesoft.smarteqm.mylyn.ui.internal.editor;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -21,10 +21,10 @@ import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.events.IHyperlinkListener;
 import org.eclipse.ui.forms.widgets.*;
 
-import com.inflectra.spirateam.mylyn.core.internal.ArtifactAttribute;
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamRepositoryConnector;
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamTaskDataHandler;
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
+import com.smartesoft.smarteqm.mylyn.core.internal.ArtifactAttribute;
+import com.smartesoft.smarteqm.mylyn.core.internal.SpiraTeamRepositoryConnector;
+import com.smartesoft.smarteqm.mylyn.core.internal.SpiraTeamTaskDataHandler;
+import com.smartesoft.smarteqm.mylyn.core.internal.SpiraTeamUtil;
 
 
 public class SpiraTeamActionsPart extends AbstractTaskEditorPart

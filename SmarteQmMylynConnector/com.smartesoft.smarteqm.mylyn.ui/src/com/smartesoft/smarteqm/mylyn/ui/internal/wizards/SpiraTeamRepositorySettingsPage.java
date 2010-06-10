@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.inflectra.spirateam.mylyn.ui.internal.wizards;
+package com.smartesoft.smarteqm.mylyn.ui.internal.wizards;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.Composite;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.inflectra.spirateam.mylyn.core.internal.*;
-import com.inflectra.spirateam.mylyn.core.internal.services.*;
-import com.inflectra.spirateam.mylyn.ui.internal.*;
+import com.smartesoft.smarteqm.mylyn.core.internal.*;
+import com.smartesoft.smarteqm.mylyn.core.internal.services.*;
+import com.smartesoft.smarteqm.mylyn.ui.internal.*;
 
 /**
  * Dialog used to specify a Spira repository address, username, and password.

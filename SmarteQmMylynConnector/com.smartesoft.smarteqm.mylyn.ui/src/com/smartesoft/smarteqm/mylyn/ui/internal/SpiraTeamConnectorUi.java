@@ -1,4 +1,4 @@
-package com.inflectra.spirateam.mylyn.ui.internal;
+package com.smartesoft.smarteqm.mylyn.ui.internal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,10 +14,10 @@ import org.eclipse.mylyn.tasks.ui.LegendElement;
 import org.eclipse.mylyn.tasks.ui.wizards.ITaskRepositoryPage;
 import org.eclipse.mylyn.tasks.ui.wizards.RepositoryQueryWizard;
 
-import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
-import com.inflectra.spirateam.mylyn.ui.internal.wizards.SpiraTeamNamedFilterPage;
-import com.inflectra.spirateam.mylyn.ui.internal.wizards.SpiraTeamRepositorySettingsPage;
+import com.smartesoft.smarteqm.mylyn.core.internal.ArtifactType;
+import com.smartesoft.smarteqm.mylyn.core.internal.SpiraTeamCorePlugin;
+import com.smartesoft.smarteqm.mylyn.ui.internal.wizards.SpiraTeamNamedFilterPage;
+import com.smartesoft.smarteqm.mylyn.ui.internal.wizards.SpiraTeamRepositorySettingsPage;
 
 public class SpiraTeamConnectorUi extends AbstractRepositoryConnectorUi
 {

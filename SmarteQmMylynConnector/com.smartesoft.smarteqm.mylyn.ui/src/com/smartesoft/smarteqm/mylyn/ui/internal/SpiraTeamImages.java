@@ -1,4 +1,4 @@
-package com.inflectra.spirateam.mylyn.ui.internal;
+package com.smartesoft.smarteqm.mylyn.ui.internal;
 
 import java.net.MalformedURLException;
 import java.net.URL;

@@ -1,4 +1,4 @@
-package com.inflectra.spirateam.mylyn.ui.internal.editor;
+package com.smartesoft.smarteqm.mylyn.ui.internal.editor;
 
 import org.eclipse.osgi.util.NLS;
 

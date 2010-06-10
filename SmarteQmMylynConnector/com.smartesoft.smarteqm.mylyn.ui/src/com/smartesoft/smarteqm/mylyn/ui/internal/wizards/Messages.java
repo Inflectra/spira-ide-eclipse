@@ -1,4 +1,4 @@
-package com.inflectra.spirateam.mylyn.ui.internal.wizards;
+package com.smartesoft.smarteqm.mylyn.ui.internal.wizards;
 
 import org.eclipse.osgi.util.NLS;
 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.inflectra.spirateam.mylyn.ui.internal.editor;
+package com.smartesoft.smarteqm.mylyn.ui.internal.editor;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -16,8 +16,8 @@ import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 
-import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
-import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
+import com.smartesoft.smarteqm.mylyn.core.internal.ArtifactType;
+import com.smartesoft.smarteqm.mylyn.core.internal.SpiraTeamCorePlugin;
 
 /**
  * @author Inflectra Corporation

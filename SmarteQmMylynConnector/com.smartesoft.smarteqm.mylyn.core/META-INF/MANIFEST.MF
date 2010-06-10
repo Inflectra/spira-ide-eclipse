@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
-Bundle-SymbolicName: com.inflectra.spirateam.mylyn.core;singleton:=true
+Bundle-SymbolicName: com.smartesoft.smarteqm.mylyn.core;singleton:=true
 Bundle-Version: 2.3.1.qualifier
 Bundle-Activator: com.smartesoft.smarteqm.mylyn.core.internal.SpiraTeamCorePlugin
 Bundle-Vendor: %Bundle-Vendor

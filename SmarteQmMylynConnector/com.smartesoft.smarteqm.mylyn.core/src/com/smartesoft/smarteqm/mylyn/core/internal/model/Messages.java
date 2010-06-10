@@ -4,7 +4,7 @@ import org.eclipse.osgi.util.NLS;
 
 public class Messages extends NLS
 {
-	private static final String BUNDLE_NAME = "com.inflectra.spirateam.mylyn.core.internal.model.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "com.smartesoft.smarteqm.mylyn.core.internal.model.messages"; //$NON-NLS-1$
 
 	static
 	{

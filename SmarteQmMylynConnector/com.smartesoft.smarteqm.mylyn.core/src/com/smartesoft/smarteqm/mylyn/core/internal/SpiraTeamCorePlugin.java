@@ -31,10 +31,10 @@ public class SpiraTeamCorePlugin extends Plugin
 {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "com.inflectra.spira.mylyn.core";	//$NON-NLS-1$
+	public static final String PLUGIN_ID = "com.smartesoft.smarteqm.mylyn.core";	//$NON-NLS-1$
 	
 	//The connector name and description
-	public final static String CONNECTOR_KIND = "spira";
+	public final static String CONNECTOR_KIND = "smarteqm";
 	public final static String LABEL = NLS.bind(Messages.SpiraTeamCorePlugin_SpiraTeam_description, "v2.3.1");	//$NON-NLS-1$
 
 	// The shared instance

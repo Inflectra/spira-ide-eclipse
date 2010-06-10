@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Compile com.inflectra.spirateam.mylyn.feature" default="main">
 	<target name="main">
-		<ant antfile="build.xml" dir="../com.inflectra.spirateam.mylyn.core" target="build.jars"/>
-		<ant antfile="build.xml" dir="../com.inflectra.spirateam.mylyn.ui" target="build.jars"/>
+		<ant antfile="build.xml" dir="../com.smartesoft.smarteqm.mylyn.core" target="build.jars"/>
+		<ant antfile="build.xml" dir="../com.smartesoft.smarteqm.mylyn.ui" target="build.jars"/>
 	</target>
 </project>

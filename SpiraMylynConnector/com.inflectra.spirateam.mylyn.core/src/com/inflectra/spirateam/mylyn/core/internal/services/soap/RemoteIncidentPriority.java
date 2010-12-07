@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="Active" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="Color" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="NameZ" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="Name" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="PriorityId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -52,7 +52,7 @@ public class RemoteIncidentPriority {
     protected Boolean active;
     @XmlElementRef(name = "Color", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<String> color;
-    @XmlElementRef(name = "NameZ", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "Name", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<String> nameZ;
     @XmlElementRef(name = "PriorityId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> priorityId;
@@ -113,7 +113,7 @@ public class RemoteIncidentPriority {
      *     {@link JAXBElement }{@code <}{@link String }{@code >}
      *     
      */
-    public JAXBElement<String> getNameZ() {
+    public JAXBElement<String> getName() {
         return nameZ;
     }
 
@@ -125,7 +125,7 @@ public class RemoteIncidentPriority {
      *     {@link JAXBElement }{@code <}{@link String }{@code >}
      *     
      */
-    public void setNameZ(JAXBElement<String> value) {
+    public void setName(JAXBElement<String> value) {
         this.nameZ = ((JAXBElement<String> ) value);
     }
 

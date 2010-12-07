@@ -30,9 +30,9 @@ public class ImportExport
         try {
             URL baseUrl;
             baseUrl = com.inflectra.spirateam.mylyn.core.internal.services.soap.ImportExport.class.getResource(".");
-            url = new URL(baseUrl, "file:/D:/WorkingFiles/ImportExport30.wsdl");
+            url = new URL(baseUrl, "http://localhost/SpiraTeam/Services/v3_0/ImportExport.svc?WSDL");
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: 'file:/D:/WorkingFiles/ImportExport30.wsdl', retrying as a local file");
+            logger.warning("Failed to create URL for the wsdl Location: 'http://localhost/SpiraTeam/Services/v3_0/ImportExport.svc?WSDL', retrying as a local file");
             logger.warning(e.getMessage());
         }
         IMPORTEXPORT_WSDL_LOCATION = url;

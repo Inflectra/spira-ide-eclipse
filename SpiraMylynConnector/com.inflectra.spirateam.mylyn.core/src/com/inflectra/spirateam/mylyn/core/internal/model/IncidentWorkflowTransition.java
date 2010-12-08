@@ -18,13 +18,13 @@ public class IncidentWorkflowTransition
     {
         this.executeByDetector = remoteWorkflowIncidentTransition.isExecuteByDetector();
         this.executeByOwner = remoteWorkflowIncidentTransition.isExecuteByOwner();
-        this.incidentStatusIDInput = remoteWorkflowIncidentTransition.getIncidentStatusIDInput();
-        this.incidentStatusNameInput = remoteWorkflowIncidentTransition.getIncidentStatusNameInput();
-        this.incidentStatusIDOutput = remoteWorkflowIncidentTransition.getIncidentStatusIDOutput();
-        this.incidentStatusNameOutput = remoteWorkflowIncidentTransition.getIncidentStatusNameOutput();
-        this.name = remoteWorkflowIncidentTransition.getName();
-        this.workflowID = remoteWorkflowIncidentTransition.getWorkflowID();
-        this.transitionID = remoteWorkflowIncidentTransition.getTransitionID();
+        this.incidentStatusIDInput = remoteWorkflowIncidentTransition.getIncidentStatusIdInput();
+        this.incidentStatusNameInput = remoteWorkflowIncidentTransition.getIncidentStatusNameInput().getValue();
+        this.incidentStatusIDOutput = remoteWorkflowIncidentTransition.getIncidentStatusIdOutput();
+        this.incidentStatusNameOutput = remoteWorkflowIncidentTransition.getIncidentStatusNameOutput().getValue();
+        this.name = remoteWorkflowIncidentTransition.getName().getValue();
+        this.workflowID = remoteWorkflowIncidentTransition.getWorkflowId();
+        this.transitionID = remoteWorkflowIncidentTransition.getTransitionId();
     }
     
     /**

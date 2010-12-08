@@ -50,6 +50,7 @@ public class SpiraTeamUtil
 			//v3.0 or higher
 			current = true;
 		}
+		/* The new version requires v3.0 or higher
 		if (spiraImportExport.getProductVersionPrimary() == 2 &&
 				spiraImportExport.getProductVersionSecondary() == 3 &&
 				spiraImportExport.getProductVersionTertiary() == 1 &&
@@ -57,7 +58,7 @@ public class SpiraTeamUtil
 		{
 			//v2.3.1 Patch 18 or higher
 			current = true;
-		}
+		}*/
 		return current;
 
 	}

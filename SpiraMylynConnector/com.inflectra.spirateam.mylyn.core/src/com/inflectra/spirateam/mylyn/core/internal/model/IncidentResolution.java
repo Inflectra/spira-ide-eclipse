@@ -29,12 +29,12 @@ public class IncidentResolution
     public IncidentResolution(RemoteIncidentResolution remoteIncidentResolution)
     {
     	//Set the various member variables
-    	this.incidentResolutionId = remoteIncidentResolution.getIncidentResolutionId();
+    	this.incidentResolutionId = remoteIncidentResolution.getIncidentResolutionId().getValue();
     	this.incidentId = remoteIncidentResolution.getIncidentId();
-    	this.creatorId = remoteIncidentResolution.getCreatorId();
-    	this.resolution = remoteIncidentResolution.getResolution();
+    	this.creatorId = remoteIncidentResolution.getCreatorId().getValue();
+    	this.resolution = remoteIncidentResolution.getResolution().getValue();
         this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteIncidentResolution.getCreationDate());
-    	this.creatorName = remoteIncidentResolution.getCreatorName();
+    	this.creatorName = remoteIncidentResolution.getCreatorName().getValue();
     }
     
     /**

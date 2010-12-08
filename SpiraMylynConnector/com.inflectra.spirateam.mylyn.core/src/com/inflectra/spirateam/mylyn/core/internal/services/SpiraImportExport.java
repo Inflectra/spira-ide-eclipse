@@ -4,6 +4,7 @@
 package com.inflectra.spirateam.mylyn.core.internal.services;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -80,6 +81,36 @@ public class SpiraImportExport
 			jaxString.setNil(true);
 		}
 		return jaxString;
+	}
+	
+	/***
+	 * Creates a JAXB web service integer element from a Java integer
+	 * @param value
+	 * @return
+	 */
+	public static JAXBElement<Integer> CreateJAXBInteger(String fieldName, Integer value)
+	{
+		JAXBElement<Integer> jaxInteger = new JAXBElement<Integer>(new QName(WEB_SERVICE_NAMESPACE, fieldName), Integer.class, value);
+		if (value == null)
+		{
+			jaxInteger.setNil(true);
+		}
+		return jaxInteger;
+	}
+	
+	/***
+	 * Creates a JAXB web service XMLGregorianCalendar element from a Java XMLGregorianCalendar object
+	 * @param value
+	 * @return
+	 */
+	public static JAXBElement<XMLGregorianCalendar> CreateJAXBXMLGregorianCalendar(String fieldName, XMLGregorianCalendar value)
+	{
+		JAXBElement<XMLGregorianCalendar> jaxXMLGregorianCalendar = new JAXBElement<XMLGregorianCalendar>(new QName(WEB_SERVICE_NAMESPACE, fieldName), XMLGregorianCalendar.class, value);
+		if (value == null)
+		{
+			jaxXMLGregorianCalendar.setNil(true);
+		}
+		return jaxXMLGregorianCalendar;
 	}
 	
 	public boolean hasAttributes()

@@ -3,6 +3,7 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal.services;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
 import javax.xml.ws.soap.SOAPFaultException;
@@ -39,15 +40,15 @@ import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionExcep
  */
 public class SpiraImportExport
 {
-	private static final String WEB_SERVICE_SUFFIX = "/Services/v2_2/ImportExport.asmx";	//$NON-NLS-1$
-	private static final String WEB_SERVICE_NAMESPACE = "{http://www.inflectra.com/SpiraTest/Services/v2.2/}ImportExport";	//$NON-NLS-1$
+	private static final String WEB_SERVICE_SUFFIX = "/Services/v3_0/ImportExport.svc";	//$NON-NLS-1$
+	private static final String WEB_SERVICE_NAMESPACE = "{http://www.inflectra.com/SpiraTest/Services/v3.0/}ImportExport";	//$NON-NLS-1$
 	private static final String SPIRA_PLUG_IN_NAME = "Eclipse-IDE";	//$NON-NLS-1$
 	
 	private URL serviceUrl = null;
 	private String userName = "";
 	private String password = "";
 	private ImportExport service = null;
-	private ImportExportSoap soap = null;
+	private IImportExport soap = null;
 	private Integer storedProjectId = null;
 	private String productName = "";
 	private Integer authenticatedUserId = null;
@@ -65,6 +66,21 @@ public class SpiraImportExport
 	public static int TASK_STATUS_COMPLETED = 3;
 
 	protected SpiraTeamClientData data;
+	
+	/***
+	 * Creates a JAXB web service string element from a Java string
+	 * @param value
+	 * @return
+	 */
+	public static JAXBElement<String> CreateJAXBString(String fieldName, String value)
+	{
+		JAXBElement<String> jaxString = new JAXBElement<String>(new QName(WEB_SERVICE_NAMESPACE, fieldName), String.class, value);
+		if (value == null)
+		{
+			jaxString.setNil(true);
+		}
+		return jaxString;
+	}
 	
 	public boolean hasAttributes()
 	{
@@ -92,7 +108,7 @@ public class SpiraImportExport
 		try
 		{
 			this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
-			this.soap = this.service.getImportExportSoap();
+			this.soap = this.service.getBasicHttpBindingIImportExport();
 			
 			//Make sure that session is maintained
 			Map<String, Object> requestContext = ((BindingProvider)this.soap).getRequestContext();
@@ -119,7 +135,7 @@ public class SpiraImportExport
 		try
 		{
 			this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
-			this.soap = this.service.getImportExportSoap();
+			this.soap = this.service.getBasicHttpBindingIImportExport();
 			
 			//Make sure that session is maintained
 			Map<String, Object> requestContext = ((BindingProvider)this.soap).getRequestContext();
@@ -211,7 +227,7 @@ public class SpiraImportExport
 	 * Returns the soap proxy handle
 	 * @return Handle to the soap proxy
 	 */
-	public ImportExportSoap getSoap()
+	public IImportExport getSoap()
 	{
 		return this.soap;
 	}
@@ -245,7 +261,7 @@ public class SpiraImportExport
 	        
 	        //Version number
 	        RemoteVersion productVersion = soap.systemGetProductVersion();
-	        String versionString = productVersion.getVersion();
+	        String versionString = productVersion.getVersion().getValue();
 	        String[] versionElements = versionString.split("\\.");
 	        this.productVersionPrimary = 0;
 	        this.productVersionSecondary = 0;
@@ -264,18 +280,34 @@ public class SpiraImportExport
 	        }
 	        	
 	        //Patch Number
-	        this.patchNumber = productVersion.getPatch();
+	        this.patchNumber = productVersion.getPatch().getValue();
 	        
 	        //Get the ID of the currently authenticated user
 	        RemoteUser remoteUser = soap.userRetrieveByUserName(userName);
 	        if (remoteUser != null)
 	        {
-	        	this.authenticatedUserId = remoteUser.getUserId();
+	        	this.authenticatedUserId = remoteUser.getUserId().getValue();
 	        }
 	        
 	        return success;
 		}
 		catch (WebServiceException ex)
+		{
+			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+		}
+		catch (IImportExportUserRetrieveByUserNameServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+		}
+		catch (IImportExportSystemGetProductNameServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+		}
+		catch (IImportExportSystemGetProductVersionServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
 		}
@@ -338,19 +370,24 @@ public class SpiraImportExport
 			
 			//Convert the SOAP requirement into the local version
 			Requirement requirement = new Requirement(remoteRequirement);
-			
-			//We need to also get the author's name
-			RemoteUser remoteAuthor = soap.userRetrieveById(requirement.getAuthorId());
-			if (remoteAuthor != null)
-			{
-				requirement.setAuthorName(remoteAuthor.getFirstName() + " " + remoteAuthor.getLastName() + " [" + remoteAuthor.getEmailAddress() + "]");
-			}
-			
+						
 	        return requirement;
 		}
 		catch (WebServiceException ex)
 		{
 			throw new SpiraException(ex.getMessage());
+		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportRequirementRetrieveByIdServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
 		}
 	}
 	
@@ -399,6 +436,14 @@ public class SpiraImportExport
 		catch (WebServiceException ex)
 		{
 			throw new SpiraException(ex.getMessage());
+		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportRequirementRetrieveForOwnerServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
 		}
 	}
 	
@@ -474,6 +519,18 @@ public class SpiraImportExport
 		{
 			throw new SpiraException(ex.getMessage());
 		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportIncidentRetrieveResolutionsServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
 	}
 	
 	/**
@@ -533,19 +590,24 @@ public class SpiraImportExport
 			
 			//Convert the SOAP incident into the local version
 			Incident incident = new Incident(remoteIncident);
-			
-			//We need to also get the detector's name
-			RemoteUser remoteOpener = soap.userRetrieveById(incident.getOpenerId());
-			if (remoteOpener != null)
-			{
-				incident.setOpenerName(remoteOpener.getFirstName() + " " + remoteOpener.getLastName() + " [" + remoteOpener.getEmailAddress() + "]");
-			}
-			
+					
 	        return incident;
 		}
 		catch (WebServiceException ex)
 		{
 			throw new SpiraException(ex.getMessage());
+		}
+		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportIncidentRetrieveByIdServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
 		}
 	}
 	
@@ -677,13 +739,8 @@ public class SpiraImportExport
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteProjectUser remoteProjectUser : remoteProjectUsers)
 			{
-				int userId = remoteProjectUser.getUserId();
-				//Now we need to retrieve the user record (hopefully newer API will combine these)
-				RemoteUser remoteUser = soap.userRetrieveById(userId);
-				if (remoteUser != null)
-				{
-					lookupValues.add(new ArtifactFieldValue(userId, remoteUser.getFirstName() + " " + remoteUser.getLastName() + " [" + remoteUser.getEmailAddress() + "]"));
-				}
+				int userId = remoteProjectUser.getUserId().getValue();
+				lookupValues.add(new ArtifactFieldValue(userId, remoteProjectUser.getFirstName() + " " + remoteProjectUser.getLastName() + " [" + remoteProjectUser.getEmailAddress() + "]"));
 			}		
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
 			return artifactField;
@@ -693,6 +750,18 @@ public class SpiraImportExport
 			return null;
 		}
 		catch (WebServiceException ex)
+		{
+			return null;
+		}
+		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		}
+		catch (IImportExportProjectRetrieveUserMembershipServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
 		{
 			return null;
 		}
@@ -727,14 +796,15 @@ public class SpiraImportExport
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteRelease remoteRelease : remoteReleases)
 			{
+				//Indent with spaces. Also need to make releases look slightly different
+				String indentDisplay = remoteRelease.getIndentLevel().toString().replaceAll("[A-Z]", " ");
 				if (remoteRelease.isIteration())
 				{
-					//Indent iterations with spaces for now
-					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId(), "  " + remoteRelease.getVersionNumber() + " - " + remoteRelease.getName()));				
+					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), indentDisplay + remoteRelease.getVersionNumber() + " - " + remoteRelease.getName()));				
 				}
 				else
 				{
-					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId(), remoteRelease.getVersionNumber() + " - " + remoteRelease.getName()));
+					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), "*" + indentDisplay + remoteRelease.getVersionNumber() + " - " + remoteRelease.getName()));
 				}
 			}		
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
@@ -745,6 +815,15 @@ public class SpiraImportExport
 			return null;
 		}
 		catch (WebServiceException ex)
+		{
+			return null;
+		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		} catch (IImportExportReleaseRetrieveServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
 		{
 			return null;
 		}
@@ -798,6 +877,15 @@ public class SpiraImportExport
 		catch (WebServiceException ex)
 		{
 			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportIncidentRetrieveWorkflowTransitionsServiceFaultMessageFaultFaultMessage ex)
+		{
+			throw new SpiraException(ex.getMessage());
 		}
 	}
 	
@@ -849,6 +937,15 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 	catch (WebServiceException ex)
 	{
 		throw new SpiraException(ex.getMessage());
+	} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage ex)
+	{
+		throw new SpiraException(ex.getMessage());
+	} catch (IImportExportIncidentRetrieveWorkflowFieldsServiceFaultMessageFaultFaultMessage ex)
+	{
+		throw new SpiraException(ex.getMessage());
+	} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage ex)
+	{
+		throw new SpiraException(ex.getMessage());
 	}
 }
 	
@@ -892,7 +989,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteIncidentStatus remoteStatus : remoteStatuses)
 			{
-				lookupValues.add(new ArtifactFieldValue(remoteStatus.getIncidentStatusId(), remoteStatus.getName()));
+				lookupValues.add(new ArtifactFieldValue(remoteStatus.getIncidentStatusId().getValue(), remoteStatus.getName().getValue()));
 			}		
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
 			return artifactField;
@@ -902,6 +999,15 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			return null;
 		}
 		catch (WebServiceException ex)
+		{
+			return null;
+		} catch (IImportExportIncidentRetrieveStatusesServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
 		{
 			return null;
 		}
@@ -947,7 +1053,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteIncidentType remoteType : remoteTypes)
 			{
-				lookupValues.add(new ArtifactFieldValue(remoteType.getIncidentTypeId(), remoteType.getName()));
+				lookupValues.add(new ArtifactFieldValue(remoteType.getIncidentTypeId().getValue(), remoteType.getName().getValue()));
 			}		
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
 			return artifactField;
@@ -957,6 +1063,15 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			return null;
 		}
 		catch (WebServiceException ex)
+		{
+			return null;
+		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		} catch (IImportExportIncidentRetrieveTypesServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
 		{
 			return null;
 		}
@@ -1002,7 +1117,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteIncidentPriority remotePriority : remotePriorities)
 			{
-				lookupValues.add(new ArtifactFieldValue(remotePriority.getPriorityId(), remotePriority.getName()));
+				lookupValues.add(new ArtifactFieldValue(remotePriority.getPriorityId().getValue(), remotePriority.getName().getValue()));
 			}		
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
 			return artifactField;
@@ -1012,6 +1127,15 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			return null;
 		}
 		catch (WebServiceException ex)
+		{
+			return null;
+		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		} catch (IImportExportIncidentRetrievePrioritiesServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
 		{
 			return null;
 		}
@@ -1057,7 +1181,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteIncidentSeverity remoteSeverity : remoteSeverities)
 			{
-				lookupValues.add(new ArtifactFieldValue(remoteSeverity.getSeverityId(), remoteSeverity.getName()));
+				lookupValues.add(new ArtifactFieldValue(remoteSeverity.getSeverityId().getValue(), remoteSeverity.getName().getValue()));
 			}		
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
 			return artifactField;
@@ -1067,6 +1191,15 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			return null;
 		}
 		catch (WebServiceException ex)
+		{
+			return null;
+		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		} catch (IImportExportIncidentRetrieveSeveritiesServiceFaultMessageFaultFaultMessage exception)
+		{
+			return null;
+		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
 		{
 			return null;
 		}
@@ -1191,6 +1324,12 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 		catch (WebServiceException ex)
 		{
 			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportIncidentRetrieveForOwnerServiceFaultMessageFaultFaultMessage ex)
+		{
+			throw new SpiraException(ex.getMessage());
 		}
 	}
 	
@@ -1232,6 +1371,15 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 		catch (WebServiceException ex)
 		{
 			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportTaskUpdateServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
 		}
 	}
 	
@@ -1274,17 +1422,8 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 				Date date = new Date();	//Defaults to now
 				RemoteIncidentResolution remoteIncidentResolution = new RemoteIncidentResolution();
 				remoteIncidentResolution.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(date));
-				//TODO: When the API is capable of setting to the authenticated user as default
-				//we can remove this code, and save on having to get the info from the web
-				//service in the first place
-				int creatorId = incident.getOpenerId();
-				if (this.authenticatedUserId != null)
-				{
-					creatorId = this.authenticatedUserId.intValue();
-				}
-				remoteIncidentResolution.setCreatorId(creatorId);
 				remoteIncidentResolution.setIncidentId(incident.getArtifactId());
-				remoteIncidentResolution.setResolution(newComment);
+				remoteIncidentResolution.setResolution(CreateJAXBString("Resolution", newComment));
 				ArrayOfRemoteIncidentResolution remoteIncidentResolutions = new ArrayOfRemoteIncidentResolution();
 				remoteIncidentResolutions.getRemoteIncidentResolution().add(remoteIncidentResolution);
 				soap.incidentAddResolutions(remoteIncidentResolutions);
@@ -1297,6 +1436,18 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 		catch (WebServiceException ex)
 		{
 			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportIncidentUpdateServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportIncidentAddResolutionsServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
 		}
 	}
 	
@@ -1375,6 +1526,10 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			{
 				//The user might not have permissions so just use the ID in that case
 				task.setRequirementName("[RQ:" + task.getRequirementId() + "]");
+			} catch (IImportExportRequirementRetrieveByIdServiceFaultMessageFaultFaultMessage exception)
+			{
+				//The user might not have permissions so just use the ID in that case
+				task.setRequirementName("[RQ:" + task.getRequirementId() + "]");
 			}
 			
 	        return task;
@@ -1384,6 +1539,15 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			throw SpiraTeamUtil.convertSoapFaults(ex);
 		}
 		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportTaskRetrieveByIdServiceFaultMessageFaultFaultMessage ex)
 		{
 			throw new SpiraException(ex.getMessage());
 		}
@@ -1435,6 +1599,12 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 		catch (WebServiceException ex)
 		{
 			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportTaskRetrieveForOwnerServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
 		}
 	}
 }

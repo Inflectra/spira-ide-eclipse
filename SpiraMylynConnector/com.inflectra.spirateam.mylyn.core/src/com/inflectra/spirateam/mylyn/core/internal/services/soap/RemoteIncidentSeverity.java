@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "RemoteIncidentSeverity", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", propOrder = {
     "active",
     "color",
-    "nameZ",
+    "name",
     "severityId"
 })
 public class RemoteIncidentSeverity {
@@ -53,7 +53,7 @@ public class RemoteIncidentSeverity {
     @XmlElementRef(name = "Color", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<String> color;
     @XmlElementRef(name = "Name", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
-    protected JAXBElement<String> nameZ;
+    protected JAXBElement<String> name;
     @XmlElementRef(name = "SeverityId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> severityId;
 
@@ -106,7 +106,7 @@ public class RemoteIncidentSeverity {
     }
 
     /**
-     * Gets the value of the nameZ property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
@@ -114,11 +114,11 @@ public class RemoteIncidentSeverity {
      *     
      */
     public JAXBElement<String> getName() {
-        return nameZ;
+        return name;
     }
 
     /**
-     * Sets the value of the nameZ property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
@@ -126,7 +126,7 @@ public class RemoteIncidentSeverity {
      *     
      */
     public void setName(JAXBElement<String> value) {
-        this.nameZ = ((JAXBElement<String> ) value);
+        this.name = ((JAXBElement<String> ) value);
     }
 
     /**

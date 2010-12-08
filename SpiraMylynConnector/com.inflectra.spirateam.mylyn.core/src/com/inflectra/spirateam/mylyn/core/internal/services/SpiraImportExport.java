@@ -175,7 +175,7 @@ public class SpiraImportExport
 		}
 		catch (WebServiceException ex)
 		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message + " (" + ex.getMessage() + ")");
 		}
 	}
 	
@@ -323,7 +323,7 @@ public class SpiraImportExport
 	        return success;
 		}
 		catch (WebServiceException ex)
-		{
+		{	
 			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
 		}
 		catch (IImportExportUserRetrieveByUserNameServiceFaultMessageFaultFaultMessage exception)

@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "ImportExport", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", wsdlLocation = "file:/D:/WorkingFiles/ImportExport30.wsdl")
+@WebServiceClient(name = "ImportExport", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", wsdlLocation = "http://localhost/SpiraTeam/Services/v3_0/ImportExport.svc?WSDL")
 public class ImportExport
     extends Service
 {

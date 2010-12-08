@@ -35,7 +35,7 @@ public class SpiraTeamCorePlugin extends Plugin
 	
 	//The connector name and description
 	public final static String CONNECTOR_KIND = "spira";
-	public final static String LABEL = NLS.bind(Messages.SpiraTeamCorePlugin_SpiraTeam_description, "v2.3.1");	//$NON-NLS-1$
+	public final static String LABEL = NLS.bind(Messages.SpiraTeamCorePlugin_SpiraTeam_description, "v3.0");	//$NON-NLS-1$
 
 	// The shared instance
 	private static SpiraTeamCorePlugin plugin;

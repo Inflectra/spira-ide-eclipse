@@ -5,6 +5,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteTask;
 /**
  * Represents a single task in SpiraTeam
@@ -83,50 +84,50 @@ public class Task extends Artifact
     {
     	//Set the various member variables
     	this.dataChanged = false;
-        this.artifactId = remoteTask.getTaskId();
-        this.projectId = remoteTask.getProjectId();
-        this.ownerId = remoteTask.getOwnerId();
-        this.releaseId = remoteTask.getReleaseId();
-        this.name = remoteTask.getName();
-        this.description = remoteTask.getDescription();
+        this.artifactId = remoteTask.getTaskId().getValue();
+        this.projectId = remoteTask.getProjectId().getValue();
+        this.ownerId = remoteTask.getOwnerId().getValue();
+        this.releaseId = remoteTask.getReleaseId().getValue();
+        this.name = remoteTask.getName().getValue();
+        this.description = remoteTask.getDescription().getValue();
         this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteTask.getCreationDate());
         this.lastUpdateDate = SpiraTeamUtil.convertDatesXml2Java(remoteTask.getLastUpdateDate());
         this.taskStatusId = remoteTask.getTaskStatusId();
-        this.requirementId = remoteTask.getRequirementId();
-        this.releaseId = remoteTask.getReleaseId();
-        this.taskPriorityId = remoteTask.getTaskPriorityId();
-        this.startDate = SpiraTeamUtil.convertDatesXml2Java(remoteTask.getStartDate());
-        this.endDate = SpiraTeamUtil.convertDatesXml2Java(remoteTask.getEndDate());
+        this.requirementId = remoteTask.getRequirementId().getValue();
+        this.releaseId = remoteTask.getReleaseId().getValue();
+        this.taskPriorityId = remoteTask.getTaskPriorityId().getValue();
+        this.startDate = SpiraTeamUtil.convertDatesXml2Java(remoteTask.getStartDate().getValue());
+        this.endDate = SpiraTeamUtil.convertDatesXml2Java(remoteTask.getEndDate().getValue());
         this.completionPercent = remoteTask.getCompletionPercent();
-        this.estimatedEffort = remoteTask.getEstimatedEffort();
-        this.actualEffort = remoteTask.getActualEffort();
-        this.taskStatusName = remoteTask.getTaskStatusName();
-        this.ownerName = remoteTask.getOwnerName();
-        this.taskPriorityName = remoteTask.getTaskPriorityName();
-        this.projectName = remoteTask.getProjectName();
-        this.releaseVersionNumber = remoteTask.getReleaseVersionNumber();    
+        this.estimatedEffort = remoteTask.getEstimatedEffort().getValue();
+        this.actualEffort = remoteTask.getActualEffort().getValue();
+        this.taskStatusName = remoteTask.getTaskStatusName().getValue();
+        this.ownerName = remoteTask.getOwnerName().getValue();
+        this.taskPriorityName = remoteTask.getTaskPriorityName().getValue();
+        this.projectName = remoteTask.getProjectName().getValue();
+        this.releaseVersionNumber = remoteTask.getReleaseVersionNumber().getValue();
         
         //Now the custom properties
-        this.text01 = remoteTask.getText01();
-        this.text02 = remoteTask.getText02();
-        this.text03 = remoteTask.getText03();
-        this.text04 = remoteTask.getText04();
-        this.text05 = remoteTask.getText05();
-        this.text06 = remoteTask.getText06();
-        this.text07 = remoteTask.getText07();
-        this.text08 = remoteTask.getText08();
-        this.text09 = remoteTask.getText09();
-        this.text10 = remoteTask.getText10();
-        this.list01 = remoteTask.getList01();
-        this.list02 = remoteTask.getList02();
-        this.list03 = remoteTask.getList03();
-        this.list04 = remoteTask.getList04();
-        this.list05 = remoteTask.getList05();
-        this.list06 = remoteTask.getList06();
-        this.list07 = remoteTask.getList07();
-        this.list08 = remoteTask.getList08();
-        this.list09 = remoteTask.getList09();
-        this.list10 = remoteTask.getList10();
+        this.text01 = remoteTask.getText01().getValue();
+        this.text02 = remoteTask.getText02().getValue();
+        this.text03 = remoteTask.getText03().getValue();
+        this.text04 = remoteTask.getText04().getValue();
+        this.text05 = remoteTask.getText05().getValue();
+        this.text06 = remoteTask.getText06().getValue();
+        this.text07 = remoteTask.getText07().getValue();
+        this.text08 = remoteTask.getText08().getValue();
+        this.text09 = remoteTask.getText09().getValue();
+        this.text10 = remoteTask.getText10().getValue();
+        this.list01 = remoteTask.getList01().getValue();
+        this.list02 = remoteTask.getList02().getValue();
+        this.list03 = remoteTask.getList03().getValue();
+        this.list04 = remoteTask.getList04().getValue();
+        this.list05 = remoteTask.getList05().getValue();
+        this.list06 = remoteTask.getList06().getValue();
+        this.list07 = remoteTask.getList07().getValue();
+        this.list08 = remoteTask.getList08().getValue();
+        this.list09 = remoteTask.getList09().getValue();
+        this.list10 = remoteTask.getList10().getValue();
     }
     
     /**
@@ -137,45 +138,45 @@ public class Task extends Artifact
     {
     	//Set the properties on the SOAP object
     	RemoteTask remoteTask = new RemoteTask();
-    	remoteTask.setTaskId(this.artifactId);
-    	remoteTask.setProjectId(this.projectId);
-    	remoteTask.setOwnerId(this.ownerId);
-    	remoteTask.setReleaseId(this.releaseId);
-    	remoteTask.setName(this.name);
-    	remoteTask.setDescription(this.description);
+    	remoteTask.setTaskId(SpiraImportExport.CreateJAXBInteger("TaskId", this.artifactId));
+    	remoteTask.setProjectId(SpiraImportExport.CreateJAXBInteger("ProjectId", this.projectId));
+    	remoteTask.setOwnerId(SpiraImportExport.CreateJAXBInteger("OwnerId", this.ownerId));
+    	remoteTask.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
+    	remoteTask.setName(SpiraImportExport.CreateJAXBString("Name", this.name));
+    	remoteTask.setDescription(SpiraImportExport.CreateJAXBString("Description", this.description));
     	remoteTask.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(this.creationDate));
     	remoteTask.setLastUpdateDate(SpiraTeamUtil.convertDatesJava2Xml(this.lastUpdateDate));
     	remoteTask.setTaskStatusId(this.taskStatusId);
-    	remoteTask.setRequirementId(this.requirementId);
-    	remoteTask.setReleaseId(this.releaseId);
-    	remoteTask.setTaskPriorityId(this.taskPriorityId);
-    	remoteTask.setStartDate(SpiraTeamUtil.convertDatesJava2Xml(this.startDate));
-    	remoteTask.setEndDate(SpiraTeamUtil.convertDatesJava2Xml(this.endDate));
+    	remoteTask.setRequirementId(SpiraImportExport.CreateJAXBInteger("RequirementId", this.requirementId));
+    	remoteTask.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
+    	remoteTask.setTaskPriorityId(SpiraImportExport.CreateJAXBInteger("TaskPriorityId", this.taskPriorityId));
+    	remoteTask.setStartDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("StartDate", SpiraTeamUtil.convertDatesJava2Xml(this.startDate)));
+    	remoteTask.setEndDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("EndDate", SpiraTeamUtil.convertDatesJava2Xml(this.endDate)));
     	remoteTask.setCompletionPercent(this.completionPercent);
-    	remoteTask.setEstimatedEffort(this.estimatedEffort);
-    	remoteTask.setActualEffort(this.actualEffort);
+    	remoteTask.setEstimatedEffort(SpiraImportExport.CreateJAXBInteger("", this.estimatedEffort));
+    	remoteTask.setActualEffort(SpiraImportExport.CreateJAXBInteger("", this.actualEffort));
         
         //Now the custom properties
-    	remoteTask.setText01(this.text01);
-    	remoteTask.setText02(this.text02);
-    	remoteTask.setText03(this.text03);
-    	remoteTask.setText04(this.text04);
-    	remoteTask.setText05(this.text05);
-    	remoteTask.setText06(this.text06);
-    	remoteTask.setText07(this.text07);
-    	remoteTask.setText08(this.text08);
-    	remoteTask.setText09(this.text09);
-    	remoteTask.setText10(this.text10);
-    	remoteTask.setList01(this.list01);
-    	remoteTask.setList02(this.list02);
-    	remoteTask.setList03(this.list03);
-    	remoteTask.setList04(this.list04);
-    	remoteTask.setList05(this.list05);
-    	remoteTask.setList06(this.list06);
-    	remoteTask.setList07(this.list07);
-    	remoteTask.setList08(this.list08);
-    	remoteTask.setList09(this.list09);
-    	remoteTask.setList10(this.list10);
+    	remoteTask.setText01(SpiraImportExport.CreateJAXBString("Text01", this.text01));
+    	remoteTask.setText02(SpiraImportExport.CreateJAXBString("Text02", this.text02));
+    	remoteTask.setText03(SpiraImportExport.CreateJAXBString("Text03", this.text03));
+    	remoteTask.setText04(SpiraImportExport.CreateJAXBString("Text04", this.text04));
+    	remoteTask.setText05(SpiraImportExport.CreateJAXBString("Text05", this.text05));
+    	remoteTask.setText06(SpiraImportExport.CreateJAXBString("Text06", this.text06));
+    	remoteTask.setText07(SpiraImportExport.CreateJAXBString("Text07", this.text07));
+    	remoteTask.setText08(SpiraImportExport.CreateJAXBString("Text08", this.text08));
+    	remoteTask.setText09(SpiraImportExport.CreateJAXBString("Text09", this.text09));
+    	remoteTask.setText10(SpiraImportExport.CreateJAXBString("Text10", this.text10));
+    	remoteTask.setList01(SpiraImportExport.CreateJAXBInteger("List01", this.list01));
+    	remoteTask.setList02(SpiraImportExport.CreateJAXBInteger("List02", this.list02));
+    	remoteTask.setList03(SpiraImportExport.CreateJAXBInteger("List03", this.list03));
+    	remoteTask.setList04(SpiraImportExport.CreateJAXBInteger("List04", this.list04));
+    	remoteTask.setList05(SpiraImportExport.CreateJAXBInteger("List05", this.list05));
+    	remoteTask.setList06(SpiraImportExport.CreateJAXBInteger("List06", this.list06));
+    	remoteTask.setList07(SpiraImportExport.CreateJAXBInteger("List07", this.list07));
+    	remoteTask.setList08(SpiraImportExport.CreateJAXBInteger("List08", this.list08));
+    	remoteTask.setList09(SpiraImportExport.CreateJAXBInteger("List09", this.list09));
+    	remoteTask.setList10(SpiraImportExport.CreateJAXBInteger("List10", this.list10));
         
         return remoteTask;
     }

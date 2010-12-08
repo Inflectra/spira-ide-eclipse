@@ -67,41 +67,42 @@ public class Requirement
     public Requirement(RemoteRequirement remoteRequirement)
     {
     	//Set the various member variables
-        this.artifactId = remoteRequirement.getRequirementId();
-        this.projectId = remoteRequirement.getProjectId();
-        this.statusId = remoteRequirement.getStatusId();
-        this.authorId = remoteRequirement.getAuthorId();
-        this.ownerId = remoteRequirement.getOwnerId();
-        this.importanceId = remoteRequirement.getImportanceId();
-        this.releaseId = remoteRequirement.getReleaseId();
-        this.name = remoteRequirement.getName();
-        this.description = remoteRequirement.getDescription();
+        this.artifactId = remoteRequirement.getRequirementId().getValue();
+        this.projectId = remoteRequirement.getProjectId().getValue();
+        this.statusId = remoteRequirement.getStatusId().getValue();
+        this.authorId = remoteRequirement.getAuthorId().getValue();
+        this.authorName = remoteRequirement.getAuthorName().getValue();
+        this.ownerId = remoteRequirement.getOwnerId().getValue();
+        this.importanceId = remoteRequirement.getImportanceId().getValue();
+        this.releaseId = remoteRequirement.getReleaseId().getValue();
+        this.name = remoteRequirement.getName().getValue();
+        this.description = remoteRequirement.getDescription().getValue();
         this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getCreationDate());
         this.lastUpdateDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getLastUpdateDate());
         this.summary = remoteRequirement.isSummary();
-        this.plannedEffort = remoteRequirement.getPlannedEffort();
+        this.plannedEffort = remoteRequirement.getPlannedEffort().getValue();
         
         //Now the custom properties
-        this.text01 = remoteRequirement.getText01();
-        this.text02 = remoteRequirement.getText02();
-        this.text03 = remoteRequirement.getText03();
-        this.text04 = remoteRequirement.getText04();
-        this.text05 = remoteRequirement.getText05();
-        this.text06 = remoteRequirement.getText06();
-        this.text07 = remoteRequirement.getText07();
-        this.text08 = remoteRequirement.getText08();
-        this.text09 = remoteRequirement.getText09();
-        this.text10 = remoteRequirement.getText10();
-        this.list01 = remoteRequirement.getList01();
-        this.list02 = remoteRequirement.getList02();
-        this.list03 = remoteRequirement.getList03();
-        this.list04 = remoteRequirement.getList04();
-        this.list05 = remoteRequirement.getList05();
-        this.list06 = remoteRequirement.getList06();
-        this.list07 = remoteRequirement.getList07();
-        this.list08 = remoteRequirement.getList08();
-        this.list09 = remoteRequirement.getList09();
-        this.list10 = remoteRequirement.getList10();
+        this.text01 = remoteRequirement.getText01().getValue();
+        this.text02 = remoteRequirement.getText02().getValue();
+        this.text03 = remoteRequirement.getText03().getValue();
+        this.text04 = remoteRequirement.getText04().getValue();
+        this.text05 = remoteRequirement.getText05().getValue();
+        this.text06 = remoteRequirement.getText06().getValue();
+        this.text07 = remoteRequirement.getText07().getValue();
+        this.text08 = remoteRequirement.getText08().getValue();
+        this.text09 = remoteRequirement.getText09().getValue();
+        this.text10 = remoteRequirement.getText10().getValue();
+        this.list01 = remoteRequirement.getList01().getValue();
+        this.list02 = remoteRequirement.getList02().getValue();
+        this.list03 = remoteRequirement.getList03().getValue();
+        this.list04 = remoteRequirement.getList04().getValue();
+        this.list05 = remoteRequirement.getList05().getValue();
+        this.list06 = remoteRequirement.getList06().getValue();
+        this.list07 = remoteRequirement.getList07().getValue();
+        this.list08 = remoteRequirement.getList08().getValue();
+        this.list09 = remoteRequirement.getList09().getValue();
+        this.list10 = remoteRequirement.getList10().getValue();
     }
     
     @Override

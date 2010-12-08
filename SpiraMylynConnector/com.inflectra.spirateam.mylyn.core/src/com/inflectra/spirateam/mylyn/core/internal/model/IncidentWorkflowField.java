@@ -11,10 +11,10 @@ public class IncidentWorkflowField
     
     public IncidentWorkflowField (RemoteWorkflowIncidentFields remoteWorkflowField)
     {
-    	this.fieldCaption = remoteWorkflowField.getFieldCaption();
-    	this.fieldName = remoteWorkflowField.getFieldName();
-    	this.fieldID = remoteWorkflowField.getFieldID();
-    	this.fieldStatus = remoteWorkflowField.getFieldStatus();
+    	this.fieldCaption = remoteWorkflowField.getFieldCaption().getValue();
+    	this.fieldName = remoteWorkflowField.getFieldName().getValue();
+    	this.fieldID = remoteWorkflowField.getFieldId();
+    	this.fieldStatus = remoteWorkflowField.getFieldStateId();
     }
     
     /**

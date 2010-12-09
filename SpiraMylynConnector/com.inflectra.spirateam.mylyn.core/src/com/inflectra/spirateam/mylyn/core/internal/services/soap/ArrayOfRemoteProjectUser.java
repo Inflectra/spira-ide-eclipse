@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfRemoteProjectUser", propOrder = {
+@XmlType(name = "ArrayOfRemoteProjectUser", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", propOrder = {
     "remoteProjectUser"
 })
 public class ArrayOfRemoteProjectUser {

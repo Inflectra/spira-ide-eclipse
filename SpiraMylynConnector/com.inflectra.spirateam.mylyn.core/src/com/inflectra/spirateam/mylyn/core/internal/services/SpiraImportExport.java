@@ -771,7 +771,7 @@ public class SpiraImportExport
 			for (RemoteProjectUser remoteProjectUser : remoteProjectUsers)
 			{
 				int userId = remoteProjectUser.getUserId().getValue();
-				lookupValues.add(new ArtifactFieldValue(userId, remoteProjectUser.getFirstName() + " " + remoteProjectUser.getLastName() + " [" + remoteProjectUser.getEmailAddress() + "]"));
+				lookupValues.add(new ArtifactFieldValue(userId, remoteProjectUser.getFirstName().getValue() + " " + remoteProjectUser.getLastName().getValue() + " [" + remoteProjectUser.getEmailAddress().getValue() + "]"));
 			}		
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
 			return artifactField;

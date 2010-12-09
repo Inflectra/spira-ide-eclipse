@@ -42,23 +42,33 @@ public class SpiraTeamUtil
 	public static final String WORKFLOW_TRANSITION_STATUS_ACTIVE = "active";
 	public static final String WORKFLOW_TRANSITION_STATUS_EXECUTED = "executed";
 	
+	/***
+	 * Make sure that the server is running v3.0 patch 009 or higher
+	 * @param spiraImportExport
+	 * @return
+	 */
 	public static boolean ValidateServerVersion (SpiraImportExport spiraImportExport)
 	{
 		boolean current = false;
-		if (spiraImportExport.getProductVersionPrimary() >= 3)
+		if (spiraImportExport.getProductVersionPrimary() >= 4)
 		{
-			//v3.0 or higher
+			//v4.0 or higher
 			current = true;
 		}
-		/* The new version requires v3.0 or higher
-		if (spiraImportExport.getProductVersionPrimary() == 2 &&
-				spiraImportExport.getProductVersionSecondary() == 3 &&
-				spiraImportExport.getProductVersionTertiary() == 1 &&
-				spiraImportExport.getPatchNumber() >= 18)
+		if (spiraImportExport.getProductVersionPrimary() == 3 &&
+				spiraImportExport.getProductVersionSecondary() >= 1)
 		{
-			//v2.3.1 Patch 18 or higher
+			//v3.1 or higher
 			current = true;
-		}*/
+		}
+		if (spiraImportExport.getProductVersionPrimary() == 3 &&
+				spiraImportExport.getProductVersionSecondary() == 0 &&
+				spiraImportExport.getProductVersionTertiary() == 0 &&
+				spiraImportExport.getPatchNumber() >= 9)
+		{
+			//v3.0 Patch 9 or higher
+			current = true;
+		}
 		return current;
 
 	}

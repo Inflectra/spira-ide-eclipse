@@ -29,6 +29,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowField;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransition;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
+import com.inflectra.spirateam.mylyn.core.internal.model.RequirementComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.*;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
@@ -401,6 +402,16 @@ public class SpiraImportExport
 			
 			//Convert the SOAP requirement into the local version
 			Requirement requirement = new Requirement(remoteRequirement);
+			
+			//Now get any associated comments
+			List<RemoteComment> remoteComments = soap.requirementRetrieveComments(requirementId).getRemoteComment();
+			
+			//Convert the SOAP resolutions into the local version
+			for (RemoteComment remoteComment : remoteComments)
+			{
+				RequirementComment requirementComment = new RequirementComment(remoteComment);
+				requirement.getComments().add(requirementComment);
+			}
 						
 	        return requirement;
 		}
@@ -417,6 +428,9 @@ public class SpiraImportExport
 			throw new SpiraException(exception.getMessage());
 		}
 		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportRequirementRetrieveCommentsServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
 		}
@@ -473,92 +487,6 @@ public class SpiraImportExport
 			throw new SpiraException(exception.getMessage());
 		}
 		catch (IImportExportRequirementRetrieveForOwnerServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-	}
-	
-	public List<IncidentResolution> incidentRetrieveResolutions(String incidentKey)
-		throws SpiraException
-	{
-		//Don't return releases if we have no project set
-		if (this.storedProjectId == null)
-		{
-			return null;
-		}
-		int projectId = this.storedProjectId.intValue();
-		return this.incidentRetrieveResolutions(projectId, incidentKey);
-	}
-	
-	public List<IncidentResolution> incidentRetrieveResolutions(int projectId, String incidentKey)
-		throws SpiraException
-	{
-		try
-		{	
-			//First make sure that the incident key is in the correct format
-			if (incidentKey == null)
-			{
-				throw new SpiraInvalidArtifactKeyException(Messages.SpiraImportExport_ArtifactKeyNull);
-			}
-			if (incidentKey.length() < 3)
-			{
-				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, incidentKey));
-			}
-			if (!incidentKey.substring(0, 2).equals(ArtifactType.INCIDENT.getPrefix()))
-			{
-				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, incidentKey));
-			}
-			int incidentId;
-			try
-			{
-				incidentId = Integer.parseInt(incidentKey.substring(2));
-			}
-			catch (NumberFormatException e)
-			{
-				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, incidentKey));
-			}
-			
-			//Next we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				//throw new SpiraException (this.userName + "/" + this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-			
-			//Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				//throw new SpiraException (this.userName + "/" + this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-				
-			//Call the appropriate method
-			List<RemoteIncidentResolution> remoteResolutions = soap.incidentRetrieveResolutions(incidentId).getRemoteIncidentResolution();
-			
-			//Convert the SOAP resolutions into the local version
-			List<IncidentResolution> incidentResolutions = new ArrayList<IncidentResolution>();
-			for (RemoteIncidentResolution remoteResolution : remoteResolutions)
-			{
-				IncidentResolution incidentResolution = new IncidentResolution(remoteResolution);
-				incidentResolutions.add(incidentResolution);
-			}
-	        return incidentResolutions;
-		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportIncidentRetrieveResolutionsServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
 		}
@@ -621,6 +549,16 @@ public class SpiraImportExport
 			
 			//Convert the SOAP incident into the local version
 			Incident incident = new Incident(remoteIncident);
+			
+			//Now get the resolutions
+			List<RemoteIncidentResolution> remoteResolutions = soap.incidentRetrieveResolutions(incidentId).getRemoteIncidentResolution();
+			
+			//Convert the SOAP resolutions into the local version
+			for (RemoteIncidentResolution remoteResolution : remoteResolutions)
+			{
+				IncidentResolution incidentResolution = new IncidentResolution(remoteResolution);
+				incident.getResolutions().add(incidentResolution);
+			}
 					
 	        return incident;
 		}
@@ -637,6 +575,9 @@ public class SpiraImportExport
 			throw new SpiraException(exception.getMessage());
 		}
 		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportIncidentRetrieveResolutionsServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
 		}
@@ -831,11 +772,11 @@ public class SpiraImportExport
 				String indentDisplay = remoteRelease.getIndentLevel().getValue().replaceAll("[A-Z]", " ");
 				if (remoteRelease.isIteration())
 				{
-					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), indentDisplay + remoteRelease.getVersionNumber().getValue() + " - " + remoteRelease.getName().getValue()));				
+					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), indentDisplay + remoteRelease.getVersionNumber().getValue() + " - " + remoteRelease.getName().getValue() + "*"));				
 				}
 				else
 				{
-					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), "*" + indentDisplay + remoteRelease.getVersionNumber().getValue() + " - " + remoteRelease.getName().getValue()));
+					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), indentDisplay + remoteRelease.getVersionNumber().getValue() + " - " + remoteRelease.getName().getValue()));
 				}
 			}		
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));

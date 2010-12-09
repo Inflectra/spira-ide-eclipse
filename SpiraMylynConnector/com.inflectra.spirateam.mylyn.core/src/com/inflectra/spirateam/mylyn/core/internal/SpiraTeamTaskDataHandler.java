@@ -38,6 +38,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowField;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransition;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
+import com.inflectra.spirateam.mylyn.core.internal.model.RequirementComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataValidationException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
@@ -52,7 +53,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 {
 	//The TASK_DATA_VERSION should be the version number (e.g. v2.3.1) in XXYYZZ format
 	//So that we can migrate old tasks if necessary when we add new attributes
-	private static final String TASK_DATA_VERSION = "020301"; //$NON-NLS-1$
+	private static final String TASK_DATA_VERSION = "030000"; //$NON-NLS-1$
 	private static final String ATTRIBUTE_ARTIFACT_KEY = "spira.key"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_PROJECT_ID = "spira.projectId"; //$NON-NLS-1$
 	
@@ -1067,6 +1068,25 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID, requirement.getImportanceId() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_RELEASE_ID, requirement.getReleaseId() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT, SpiraTeamUtil.effortValuesToString(requirement.getPlannedEffort()), projectId);
+			
+			// Handle SpiraTeam comments
+			if (requirement.getComments() != null)
+			{
+				List<RequirementComment> comments = requirement.getComments();
+				int count = 1;
+				for (RequirementComment comment : comments)
+				{
+					TaskCommentMapper mapper = new TaskCommentMapper();
+					mapper.setAuthor(repository.createPerson(comment.getCreatorName()));
+					mapper.setCreationDate(comment.getCreationDate());
+					mapper.setText(SpiraTeamUtil.HtmlRenderAsPlainText(comment.getText()));
+					mapper.setNumber(count);
+
+					TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_COMMENT + count);
+					mapper.applyTo(attribute);
+					count++;
+				}
+			}
 		}
 		
 		if (artifact instanceof Incident)
@@ -1094,30 +1114,21 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateAttributesForWorkflow(client, data, projectId, incident.getIncidentTypeId(), incident.getIncidentStatusId(), changedAttributes);
 			
 			// Handle SpiraTeam comments/resolutions if we have an incident
-			try
+			if (incident.getResolutions() != null)
 			{
-				IncidentResolution[] resolutions = client.incidentRetrieveResolutions(incident.getArtifactKey()).toArray(new IncidentResolution[0]);
-				if (resolutions != null)
+				int count = 1;
+				for (IncidentResolution resolution : incident.getResolutions())
 				{
-					int count = 1;
-					for (int i = 0; i < resolutions.length; i++)
-					{
-						TaskCommentMapper mapper = new TaskCommentMapper();
-						mapper.setAuthor(repository.createPerson(resolutions[i].getCreatorName()));
-						mapper.setCreationDate(resolutions[i].getCreationDate());
-						mapper.setText(SpiraTeamUtil.HtmlRenderAsPlainText(resolutions[i].getResolution()));
-						mapper.setNumber(count);
-	
-						TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_COMMENT + count);
-						mapper.applyTo(attribute);
-						count++;
-					}
+					TaskCommentMapper mapper = new TaskCommentMapper();
+					mapper.setAuthor(repository.createPerson(resolution.getCreatorName()));
+					mapper.setCreationDate(resolution.getCreationDate());
+					mapper.setText(SpiraTeamUtil.HtmlRenderAsPlainText(resolution.getResolution()));
+					mapper.setNumber(count);
+
+					TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_COMMENT + count);
+					mapper.applyTo(attribute);
+					count++;
 				}
-			}
-			catch (SpiraException ex)
-			{
-				//Let the user know
-				throw new SpiraException(Messages.SpiraTeamTaskDataHandler_UnableToRetrieveComments);
 			}
 			
 			//Workflow Transitions

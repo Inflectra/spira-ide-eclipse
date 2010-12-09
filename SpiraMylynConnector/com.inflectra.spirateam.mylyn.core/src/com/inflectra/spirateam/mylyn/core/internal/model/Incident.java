@@ -1,6 +1,9 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
@@ -39,6 +42,9 @@ public class Incident extends Artifact
     protected String resolvedReleaseVersionNumber;
     protected String verifiedReleaseVersionNumber;
     protected Boolean incidentStatusOpenStatus;
+    
+    //Contains the collection of resolutions
+    protected List<IncidentResolution> resolutions = new ArrayList<IncidentResolution>();
     
     public enum Key
     {
@@ -743,4 +749,12 @@ public class Incident extends Artifact
     public Boolean isIncidentStatusOpenStatus() {
         return incidentStatusOpenStatus;
     }
+    
+	/**
+	 * @return the resolutions
+	 */
+	public List<IncidentResolution> getResolutions()
+	{
+		return this.resolutions;
+	}
 }

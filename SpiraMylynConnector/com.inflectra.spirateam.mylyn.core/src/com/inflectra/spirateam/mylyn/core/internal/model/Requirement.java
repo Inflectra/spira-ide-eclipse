@@ -1,5 +1,8 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteRequirement;
@@ -15,9 +18,14 @@ public class Requirement
     protected int authorId;
     protected String authorName;
     protected Integer importanceId;
+    protected String importanceName;
     protected Integer releaseId;
+    protected String releaseVersionNumber;
     protected boolean summary;
     protected Integer plannedEffort;
+    
+    //Contains the collection of comments
+    protected List<RequirementComment> comments = new ArrayList<RequirementComment>();
 
     public enum Key
     {
@@ -27,7 +35,8 @@ public class Requirement
 		AUTHOR_ID("requirement.authorId"),
 		IMPORTANCE_ID("requirement.importanceId"),
 		RELEASE_ID("requirement.releaseId"),
-		PLANNED_EFFORT("requirement.plannedEffort");
+		PLANNED_EFFORT("requirement.plannedEffort"),
+		COMMENT("requirement.comment");
 		
 		public static Key fromKey(String name)
 		{
@@ -74,7 +83,9 @@ public class Requirement
         this.authorName = remoteRequirement.getAuthorName().getValue();
         this.ownerId = remoteRequirement.getOwnerId().getValue();
         this.importanceId = remoteRequirement.getImportanceId().getValue();
+        this.importanceName = remoteRequirement.getImportanceName().getValue();
         this.releaseId = remoteRequirement.getReleaseId().getValue();
+        this.releaseVersionNumber = remoteRequirement.getReleaseVersionNumber().getValue();
         this.name = remoteRequirement.getName().getValue();
         this.description = remoteRequirement.getDescription().getValue();
         this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getCreationDate());
@@ -194,6 +205,18 @@ public class Requirement
     public void setImportanceId(Integer value) {
         this.importanceId = value;
     }
+    
+    /**
+     * Gets the value of the importanceName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getImportanceName() {
+        return importanceName;
+    } 
 
     /**
      * Gets the value of the releaseId property.
@@ -219,7 +242,17 @@ public class Requirement
         this.releaseId = value;
     }
 
- 
+    /**
+     * Gets the value of the releaseVersionNumber property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getReleaseVersionNumber() {
+        return releaseVersionNumber;
+    } 
 
     /**
      * Gets the value of the summary property.
@@ -260,4 +293,12 @@ public class Requirement
     public void setPlannedEffort(Integer value) {
         this.plannedEffort = value;
     }
+
+	/**
+	 * @return the comments
+	 */
+	public List<RequirementComment> getComments()
+	{
+		return this.comments;
+	}
 }

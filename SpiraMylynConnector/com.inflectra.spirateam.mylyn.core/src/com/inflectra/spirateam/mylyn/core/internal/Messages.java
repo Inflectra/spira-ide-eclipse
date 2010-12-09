@@ -75,6 +75,7 @@ public class Messages extends NLS
 	public static String TaskAttribute_CompletionPercentage;
 	public static String TaskAttribute_EstimatedEffort;
 	public static String TaskAttribute_ActualEffort;
+	public static String TaskAttribute_NewComment;
 	
 	public static String IncidentAttribute_PriorityId;
 	public static String IncidentAttribute_SeverityId;

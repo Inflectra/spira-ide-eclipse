@@ -40,6 +40,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransit
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.RequirementComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
+import com.inflectra.spirateam.mylyn.core.internal.model.TaskComment;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataValidationException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
@@ -1207,6 +1208,25 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE, task.getCompletionPercent() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ESTIMATED_EFFORT, SpiraTeamUtil.effortValuesToString(task.getEstimatedEffort()), projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ACTUAL_EFFORT, SpiraTeamUtil.effortValuesToString(task.getActualEffort()), projectId);
+			
+			// Handle SpiraTeam comments
+			if (task.getComments() != null)
+			{
+				List<TaskComment> comments = task.getComments();
+				int count = 1;
+				for (TaskComment comment : comments)
+				{
+					TaskCommentMapper mapper = new TaskCommentMapper();
+					mapper.setAuthor(repository.createPerson(comment.getCreatorName()));
+					mapper.setCreationDate(comment.getCreationDate());
+					mapper.setText(SpiraTeamUtil.HtmlRenderAsPlainText(comment.getText()));
+					mapper.setNumber(count);
+
+					TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_COMMENT + count);
+					mapper.applyTo(attribute);
+					count++;
+				}
+			}
 		}
 
 		/* Handle attachments - future enhancement once the API has been upgraded

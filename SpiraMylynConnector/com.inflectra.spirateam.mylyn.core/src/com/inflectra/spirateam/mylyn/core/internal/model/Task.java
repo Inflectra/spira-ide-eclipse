@@ -1,6 +1,9 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
@@ -30,6 +33,9 @@ public class Task extends Artifact
     protected String releaseVersionNumber;
     protected String requirementName;
     
+    //Contains the collection of comments
+    protected List<TaskComment> comments = new ArrayList<TaskComment>();
+    
     public enum Key
     {
 		//Task-specific attributes
@@ -43,7 +49,8 @@ public class Task extends Artifact
 		COMPLETION_PERCENTAGE("task.completionPercentage"),
 		ESTIMATED_EFFORT("task.estimatedEffort"),
 		ACTUAL_EFFORT("task.actualEffort"),
-		REQUIREMENT_NAME("task.requirementName");
+		REQUIREMENT_NAME("task.requirementName"),
+		COMMENT("task.comment");
 
 		public static Key fromKey(String name)
 		{
@@ -511,4 +518,12 @@ public class Task extends Artifact
     {
     	this.requirementName = requirementName;
     }
+    
+	/**
+	 * @return the comments
+	 */
+	public List<TaskComment> getComments()
+	{
+		return this.comments;
+	}
 }

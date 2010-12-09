@@ -31,6 +31,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransit
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.RequirementComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
+import com.inflectra.spirateam.mylyn.core.internal.model.TaskComment;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.*;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
 
@@ -1573,6 +1574,17 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 				task.setRequirementName("[RQ:" + task.getRequirementId() + "]");
 			}
 			
+			//Now get any associated comments
+			List<RemoteComment> remoteComments = soap.taskRetrieveComments(taskId).getRemoteComment();
+			
+			//Convert the SOAP resolutions into the local version
+			for (RemoteComment remoteComment : remoteComments)
+			{
+				TaskComment taskComment = new TaskComment(remoteComment);
+				task.getComments().add(taskComment);
+			}
+
+			
 	        return task;
 		}
 		catch (SOAPFaultException ex)
@@ -1585,10 +1597,16 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage ex)
+		}
+		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		} catch (IImportExportTaskRetrieveByIdServiceFaultMessageFaultFaultMessage ex)
+		}
+		catch (IImportExportTaskRetrieveByIdServiceFaultMessageFaultFaultMessage ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+		catch (IImportExportTaskRetrieveCommentsServiceFaultMessageFaultFaultMessage ex)
 		{
 			throw new SpiraException(ex.getMessage());
 		}

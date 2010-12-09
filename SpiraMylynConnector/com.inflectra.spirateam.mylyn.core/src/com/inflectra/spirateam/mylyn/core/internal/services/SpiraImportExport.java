@@ -765,7 +765,7 @@ public class SpiraImportExport
 			//Get the list of users
 			List<RemoteProjectUser> remoteProjectUsers = soap.projectRetrieveUserMembership().getRemoteProjectUser();
 			
-			//Convert the SOAP release into the ArtifactField class
+			//Convert the SOAP project user into the ArtifactField class
 			ArtifactField artifactField = new ArtifactField("User");
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteProjectUser remoteProjectUser : remoteProjectUsers)

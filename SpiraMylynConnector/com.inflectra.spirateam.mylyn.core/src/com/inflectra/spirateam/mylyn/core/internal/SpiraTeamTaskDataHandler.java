@@ -617,13 +617,17 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 
 							//See what kind of artifact we have
 
-							//Currently only incidents and tasks can be updated
 							ArtifactType artifactType = ArtifactType.byTaskKey(taskKey);
+							if (artifactType.equals(ArtifactType.REQUIREMENT))
+							{
+								updateRequirementFromTaskData(client, repository, taskData, projectId);
+								return new RepositoryResponse(ResponseKind.TASK_UPDATED, taskKey); //$NON-NLS-1$
+							}
 							if (artifactType.equals(ArtifactType.TASK))
 							{
 								updateTaskFromTaskData(client, repository, taskData, projectId);
 								return new RepositoryResponse(ResponseKind.TASK_UPDATED, taskKey); //$NON-NLS-1$
-							}			
+							}
 							if (artifactType.equals(ArtifactType.INCIDENT))
 							{
 								updateIncidentFromTaskData(client, repository, taskData, projectId);
@@ -755,6 +759,59 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		{
 			//Convert into data validation exception
 			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsNotValidDate, attribute.toString()));
+		}
+	}
+	
+	/**
+	 * Updates the Spira Requirement on the server from the local changes
+	 * @param client Reference to the SOAP proxy
+	 * @param repository Reference to the Mylyn Repository
+	 * @param taskData The task information
+	 */
+	private void updateRequirementFromTaskData(SpiraImportExport client, TaskRepository repository, TaskData taskData, int projectId)
+		throws SpiraException
+	{	
+		//First we need to get a fresh copy of the Requirement from the server
+		String artifactKey = taskData.getTaskId();
+		Requirement requirement = client.requirementRetrieveByKey(artifactKey, projectId, null);
+		if (requirement == null)
+		{
+			//Need to throw an exception because the task doesn't exist on the server anymore
+			throw new SpiraException(Messages.SpiraTeamTaskDataHandler_ArtifactNoLongerExists);
+		}
+		
+		//Next we need to validate that required text fields are populated
+		//[None for requirements]
+			
+		//Next we need to update the requirement with the values from IDE
+		
+		//First we set the cross-attribute properties
+		requirement.setName(getTaskAttributeStringValue(taskData, ArtifactAttribute.NAME));
+		requirement.setDescription(getTaskAttributeStringValue(taskData, ArtifactAttribute.DESCRIPTION));
+		requirement.setOwnerId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.OWNER_ID));
+		//This will be checked by the server to see if it matches the current record
+		//since the server uses optimistic concurrency
+		requirement.setLastUpdateDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.LAST_UPDATE_DATE));
+
+		//Now we need to set the requirement-specific attributes
+		requirement.setAuthorId(getTaskAttributeIntValue(taskData, ArtifactAttribute.REQUIREMENT_AUTHOR_ID));
+		requirement.setReleaseId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.REQUIREMENT_RELEASE_ID));
+		requirement.setImportanceId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID));
+		requirement.setPlannedEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT));
+		requirement.setStatusId(getTaskAttributeEffortValue(taskData, ArtifactAttribute.REQUIREMENT_STATUS_ID));
+		
+		//Now we need to see if any new comments were submitted
+		TaskAttribute newCommentAttribute = taskData.getRoot().getAttribute(ArtifactAttribute.REQUIREMENT_NEW_COMMENT.getArtifactKey());
+		String newComment = null;
+		if (newCommentAttribute != null)
+		{
+			newComment = newCommentAttribute.getValue();
+		}
+
+		//Finally we need to commit the changes on the server
+		if (requirement.isDataChanged() || newComment != null)
+		{
+			client.requirementUpdate(requirement, newComment);
 		}
 	}
 	

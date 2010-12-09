@@ -153,8 +153,8 @@ public class Task extends Artifact
     	remoteTask.setStartDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("StartDate", SpiraTeamUtil.convertDatesJava2Xml(this.startDate)));
     	remoteTask.setEndDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("EndDate", SpiraTeamUtil.convertDatesJava2Xml(this.endDate)));
     	remoteTask.setCompletionPercent(this.completionPercent);
-    	remoteTask.setEstimatedEffort(SpiraImportExport.CreateJAXBInteger("", this.estimatedEffort));
-    	remoteTask.setActualEffort(SpiraImportExport.CreateJAXBInteger("", this.actualEffort));
+    	remoteTask.setEstimatedEffort(SpiraImportExport.CreateJAXBInteger("EstimatedEffort", this.estimatedEffort));
+    	remoteTask.setActualEffort(SpiraImportExport.CreateJAXBInteger("ActualEffort", this.actualEffort));
         
         //Now the custom properties
     	remoteTask.setText01(SpiraImportExport.CreateJAXBString("Text01", this.text01));

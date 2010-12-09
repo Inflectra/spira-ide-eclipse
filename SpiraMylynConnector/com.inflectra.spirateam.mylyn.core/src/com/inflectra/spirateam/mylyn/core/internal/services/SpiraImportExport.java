@@ -1356,6 +1356,74 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 	}
 	
 	/**
+	 * Updates a requirement object on the server
+	 * @param requirement The requirement object
+	 * @param newComment A new comment to be added
+	 * @throws SpiraException
+	 */
+	public void requirementUpdate(Requirement requirement, String newComment)
+		throws SpiraException
+	{
+		try
+		{	
+			//First we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+			
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(requirement.getProjectId());
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, requirement.getProjectId()));
+			}
+
+			//Convert the local requirement into the SOAP version
+			RemoteRequirement remoteRequirement = requirement.toSoapObject();
+			
+			//Call the appropriate method to update the incident
+			soap.requirementUpdate(remoteRequirement);
+			
+			//See if we need to add a new comment/resolution as well
+			if (newComment != null)
+			{
+				//Add the new resolution
+				Date date = new Date();	//Defaults to now
+				RemoteComment remoteComment = new RemoteComment();
+				remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(date)));
+				remoteComment.setArtifactId(requirement.getArtifactId());
+				remoteComment.setText(CreateJAXBString("Text", newComment));
+				soap.requirementCreateComment(remoteComment);
+			}
+		}
+		catch (SOAPFaultException ex)
+		{
+			throw SpiraTeamUtil.convertSoapFaults(ex);
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportRequirementUpdateServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportRequirementCreateCommentServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+	}
+	
+	/**
 	 * Updates an incident object on the server
 	 * @param incident The incident object
 	 * @param newComment A new comment to be added

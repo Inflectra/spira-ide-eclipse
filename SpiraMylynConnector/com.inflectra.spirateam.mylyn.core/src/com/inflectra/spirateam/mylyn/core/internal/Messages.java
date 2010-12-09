@@ -62,7 +62,8 @@ public class Messages extends NLS
 	public static String RequirementAttribute_AuthorId;
 	public static String RequirementAttribute_ImportanceId;
 	public static String RequirementAttribute_ReleaseId;
-	public static String Requirementttribute_PlannedEffort;
+	public static String RequirementAttribute_PlannedEffort;
+	public static String RequirementAttribute_NewComment;
 	
 	public static String TaskAttribute_Type;
 	public static String TaskAttribute_StatusId;

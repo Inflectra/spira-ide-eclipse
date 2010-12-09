@@ -828,14 +828,14 @@ public class SpiraImportExport
 			for (RemoteRelease remoteRelease : remoteReleases)
 			{
 				//Indent with spaces. Also need to make releases look slightly different
-				String indentDisplay = remoteRelease.getIndentLevel().toString().replaceAll("[A-Z]", " ");
+				String indentDisplay = remoteRelease.getIndentLevel().getValue().replaceAll("[A-Z]", " ");
 				if (remoteRelease.isIteration())
 				{
-					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), indentDisplay + remoteRelease.getVersionNumber() + " - " + remoteRelease.getName()));				
+					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), indentDisplay + remoteRelease.getVersionNumber().getValue() + " - " + remoteRelease.getName().getValue()));				
 				}
 				else
 				{
-					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), "*" + indentDisplay + remoteRelease.getVersionNumber() + " - " + remoteRelease.getName()));
+					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), "*" + indentDisplay + remoteRelease.getVersionNumber().getValue() + " - " + remoteRelease.getName().getValue()));
 				}
 			}		
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));

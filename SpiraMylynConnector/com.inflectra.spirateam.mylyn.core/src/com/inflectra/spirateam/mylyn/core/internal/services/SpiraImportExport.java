@@ -44,6 +44,7 @@ public class SpiraImportExport
 {
 	private static final String WEB_SERVICE_SUFFIX = "/Services/v3_0/ImportExport.svc";	//$NON-NLS-1$
 	private static final String WEB_SERVICE_NAMESPACE = "{http://www.inflectra.com/SpiraTest/Services/v3.0/}ImportExport";	//$NON-NLS-1$
+	private static final String WEB_SERVICE_NAMESPACE_DATA_OBJECTS = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects";	//$NON-NLS-1$
 	private static final String SPIRA_PLUG_IN_NAME = "Eclipse-IDE";	//$NON-NLS-1$
 	
 	private URL serviceUrl = null;
@@ -76,7 +77,7 @@ public class SpiraImportExport
 	 */
 	public static JAXBElement<String> CreateJAXBString(String fieldName, String value)
 	{
-		JAXBElement<String> jaxString = new JAXBElement<String>(new QName(WEB_SERVICE_NAMESPACE, fieldName), String.class, value);
+		JAXBElement<String> jaxString = new JAXBElement<String>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), String.class, value);
 		if (value == null)
 		{
 			jaxString.setNil(true);
@@ -91,7 +92,7 @@ public class SpiraImportExport
 	 */
 	public static JAXBElement<Integer> CreateJAXBInteger(String fieldName, Integer value)
 	{
-		JAXBElement<Integer> jaxInteger = new JAXBElement<Integer>(new QName(WEB_SERVICE_NAMESPACE, fieldName), Integer.class, value);
+		JAXBElement<Integer> jaxInteger = new JAXBElement<Integer>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), Integer.class, value);
 		if (value == null)
 		{
 			jaxInteger.setNil(true);
@@ -106,7 +107,7 @@ public class SpiraImportExport
 	 */
 	public static JAXBElement<XMLGregorianCalendar> CreateJAXBXMLGregorianCalendar(String fieldName, XMLGregorianCalendar value)
 	{
-		JAXBElement<XMLGregorianCalendar> jaxXMLGregorianCalendar = new JAXBElement<XMLGregorianCalendar>(new QName(WEB_SERVICE_NAMESPACE, fieldName), XMLGregorianCalendar.class, value);
+		JAXBElement<XMLGregorianCalendar> jaxXMLGregorianCalendar = new JAXBElement<XMLGregorianCalendar>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), XMLGregorianCalendar.class, value);
 		if (value == null)
 		{
 			jaxXMLGregorianCalendar.setNil(true);

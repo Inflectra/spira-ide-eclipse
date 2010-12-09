@@ -348,6 +348,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_RELEASE_ID);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT);
+			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_NEW_COMMENT);
 		}
 		
 		//Incident-specific fields
@@ -794,11 +795,11 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		requirement.setLastUpdateDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.LAST_UPDATE_DATE));
 
 		//Now we need to set the requirement-specific attributes
-		requirement.setAuthorId(getTaskAttributeIntValue(taskData, ArtifactAttribute.REQUIREMENT_AUTHOR_ID));
+		//requirement.setAuthorId(getTaskAttributeIntValue(taskData, ArtifactAttribute.REQUIREMENT_AUTHOR_ID));
 		requirement.setReleaseId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.REQUIREMENT_RELEASE_ID));
 		requirement.setImportanceId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID));
 		requirement.setPlannedEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT));
-		requirement.setStatusId(getTaskAttributeEffortValue(taskData, ArtifactAttribute.REQUIREMENT_STATUS_ID));
+		requirement.setStatusId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.REQUIREMENT_STATUS_ID));
 		
 		//Now we need to see if any new comments were submitted
 		TaskAttribute newCommentAttribute = taskData.getRoot().getAttribute(ArtifactAttribute.REQUIREMENT_NEW_COMMENT.getArtifactKey());

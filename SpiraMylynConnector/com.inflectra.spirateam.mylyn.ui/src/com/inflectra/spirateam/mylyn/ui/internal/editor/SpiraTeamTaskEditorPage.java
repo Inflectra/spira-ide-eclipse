@@ -44,20 +44,9 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 			}
 		}
 		
-		//Set the parts that are visible appropriately for each artifact type
+		//Set the parts that are visible
 		setNeedsPrivateSection(false);
-		if (artifactType.equals(ArtifactType.REQUIREMENT))
-		{
-			setNeedsSubmitButton(false);
-		}
-		if (artifactType.equals(ArtifactType.TASK))
-		{
-			setNeedsSubmitButton(true);
-		}
-		if (artifactType.equals(ArtifactType.INCIDENT))
-		{
-			setNeedsSubmitButton(true);
-		}
+		setNeedsSubmitButton(true);
 	}
 
 	@Override
@@ -77,22 +66,22 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 			
 			if (taskEditorPartDescriptor.getId().equals(ID_PART_COMMENTS))
 			{
-				//Requirements and Tasks don't currently support comments
+				//All artifacts now support comments (since v3.0)
+				/*
 				if (artifactType.equals(ArtifactType.REQUIREMENT) || artifactType.equals(ArtifactType.TASK))
 				{
 					it.remove();
-				}
+				}*/
 			}
-			if (taskEditorPartDescriptor.getId().equals(ID_PART_ACTIONS))
+			if (taskEditorPartDescriptor.getId().equals(ID_PART_ACTIONS) && artifactType.equals(ArtifactType.INCIDENT))
 			{
-				//Requirements don't have Actions
-				//Incidents and Tasks use a customized Actions Part
+				//Incidents use a customized Actions Part with workflow operations
 				it.remove();
 			}
 		}
 		
 		//Add the new Actions Part
-		if (artifactType.equals(ArtifactType.INCIDENT) || artifactType.equals(ArtifactType.TASK))
+		if (artifactType.equals(ArtifactType.INCIDENT))
 		{
 			descriptors.add(new TaskEditorPartDescriptor(ID_PART_ACTIONS)
 			{

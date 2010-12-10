@@ -1309,9 +1309,10 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 	
 	/**
 	 * Updates a task object on the server
-	 * @param task
+	 * @param task The task object
+	 * @param newComment A new comment to be added
 	 */
-	public void taskUpdate(Task task)
+	public void taskUpdate(Task task, String newComment)
 		throws SpiraException
 	{
 		try
@@ -1337,6 +1338,18 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			
 			//Call the appropriate method
 			soap.taskUpdate(remoteTask);
+			
+			//See if we need to add a new comment as well
+			if (newComment != null)
+			{
+				//Add the new comment
+				Date date = new Date();	//Defaults to now
+				RemoteComment remoteComment = new RemoteComment();
+				remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(date)));
+				remoteComment.setArtifactId(task.getArtifactId());
+				remoteComment.setText(CreateJAXBString("Text", newComment));
+				soap.taskCreateComment(remoteComment);
+			}
 		}
 		catch (SOAPFaultException ex)
 		{
@@ -1352,6 +1365,9 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 		{
 			throw new SpiraException(exception.getMessage());
 		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportTaskCreateCommentServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
 		}
@@ -1560,7 +1576,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 					RemoteRequirement remoteRequirement = soap.requirementRetrieveById(task.getRequirementId());
 					if (remoteRequirement != null)
 					{
-						task.setRequirementName(remoteRequirement.getName() + " [RQ:" + task.getRequirementId() + "]");
+						task.setRequirementName(remoteRequirement.getName().getValue() + " [RQ:" + task.getRequirementId() + "]");
 					}
 				}
 			}

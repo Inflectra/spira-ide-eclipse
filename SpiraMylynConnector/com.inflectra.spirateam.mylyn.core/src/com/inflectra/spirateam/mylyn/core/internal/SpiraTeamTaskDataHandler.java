@@ -388,6 +388,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE);
 			createAttribute(data, client, ArtifactAttribute.TASK_ESTIMATED_EFFORT);
 			createAttribute(data, client, ArtifactAttribute.TASK_ACTUAL_EFFORT);
+			createAttribute(data, client, ArtifactAttribute.TASK_NEW_COMMENT);
 		}
 		
 		// custom fields - add when API supports it
@@ -862,10 +863,18 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		task.setEstimatedEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.TASK_ESTIMATED_EFFORT));
 		task.setActualEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.TASK_ACTUAL_EFFORT));
 		
-		//Finally we need to commit the changes on the server
-		if (task.isDataChanged())
+		//Now we need to see if any new comments were submitted
+		TaskAttribute newCommentAttribute = taskData.getRoot().getAttribute(ArtifactAttribute.TASK_NEW_COMMENT.getArtifactKey());
+		String newComment = null;
+		if (newCommentAttribute != null)
 		{
-			client.taskUpdate(task);
+			newComment = newCommentAttribute.getValue();
+		}
+
+		//Finally we need to commit the changes on the server
+		if (task.isDataChanged() || newComment != null)
+		{
+			client.taskUpdate(task, newComment);
 		}
 	}
 	

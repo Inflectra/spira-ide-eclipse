@@ -1123,7 +1123,25 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 					artifactField.setType(Type.SELECT);
 					
 					//Now we need to get the custom list values
-					//artifactField.setValues(values);
+					RemoteCustomList remoteCustomList = remoteCustomProperty.getCustomList().getValue();
+					if (remoteCustomList != null)
+					{
+						if (remoteCustomList.getValues().getValue() != null)
+						{
+							List<RemoteCustomListValue> remoteCustomListValues = remoteCustomList.getValues().getValue().getRemoteCustomListValue();
+							if (remoteCustomListValues != null)
+							{
+								ArtifactFieldValue[] values = new ArtifactFieldValue[remoteCustomListValues.size()];
+								int i = 0;
+								for (RemoteCustomListValue remoteCustomListValue : remoteCustomListValues)
+								{
+									values[i] = new ArtifactFieldValue(remoteCustomListValue.getCustomPropertyValueId().getValue(), remoteCustomListValue.getName().getValue());
+									i++;
+								}
+								artifactField.setValues(values);
+							}
+						}
+					}
 				}
 				artifactFields.add(artifactField);
 			}

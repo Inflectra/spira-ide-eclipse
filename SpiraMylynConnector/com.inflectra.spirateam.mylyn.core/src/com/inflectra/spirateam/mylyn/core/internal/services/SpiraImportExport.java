@@ -23,6 +23,7 @@ import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactAttachment;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
@@ -416,7 +417,20 @@ public class SpiraImportExport
 				RequirementComment requirementComment = new RequirementComment(remoteComment);
 				requirement.getComments().add(requirementComment);
 			}
-						
+			
+			//Now get any associated attachments
+			RemoteSort remoteSort = new RemoteSort();
+			remoteSort.setPropertyName(CreateJAXBString("PropertyName", "UploadDate"));
+			remoteSort.setSortAscending(false);
+			List<RemoteDocument> remoteDocuments = soap.documentRetrieveForArtifact(ArtifactType.REQUIREMENT.getArtifactTypeId(), requirementId, null, remoteSort).getRemoteDocument();
+
+			//Convert the SOAP attachments into the local version
+			for (RemoteDocument remoteDocument : remoteDocuments)
+			{
+				ArtifactAttachment artifactAttachment = new ArtifactAttachment(remoteDocument);
+				requirement.getAttachments().add(artifactAttachment);
+			}
+
 	        return requirement;
 		}
 		catch (WebServiceException ex)
@@ -435,6 +449,9 @@ public class SpiraImportExport
 		{
 			throw new SpiraException(exception.getMessage());
 		} catch (IImportExportRequirementRetrieveCommentsServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportDocumentRetrieveForArtifactServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
 		}
@@ -564,6 +581,19 @@ public class SpiraImportExport
 				incident.getResolutions().add(incidentResolution);
 			}
 					
+			//Now get any associated attachments
+			RemoteSort remoteSort = new RemoteSort();
+			remoteSort.setPropertyName(CreateJAXBString("PropertyName", "UploadDate"));
+			remoteSort.setSortAscending(false);
+			List<RemoteDocument> remoteDocuments = soap.documentRetrieveForArtifact(ArtifactType.INCIDENT.getArtifactTypeId(), incidentId, null, remoteSort).getRemoteDocument();
+
+			//Convert the SOAP attachments into the local version
+			for (RemoteDocument remoteDocument : remoteDocuments)
+			{
+				ArtifactAttachment artifactAttachment = new ArtifactAttachment(remoteDocument);
+				incident.getAttachments().add(artifactAttachment);
+			}
+			
 	        return incident;
 		}
 		catch (WebServiceException ex)
@@ -582,6 +612,9 @@ public class SpiraImportExport
 		{
 			throw new SpiraException(exception.getMessage());
 		} catch (IImportExportIncidentRetrieveResolutionsServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		} catch (IImportExportDocumentRetrieveForArtifactServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
 		}
@@ -1642,6 +1675,18 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 				task.getComments().add(taskComment);
 			}
 
+			//Now get any associated attachments
+			RemoteSort remoteSort = new RemoteSort();
+			remoteSort.setPropertyName(CreateJAXBString("PropertyName", "UploadDate"));
+			remoteSort.setSortAscending(false);
+			List<RemoteDocument> remoteDocuments = soap.documentRetrieveForArtifact(ArtifactType.TASK.getArtifactTypeId(), taskId, null, remoteSort).getRemoteDocument();
+
+			//Convert the SOAP attachments into the local version
+			for (RemoteDocument remoteDocument : remoteDocuments)
+			{
+				ArtifactAttachment artifactAttachment = new ArtifactAttachment(remoteDocument);
+				task.getAttachments().add(artifactAttachment);
+			}
 			
 	        return task;
 		}
@@ -1665,6 +1710,9 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			throw new SpiraException(ex.getMessage());
 		}
 		catch (IImportExportTaskRetrieveCommentsServiceFaultMessageFaultFaultMessage ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		} catch (IImportExportDocumentRetrieveForArtifactServiceFaultMessageFaultFaultMessage ex)
 		{
 			throw new SpiraException(ex.getMessage());
 		}

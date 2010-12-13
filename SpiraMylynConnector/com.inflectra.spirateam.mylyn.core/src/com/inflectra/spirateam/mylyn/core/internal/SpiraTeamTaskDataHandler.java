@@ -23,6 +23,7 @@ import org.eclipse.mylyn.tasks.core.RepositoryResponse;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.RepositoryResponse.ResponseKind;
 import org.eclipse.mylyn.tasks.core.data.AbstractTaskDataHandler;
+import org.eclipse.mylyn.tasks.core.data.TaskAttachmentMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskAttributeMetaData;
@@ -32,6 +33,7 @@ import org.eclipse.mylyn.tasks.core.data.TaskOperation;
 import org.eclipse.osgi.util.NLS;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactAttachment;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
@@ -1395,29 +1397,28 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 		}
 
-		/* Handle attachments - future enhancement once the API has been upgraded
-		TracAttachment[] attachments = ticket.getAttachments();
-		if (attachments != null) {
-			for (int i = 0; i < attachments.length; i++) {
+		// Handle attachments
+		List<ArtifactAttachment> attachments = artifact.getAttachments();
+		if (attachments != null)
+		{
+			int count = 1;
+			for (ArtifactAttachment attachment : attachments)
+			{
 				TaskAttachmentMapper mapper = new TaskAttachmentMapper();
-				mapper.setAuthor(repository.createPerson(attachments[i].getAuthor()));
-				mapper.setDescription(attachments[i].getDescription());
-				mapper.setFileName(attachments[i].getFilename());
-				mapper.setLength((long) attachments[i].getSize());
-				if (attachments[i].getCreated() != null) {
-					if (lastChanged == null || attachments[i].getCreated().after(lastChanged)) {
-						lastChanged = attachments[i].getCreated();
-					}
-					mapper.setCreationDate(attachments[i].getCreated());
-				}
-				mapper.setUrl(repository.itoryUrl() + ITracClient.TICKET_ATTACHMENT_URL + ticket.getId() + "/" //$NON-NLS-1$
-						+ TracUtil.encodeUrl(attachments[i].getFilename()));
-				mapper.setAttachmentId(i + ""); //$NON-NLS-1$
+				mapper.setAuthor(repository.createPerson(attachment.getAuthorName()));
+				mapper.setDescription(attachment.getDescription());
+				mapper.setFileName(attachment.getFilename());
+				mapper.setLength((long) attachment.getSize());
+				mapper.setCreationDate(attachment.getCreationDate());
+				//mapper.setUrl(repository.itoryUrl() + ITracClient.TICKET_ATTACHMENT_URL + ticket.getId() + "/" //$NON-NLS-1$
+						//+ TracUtil.encodeUrl(attachments[i].getFilename()));
+				mapper.setAttachmentId(attachment.getAttachmentKey()); //$NON-NLS-1$
 
-				TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_ATTACHMENT + (i + 1));
+				TaskAttribute attribute = data.getRoot().createAttribute(TaskAttribute.PREFIX_ATTACHMENT + count);
 				mapper.applyTo(attribute);
+				count++;
 			}
-		}*/
+		}
 
 		return changedAttributes;
 	}

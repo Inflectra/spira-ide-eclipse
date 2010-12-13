@@ -1,6 +1,8 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 
@@ -38,6 +40,8 @@ public class Artifact
     protected Integer list08;
     protected Integer list09;
     protected Integer list10;
+    
+    protected List<ArtifactAttachment> attachments = new ArrayList<ArtifactAttachment>();
     
     protected boolean dataChanged = false;
     
@@ -940,4 +944,12 @@ public class Artifact
 	    	//We don't update the data-changed flag for this field
 	        this.lastUpdateDate = value;
 	    }
+
+		/**
+		 * @return the attachments
+		 */
+		public List<ArtifactAttachment> getAttachments()
+		{
+			return this.attachments;
+		}
 }

@@ -20,6 +20,7 @@ import org.eclipse.mylyn.tasks.core.RepositoryStatus;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.TaskRepositoryLocationFactory;
 import org.eclipse.mylyn.tasks.core.ITask.PriorityLevel;
+import org.eclipse.mylyn.tasks.core.data.AbstractTaskAttachmentHandler;
 import org.eclipse.mylyn.tasks.core.data.TaskData;
 import org.eclipse.mylyn.tasks.core.data.TaskDataCollector;
 import org.eclipse.mylyn.tasks.core.data.TaskMapper;
@@ -37,6 +38,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	private SpiraTeamClientManager clientManager;
 	private File repositoryConfigurationCacheFile;
 	private final SpiraTeamTaskDataHandler taskDataHandler = new SpiraTeamTaskDataHandler(this);
+	private final SpiraTeamTaskAttachmentHandler taskAttachmentHandler = new SpiraTeamTaskAttachmentHandler();
 	private TaskRepositoryLocationFactory taskRepositoryLocationFactory = new TaskRepositoryLocationFactory();
 	
 	/**
@@ -398,7 +400,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 			monitor.done();
 		}
 	}
-	
+		
 	@Override
 	public SpiraTeamTaskDataHandler getTaskDataHandler()
 	{
@@ -487,5 +489,14 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 			clientManager = new SpiraTeamClientManager(repositoryConfigurationCacheFile, taskRepositoryLocationFactory);
 		}
 		return clientManager;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.mylyn.tasks.core.AbstractRepositoryConnector#getTaskAttachmentHandler()
+	 */
+	@Override
+	public AbstractTaskAttachmentHandler getTaskAttachmentHandler()
+	{
+		return taskAttachmentHandler;
 	}
 }

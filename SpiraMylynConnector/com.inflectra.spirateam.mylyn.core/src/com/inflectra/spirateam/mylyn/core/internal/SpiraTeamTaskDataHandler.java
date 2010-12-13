@@ -33,6 +33,7 @@ import org.eclipse.osgi.util.NLS;
 
 import com.inflectra.spirateam.mylyn.core.internal.model.Artifact;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowField;
@@ -169,12 +170,11 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	}
 
 	/**
-	 * This overload is used for the custom properties, when we add support for that
-	 * @param data
-	 * @param field
+	 * This overload is used for the custom properties
+	 * @param data The task data object
+	 * @param field The custom field we're adding
 	 * @return
 	 */
-	/*
 	private static TaskAttribute createAttribute(TaskData data, ArtifactField field)
 	{
 		TaskAttribute attr = data.getRoot().createAttribute(field.getName());
@@ -183,7 +183,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		metaData.setLabel(field.getLabel() + ":"); //$NON-NLS-1$
 		metaData.setKind(TaskAttribute.KIND_DEFAULT);
 		metaData.setReadOnly(false);
-		metaData.putValue(ARTIFACT_KEY, field.getName());
+		metaData.putValue(ATTRIBUTE_ARTIFACT_KEY, field.getName());
 		if (field.getType() == ArtifactField.Type.CHECKBOX)
 		{
 			// attr.addOption("True", "1");
@@ -251,7 +251,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 		}
 		return attr;
-	}*/
+	}
 
 	public static TaskAttribute createAttribute(TaskData data, ArtifactAttribute artifactAttribute)
 	{
@@ -394,9 +394,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.TASK_NEW_COMMENT);
 		}
 		
-		// custom fields - add when API supports it
-		/*
-		ArtifactField[] fields = client.getCustomProperties(ArtifactType.TASK, projectId);
+		// custom fields/properties
+		ArtifactField[] fields = client.getCustomProperties(ArtifactType.TASK, null);
 		if (fields != null)
 		{
 			for (ArtifactField field : fields)
@@ -406,7 +405,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 					createAttribute(data, field);
 				}
 			}
-		}*/
+		}
 	}
 
 	public static void addWorkflowTransitions(SpiraImportExport client, Incident incident, TaskRepository repository, TaskData data)

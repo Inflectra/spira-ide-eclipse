@@ -1114,6 +1114,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 				ArtifactField artifactField = new ArtifactField(remoteCustomProperty.getCustomPropertyName().getValue());
 				artifactField.setLabel(remoteCustomProperty.getAlias().getValue());
 				artifactField.setCustom(true);
+				artifactField.setOptional(true);
 				if (remoteCustomProperty.getCustomPropertyTypeId().getValue() == SpiraTeamCorePlugin.CustomPropertyType_Text)
 				{
 					artifactField.setType(Type.TEXT);

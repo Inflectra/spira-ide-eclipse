@@ -693,6 +693,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		{
 			return null;
 		}
+		if (stringValue.equals(""))
+		{
+			return null;
+		}
 		return Integer.parseInt(stringValue);
 	}
 	

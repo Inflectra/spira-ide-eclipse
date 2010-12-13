@@ -669,6 +669,33 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		return value;
 	}
 	
+	private String getCustomPropertyStringValue(TaskData taskData, String customPropertyName)
+	{
+		//See if the custom property exists on the task
+		if (taskData.getRoot().getAttribute(customPropertyName) == null)
+		{
+			return null;
+		}
+		TaskAttribute taskAttribute = taskData.getRoot().getAttribute(customPropertyName);
+		return taskAttribute.getValue();
+	}
+	
+	private Integer getCustomPropertyIntegerValue(TaskData taskData, String customPropertyName)
+	{
+		//See if the custom property exists on the task
+		if (taskData.getRoot().getAttribute(customPropertyName) == null)
+		{
+			return null;
+		}
+		TaskAttribute taskAttribute = taskData.getRoot().getAttribute(customPropertyName);
+		String stringValue = taskAttribute.getValue();
+		if (stringValue == null)
+		{
+			return null;
+		}
+		return Integer.parseInt(stringValue);
+	}
+	
 	private Integer getTaskAttributeIntegerValue(TaskData taskData, ArtifactAttribute attribute)
 		throws SpiraDataValidationException
 	{
@@ -693,7 +720,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	}
 	
 	private Integer getTaskAttributeEffortValue(TaskData taskData, ArtifactAttribute attribute)
-	throws SpiraDataValidationException
+		throws SpiraDataValidationException
 	{
 		try
 		{
@@ -805,6 +832,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		requirement.setPlannedEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT));
 		requirement.setStatusId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.REQUIREMENT_STATUS_ID));
 		
+		//Now we need to set the custom property values
+		updateCustomPropertiesFromTaskData(requirement, taskData);
+		
 		//Now we need to see if any new comments were submitted
 		TaskAttribute newCommentAttribute = taskData.getRoot().getAttribute(ArtifactAttribute.REQUIREMENT_NEW_COMMENT.getArtifactKey());
 		String newComment = null;
@@ -865,6 +895,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		task.setActualEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.TASK_ACTUAL_EFFORT));
 		task.setRemainingEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.TASK_REMAINING_EFFORT));
 		
+		//Now we need to set the custom property values
+		updateCustomPropertiesFromTaskData(task, taskData);
+		
 		//Now we need to see if any new comments were submitted
 		TaskAttribute newCommentAttribute = taskData.getRoot().getAttribute(ArtifactAttribute.TASK_NEW_COMMENT.getArtifactKey());
 		String newComment = null;
@@ -878,6 +911,30 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		{
 			client.taskUpdate(task, newComment);
 		}
+	}
+	
+	private void updateCustomPropertiesFromTaskData(Artifact artifact, TaskData taskData)
+	{
+		artifact.setText01(getCustomPropertyStringValue(taskData, "TEXT_01"));
+		artifact.setText02(getCustomPropertyStringValue(taskData, "TEXT_02"));
+		artifact.setText03(getCustomPropertyStringValue(taskData, "TEXT_03"));
+		artifact.setText04(getCustomPropertyStringValue(taskData, "TEXT_04"));
+		artifact.setText05(getCustomPropertyStringValue(taskData, "TEXT_05"));
+		artifact.setText06(getCustomPropertyStringValue(taskData, "TEXT_06"));
+		artifact.setText07(getCustomPropertyStringValue(taskData, "TEXT_07"));
+		artifact.setText08(getCustomPropertyStringValue(taskData, "TEXT_08"));
+		artifact.setText09(getCustomPropertyStringValue(taskData, "TEXT_09"));
+		artifact.setText10(getCustomPropertyStringValue(taskData, "TEXT_10"));
+		artifact.setList01(getCustomPropertyIntegerValue(taskData, "LIST_01"));
+		artifact.setList02(getCustomPropertyIntegerValue(taskData, "LIST_02"));
+		artifact.setList03(getCustomPropertyIntegerValue(taskData, "LIST_03"));
+		artifact.setList04(getCustomPropertyIntegerValue(taskData, "LIST_04"));
+		artifact.setList05(getCustomPropertyIntegerValue(taskData, "LIST_05"));
+		artifact.setList06(getCustomPropertyIntegerValue(taskData, "LIST_06"));
+		artifact.setList07(getCustomPropertyIntegerValue(taskData, "LIST_07"));
+		artifact.setList08(getCustomPropertyIntegerValue(taskData, "LIST_08"));
+		artifact.setList09(getCustomPropertyIntegerValue(taskData, "LIST_09"));
+		artifact.setList10(getCustomPropertyIntegerValue(taskData, "LIST_10"));
 	}
 	
 	/**
@@ -945,6 +1002,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		incident.setEstimatedEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT));
 		incident.setActualEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT));
 
+		//Now we need to set the custom property values
+		updateCustomPropertiesFromTaskData(incident, taskData);
+		
 		//Now we need to see if any new comments were submitted
 		TaskAttribute newCommentAttribute = taskData.getRoot().getAttribute(ArtifactAttribute.INCIDENT_NEW_RESOLUTION.getArtifactKey());
 		String newComment = null;

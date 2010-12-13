@@ -114,6 +114,10 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 		{
 			return getOptions(client.taskGetStatus(), false);
 		}
+		else if (ArtifactAttribute.TASK_CREATOR_ID.getArtifactKey().equals(artifactAttributeKey))
+		{
+			return getOptions(client.usersGet(), true);
+		}
 		else if (ArtifactAttribute.TASK_PRIORITY_ID.getArtifactKey().equals(artifactAttributeKey))
 		{
 			return getOptions(client.taskGetPriority(), true);

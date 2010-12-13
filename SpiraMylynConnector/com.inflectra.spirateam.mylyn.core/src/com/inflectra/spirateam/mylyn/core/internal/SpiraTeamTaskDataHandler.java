@@ -383,11 +383,14 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.TASK_REQUIREMENT_ID);
 			createAttribute(data, client, ArtifactAttribute.TASK_RELEASE_ID);
 			createAttribute(data, client, ArtifactAttribute.TASK_PRIORITY_ID);
+			createAttribute(data, client, ArtifactAttribute.TASK_CREATOR_ID);
 			createAttribute(data, client, ArtifactAttribute.TASK_START_DATE);
 			createAttribute(data, client, ArtifactAttribute.TASK_END_DATE);
 			createAttribute(data, client, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE);
 			createAttribute(data, client, ArtifactAttribute.TASK_ESTIMATED_EFFORT);
 			createAttribute(data, client, ArtifactAttribute.TASK_ACTUAL_EFFORT);
+			createAttribute(data, client, ArtifactAttribute.TASK_REMAINING_EFFORT);
+			createAttribute(data, client, ArtifactAttribute.TASK_PROJECTED_EFFORT);
 			createAttribute(data, client, ArtifactAttribute.TASK_NEW_COMMENT);
 		}
 		
@@ -859,9 +862,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		task.setTaskPriorityId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.TASK_PRIORITY_ID));
 		task.setStartDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.TASK_START_DATE));
 		task.setEndDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.TASK_END_DATE));
-		task.setCompletionPercent(getTaskAttributeIntValue(taskData, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE));
 		task.setEstimatedEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.TASK_ESTIMATED_EFFORT));
 		task.setActualEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.TASK_ACTUAL_EFFORT));
+		task.setRemainingEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.TASK_REMAINING_EFFORT));
 		
 		//Now we need to see if any new comments were submitted
 		TaskAttribute newCommentAttribute = taskData.getRoot().getAttribute(ArtifactAttribute.TASK_NEW_COMMENT.getArtifactKey());
@@ -1212,11 +1215,14 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_REQUIREMENT_ID, task.getRequirementName(), projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_RELEASE_ID, task.getReleaseId() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_PRIORITY_ID, task.getTaskPriorityId() + "", projectId);
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_CREATOR_ID, task.getCreatorId() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_START_DATE, SpiraTeamUtil.dateToString(task.getStartDate()), projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_END_DATE, SpiraTeamUtil.dateToString(task.getEndDate()), projectId);
-			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE, task.getCompletionPercent() + "", projectId);
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE, task.getCompletionPercent() + "%", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ESTIMATED_EFFORT, SpiraTeamUtil.effortValuesToString(task.getEstimatedEffort()), projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_ACTUAL_EFFORT, SpiraTeamUtil.effortValuesToString(task.getActualEffort()), projectId);
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_REMAINING_EFFORT, SpiraTeamUtil.effortValuesToString(task.getRemainingEffort()), projectId);
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_PROJECTED_EFFORT, SpiraTeamUtil.effortValuesToString(task.getProjectedEffort()), projectId);
 			
 			// Handle SpiraTeam comments
 			if (task.getComments() != null)

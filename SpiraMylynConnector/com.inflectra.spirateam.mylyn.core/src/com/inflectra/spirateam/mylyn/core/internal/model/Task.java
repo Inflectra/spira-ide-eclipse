@@ -32,6 +32,9 @@ public class Task extends Artifact
     protected String projectName;
     protected String releaseVersionNumber;
     protected String requirementName;
+    protected Integer remainingEffort;
+    protected Integer projectedEffort;
+    protected int creatorId;
     
     //Contains the collection of comments
     protected List<TaskComment> comments = new ArrayList<TaskComment>();
@@ -44,11 +47,14 @@ public class Task extends Artifact
 		REQUIREMENT_ID("task.requirementId"),
 		RELEASE_ID("task.releaseId"),
 		PRIORITY_ID("task.priorityId"),
+		CREATOR_ID("task.creatorId"),
 		START_DATE("task.startDate"),
 		END_DATE("task.endDate"),
 		COMPLETION_PERCENTAGE("task.completionPercentage"),
 		ESTIMATED_EFFORT("task.estimatedEffort"),
 		ACTUAL_EFFORT("task.actualEffort"),
+		REMAINING_EFFORT("task.remainingEffort"),
+		PROJECTED_EFFORT("task.projectedEffort"),
 		REQUIREMENT_NAME("task.requirementName"),
 		COMMENT("task.comment");
 
@@ -95,6 +101,7 @@ public class Task extends Artifact
         this.projectId = remoteTask.getProjectId().getValue();
         this.ownerId = remoteTask.getOwnerId().getValue();
         this.releaseId = remoteTask.getReleaseId().getValue();
+        this.creatorId = remoteTask.getCreatorId().getValue();
         this.name = remoteTask.getName().getValue();
         this.description = remoteTask.getDescription().getValue();
         this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteTask.getCreationDate());
@@ -108,6 +115,8 @@ public class Task extends Artifact
         this.completionPercent = remoteTask.getCompletionPercent();
         this.estimatedEffort = remoteTask.getEstimatedEffort().getValue();
         this.actualEffort = remoteTask.getActualEffort().getValue();
+        this.remainingEffort = remoteTask.getRemainingEffort().getValue();
+        this.projectedEffort = remoteTask.getProjectedEffort().getValue();
         this.taskStatusName = remoteTask.getTaskStatusName().getValue();
         this.ownerName = remoteTask.getOwnerName().getValue();
         this.taskPriorityName = remoteTask.getTaskPriorityName().getValue();
@@ -149,6 +158,7 @@ public class Task extends Artifact
     	remoteTask.setProjectId(SpiraImportExport.CreateJAXBInteger("ProjectId", this.projectId));
     	remoteTask.setOwnerId(SpiraImportExport.CreateJAXBInteger("OwnerId", this.ownerId));
     	remoteTask.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
+    	remoteTask.setCreatorId(SpiraImportExport.CreateJAXBInteger("Creator", this.creatorId));
     	remoteTask.setName(SpiraImportExport.CreateJAXBString("Name", this.name));
     	remoteTask.setDescription(SpiraImportExport.CreateJAXBString("Description", this.description));
     	remoteTask.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(this.creationDate));
@@ -159,9 +169,9 @@ public class Task extends Artifact
     	remoteTask.setTaskPriorityId(SpiraImportExport.CreateJAXBInteger("TaskPriorityId", this.taskPriorityId));
     	remoteTask.setStartDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("StartDate", SpiraTeamUtil.convertDatesJava2Xml(this.startDate)));
     	remoteTask.setEndDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("EndDate", SpiraTeamUtil.convertDatesJava2Xml(this.endDate)));
-    	remoteTask.setCompletionPercent(this.completionPercent);
     	remoteTask.setEstimatedEffort(SpiraImportExport.CreateJAXBInteger("EstimatedEffort", this.estimatedEffort));
     	remoteTask.setActualEffort(SpiraImportExport.CreateJAXBInteger("ActualEffort", this.actualEffort));
+    	remoteTask.setRemainingEffort(SpiraImportExport.CreateJAXBInteger("RemainingEffort", this.remainingEffort));
         
         //Now the custom properties
     	remoteTask.setText01(SpiraImportExport.CreateJAXBString("Text01", this.text01));
@@ -379,19 +389,6 @@ public class Task extends Artifact
     }
 
     /**
-     * Sets the value of the completionPercent property.
-     * 
-     */
-    public void setCompletionPercent(int value)
-    {
-    	if (this.completionPercent != value)
-    	{
-    		this.dataChanged = true;
-    	}
-        this.completionPercent = value;
-    }
-
-    /**
      * Gets the value of the estimatedEffort property.
      * 
      * @return
@@ -525,5 +522,45 @@ public class Task extends Artifact
 	public List<TaskComment> getComments()
 	{
 		return this.comments;
+	}
+
+	/**
+	 * @return the remainingEffort
+	 */
+	public Integer getRemainingEffort()
+	{
+		return this.remainingEffort;
+	}
+
+	/**
+	 * @param remainingEffort the remainingEffort to set
+	 */
+	public void setRemainingEffort(Integer remainingEffort)
+	{
+		this.remainingEffort = remainingEffort;
+	}
+
+	/**
+	 * @return the projectedEffort
+	 */
+	public Integer getProjectedEffort()
+	{
+		return this.projectedEffort;
+	}
+
+	/**
+	 * @return the creatorId
+	 */
+	public int getCreatorId()
+	{
+		return this.creatorId;
+	}
+
+	/**
+	 * @param creatorId the creatorId to set
+	 */
+	public void setCreatorId(int creatorId)
+	{
+		this.creatorId = creatorId;
 	}
 }

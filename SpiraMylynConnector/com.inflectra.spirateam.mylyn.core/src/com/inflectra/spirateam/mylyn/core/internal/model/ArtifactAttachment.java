@@ -19,6 +19,7 @@ public class ArtifactAttachment
 	protected String description;
 	protected Date creationDate;
 	protected long size;
+	protected boolean urlAttachment;
 	
 	private final String ATTACHMENT_PREFIX = "DC";
 	
@@ -36,6 +37,7 @@ public class ArtifactAttachment
         this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteDocument.getUploadDate());
         this.size = remoteDocument.getSize();
         this.authorName = remoteDocument.getAuthorName().getValue();
+        this.urlAttachment = (remoteDocument.getArtifactTypeId().getValue().equals(2));
 	}
 	
 	/**
@@ -143,5 +145,21 @@ public class ArtifactAttachment
 	public void setSize(long size)
 	{
 		this.size = size;
+	}
+
+	/**
+	 * @return the urlAttachment
+	 */
+	public boolean isUrlAttachment()
+	{
+		return this.urlAttachment;
+	}
+
+	/**
+	 * @param urlAttachment the urlAttachment to set
+	 */
+	public void setUrlAttachment(boolean urlAttachment)
+	{
+		this.urlAttachment = urlAttachment;
 	}
 }

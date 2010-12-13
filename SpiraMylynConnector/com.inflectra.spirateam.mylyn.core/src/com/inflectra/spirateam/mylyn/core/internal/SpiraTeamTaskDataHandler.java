@@ -1410,7 +1410,20 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				mapper.setFileName(attachment.getFilename());
 				mapper.setLength((long) attachment.getSize());
 				mapper.setCreationDate(attachment.getCreationDate());
-				//mapper.setUrl(repository.itoryUrl() + ITracClient.TICKET_ATTACHMENT_URL + ticket.getId() + "/" //$NON-NLS-1$
+				String attachmentUrl = "";
+				//Set the url to either a viewing page or the url itself depending
+				//on the type of attachment
+				if (attachment.isUrlAttachment())
+				{
+					attachmentUrl = attachment.getFilename();
+				}
+				else
+				{
+					//http://localhost/SpiraTeam/1/Attachment/1.aspx
+					attachmentUrl = repository.getRepositoryUrl() + "/" + projectId + "/Attachment/" + attachment.getAttachmentId() + ".aspx";
+				}
+				mapper.setUrl(attachmentUrl);
+						//repository.itoryUrl() + ITracClient.TICKET_ATTACHMENT_URL + ticket.getId() + "/" //$NON-NLS-1$
 						//+ TracUtil.encodeUrl(attachments[i].getFilename()));
 				mapper.setAttachmentId(attachment.getAttachmentKey()); //$NON-NLS-1$
 

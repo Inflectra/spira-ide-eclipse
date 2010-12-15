@@ -508,9 +508,10 @@ public class SpiraImportExport
 	 * @param projectId The current project
 	 * @param artifactAttachment The artifact attachment info
 	 * @param attachmentData The actual data
+	 * @param comment Any added comments
 	 * @return
 	 */
-	public ArtifactAttachment attachmentUpload (int projectId, String artifactKey, ArtifactAttachment artifactAttachment, byte[] attachmentData)
+	public ArtifactAttachment attachmentUpload (int projectId, String artifactKey, ArtifactAttachment artifactAttachment, byte[] attachmentData, String comment)
 		throws SpiraException
 	{
 		try
@@ -535,7 +536,8 @@ public class SpiraImportExport
 			}
 			
 			//Get the artifact type id from the prefix
-			int artifactTypeId = ArtifactType.byTaskKey(artifactKey).getArtifactTypeId();
+			ArtifactType artifactType = ArtifactType.byTaskKey(artifactKey);
+			int artifactTypeId = artifactType.getArtifactTypeId();
 			
 			//Next we need to re-authenticate
 			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
@@ -559,6 +561,42 @@ public class SpiraImportExport
 			remoteDocument.setArtifactTypeId(SpiraImportExport.CreateJAXBInteger("ArtifactTypeId", artifactTypeId));
 			remoteDocument = soap.documentAddFile(remoteDocument, attachmentData);
 						
+			//See if we have to add a new comment
+			if (comment != null && !comment.isEmpty())
+			{
+				//See what type of artifact we have and handle appropriately
+				if (artifactType.equals(ArtifactType.REQUIREMENT))
+				{
+					//Add the new comment
+					RemoteComment remoteComment = new RemoteComment();
+					remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(artifactAttachment.getCreationDate())));
+					remoteComment.setArtifactId(artifactId);
+					remoteComment.setText(CreateJAXBString("Text", comment));
+					soap.requirementCreateComment(remoteComment);
+
+				}
+				else if (artifactType.equals(ArtifactType.INCIDENT))
+				{
+					RemoteIncidentResolution remoteIncidentResolution = new RemoteIncidentResolution();
+					remoteIncidentResolution.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(artifactAttachment.getCreationDate()));
+					remoteIncidentResolution.setIncidentId(artifactId);
+					remoteIncidentResolution.setResolution(CreateJAXBString("Resolution", comment));
+					ArrayOfRemoteIncidentResolution remoteIncidentResolutions = new ArrayOfRemoteIncidentResolution();
+					remoteIncidentResolutions.getRemoteIncidentResolution().add(remoteIncidentResolution);
+					soap.incidentAddResolutions(remoteIncidentResolutions);
+
+				}
+				else if (artifactType.equals(ArtifactType.TASK))
+				{
+					//Add the new comment
+					RemoteComment remoteComment = new RemoteComment();
+					remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(artifactAttachment.getCreationDate())));
+					remoteComment.setArtifactId(artifactId);
+					remoteComment.setText(CreateJAXBString("Text", comment));
+					soap.taskCreateComment(remoteComment);
+				}
+			}
+			
 	        return new ArtifactAttachment(remoteDocument);
 		}
 		catch (WebServiceException ex)
@@ -574,6 +612,18 @@ public class SpiraImportExport
 			throw new SpiraException(exception.getMessage());
 		}
 		catch (IImportExportDocumentAddFileServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportRequirementCreateCommentServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportTaskCreateCommentServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportIncidentAddResolutionsServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
 		}
@@ -1644,7 +1694,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			soap.taskUpdate(remoteTask);
 			
 			//See if we need to add a new comment as well
-			if (newComment != null)
+			if (newComment != null && !newComment.isEmpty())
 			{
 				//Add the new comment
 				Date date = new Date();	//Defaults to now
@@ -1711,7 +1761,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			soap.requirementUpdate(remoteRequirement);
 			
 			//See if we need to add a new comment/resolution as well
-			if (newComment != null)
+			if (newComment != null && !newComment.isEmpty())
 			{
 				//Add the new resolution
 				Date date = new Date();	//Defaults to now
@@ -1778,7 +1828,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			soap.incidentUpdate(remoteIncident);
 			
 			//See if we need to add a new comment/resolution as well
-			if (newComment != null)
+			if (newComment != null && !newComment.isEmpty())
 			{
 				//Add the new resolution
 				Date date = new Date();	//Defaults to now

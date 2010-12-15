@@ -150,10 +150,7 @@ public class SpiraTeamTaskAttachmentHandler extends
 						//Upload the new attachment
 						Date now = new Date();
 						ArtifactAttachment artifactAttachment = new ArtifactAttachment(source.getName(), source.getDescription(), now, source.getLength());
-						client.attachmentUpload(projectId, taskKey, artifactAttachment, attachmentData);
-						
-						//See if we need to add a new comment
-						//TODO Implement new comment feature
+						client.attachmentUpload(projectId, taskKey, artifactAttachment, attachmentData, comment);
 					}
 				}
 			}

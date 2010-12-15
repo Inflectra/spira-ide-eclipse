@@ -44,6 +44,8 @@ import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.RequirementComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.model.TaskComment;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraAuthenticationException;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataValidationException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
@@ -1562,6 +1564,69 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		{
 			//Data older than v2.3.1 we just set to the current version
 			//because v2.3.1 was the first version of the Mylyn connector :-)
+			taskData.setVersion(TASK_DATA_VERSION);
+			return;
+		}
+		if (version < 030000)
+		{
+			try
+			{
+				//Data older than v3.0.0 then we need to add the following attributes:
+				//Requirement - New Comment
+				//Task - New Comment, Remaining Effort, Projected Effort
+				//Incident - Remaining Effort, Projected Effort
+				
+				//Find out what type of task we have
+				String taskKey = taskData.getTaskId();
+				ArtifactType artifactType = ArtifactType.byTaskKey(taskKey);
+				SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(taskRepository);
+				if (artifactType.equals(ArtifactType.REQUIREMENT))
+				{
+					if (taskData.getRoot().getAttribute(ArtifactAttribute.REQUIREMENT_NEW_COMMENT.getArtifactKey()) == null)
+					{
+						createAttribute(taskData, client, ArtifactAttribute.REQUIREMENT_NEW_COMMENT);
+					}
+				}
+				else if (artifactType.equals(ArtifactType.TASK))
+				{
+					if (taskData.getRoot().getAttribute(ArtifactAttribute.TASK_NEW_COMMENT.getArtifactKey()) == null)
+					{
+						createAttribute(taskData, client, ArtifactAttribute.TASK_NEW_COMMENT);
+					}
+					if (taskData.getRoot().getAttribute(ArtifactAttribute.TASK_REMAINING_EFFORT.getArtifactKey()) == null)
+					{
+						createAttribute(taskData, client, ArtifactAttribute.TASK_REMAINING_EFFORT);
+					}
+					if (taskData.getRoot().getAttribute(ArtifactAttribute.TASK_PROJECTED_EFFORT.getArtifactKey()) == null)
+					{
+						createAttribute(taskData, client, ArtifactAttribute.TASK_PROJECTED_EFFORT);
+					}
+				}
+				else if (artifactType.equals(ArtifactType.INCIDENT))
+				{
+					if (taskData.getRoot().getAttribute(ArtifactAttribute.INCIDENT_REMAINING_EFFORT.getArtifactKey()) == null)
+					{
+						createAttribute(taskData, client, ArtifactAttribute.INCIDENT_REMAINING_EFFORT);
+					}
+					if (taskData.getRoot().getAttribute(ArtifactAttribute.INCIDENT_PROJECTED_EFFORT.getArtifactKey()) == null)
+					{
+						createAttribute(taskData, client, ArtifactAttribute.INCIDENT_PROJECTED_EFFORT);
+					}
+				}
+			}
+			catch (MalformedURLException exception)
+			{
+				//Do nothing and just update the version number
+			}
+			catch (SpiraAuthenticationException exception)
+			{
+				//Do nothing and just update the version number
+			}
+			catch (SpiraConnectionException exception)
+			{
+				//Do nothing and just update the version number
+			}
+			
 			taskData.setVersion(TASK_DATA_VERSION);
 		}
 	}

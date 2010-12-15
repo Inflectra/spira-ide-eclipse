@@ -1163,7 +1163,15 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 		for (RemoteWorkflowIncidentFields remoteField : remoteFields)
 		{
 			fields.add(new IncidentWorkflowField(remoteField));
-		}		
+		}	
+		
+		//Get the list of workflow-controlled custom-properties (active/required)
+		List<RemoteWorkflowIncidentCustomProperties> remoteWorkflowCustomProperties = soap.incidentRetrieveWorkflowCustomProperties(currentIncidentTypeId, currentIncidentStatusId).getRemoteWorkflowIncidentCustomProperties();
+		for (RemoteWorkflowIncidentCustomProperties remoteWorkflowCustomProperty : remoteWorkflowCustomProperties)
+		{
+			fields.add(new IncidentWorkflowField(remoteWorkflowCustomProperty));
+		}	
+		
 		return fields;
 	}
 	catch (WebServiceException ex)
@@ -1178,6 +1186,9 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 	} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage ex)
 	{
 		throw new SpiraException(ex.getMessage());
+	} catch (IImportExportIncidentRetrieveWorkflowCustomPropertiesServiceFaultMessageFaultFaultMessage exception)
+	{
+		throw new SpiraException(exception.getMessage());
 	}
 }
 	

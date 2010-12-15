@@ -369,6 +369,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_CLOSED_DATE);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_REMAINING_EFFORT);
+			createAttribute(data, client, ArtifactAttribute.INCIDENT_PROJECTED_EFFORT);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_TRANSITION_STATUS);
 			createAttribute(data, client, ArtifactAttribute.INCIDENT_NEW_RESOLUTION);
@@ -962,13 +964,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 		
 		//Next we need to validate that non-workflow required fields are populated
-		//% Complete
-		String valueToTest = getTaskAttributeStringValue(taskData, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE);
-		if (valueToTest == null || valueToTest.equals(""))
-		{
-			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE.toString()));
-		}
-		valueToTest = getTaskAttributeStringValue(taskData, ArtifactAttribute.NAME);
+		String valueToTest = getTaskAttributeStringValue(taskData, ArtifactAttribute.NAME);
 		if (valueToTest == null || valueToTest.equals(""))
 		{
 			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, ArtifactAttribute.NAME.toString()));
@@ -1004,9 +1000,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		incident.setVerifiedReleaseId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.INCIDENT_VERIFIED_RELEASE_ID));
 		incident.setStartDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.INCIDENT_START_DATE));
 		incident.setClosedDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.INCIDENT_CLOSED_DATE));
-		incident.setCompletionPercent(getTaskAttributeIntValue(taskData, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE));
 		incident.setEstimatedEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT));
 		incident.setActualEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT));
+		incident.setRemainingEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.INCIDENT_REMAINING_EFFORT));
 
 		//Now we need to set the custom property values
 		updateCustomPropertiesFromTaskData(incident, taskData);
@@ -1327,9 +1323,11 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_VERIFIED_RELEASE_ID, incident.getVerifiedReleaseId() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_START_DATE, SpiraTeamUtil.dateToString(incident.getStartDate()), projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_CLOSED_DATE, SpiraTeamUtil.dateToString(incident.getClosedDate()), projectId);
-			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE, incident.getCompletionPercent() + "", projectId);
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_COMPLETION_PERCENTAGE, incident.getCompletionPercent() + "%", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ESTIMATED_EFFORT, SpiraTeamUtil.effortValuesToString(incident.getEstimatedEffort()), projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_ACTUAL_EFFORT, SpiraTeamUtil.effortValuesToString(incident.getActualEffort()), projectId);
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_REMAINING_EFFORT, SpiraTeamUtil.effortValuesToString(incident.getRemainingEffort()), projectId);
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_PROJECTED_EFFORT, SpiraTeamUtil.effortValuesToString(incident.getProjectedEffort()), projectId);
 
 			//Used to denote that we have not yet executed a transition
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.INCIDENT_TRANSITION_STATUS, SpiraTeamUtil.WORKFLOW_TRANSITION_STATUS_ACTIVE, projectId);

@@ -52,9 +52,11 @@ public enum ArtifactAttribute
 	INCIDENT_VERIFIED_RELEASE_ID(Incident.Key.VERIFIED_RELEASE_ID, Messages.IncidentAttribute_VerifiedReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, "VerifiedReleaseId", Flag.ATTRIBUTE),
 	INCIDENT_START_DATE(Incident.Key.START_DATE, Messages.IncidentAttribute_StartDate, TaskAttribute.DATE_DUE, TaskAttribute.TYPE_DATE, "StartDate", Flag.ATTRIBUTE),
 	INCIDENT_CLOSED_DATE(Incident.Key.CLOSED_DATE, Messages.IncidentAttribute_ClosedDate, TaskAttribute.DATE_COMPLETION, TaskAttribute.TYPE_DATE, "ClosedDate", Flag.ATTRIBUTE),
-	INCIDENT_COMPLETION_PERCENTAGE(Incident.Key.COMPLETION_PERCENTAGE, Messages.IncidentAttribute_CompletionPercentage, null, TaskAttribute.TYPE_SHORT_TEXT, "", Flag.ATTRIBUTE),
+	INCIDENT_COMPLETION_PERCENTAGE(Incident.Key.COMPLETION_PERCENTAGE, Messages.IncidentAttribute_CompletionPercentage, null, TaskAttribute.TYPE_SHORT_TEXT, "", Flag.READ_ONLY, Flag.ATTRIBUTE),
 	INCIDENT_ESTIMATED_EFFORT(Incident.Key.ESTIMATED_EFFORT, Messages.IncidentAttribute_EstimatedEffort, null, TaskAttribute.TYPE_SHORT_TEXT, "EstimatedEffort", Flag.ATTRIBUTE),
 	INCIDENT_ACTUAL_EFFORT(Incident.Key.ACTUAL_EFFORT, Messages.IncidentAttribute_ActualEffort, null, TaskAttribute.TYPE_SHORT_TEXT, "ActualEffort", Flag.ATTRIBUTE),
+	INCIDENT_REMAINING_EFFORT(Incident.Key.REMAINING_EFFORT, Messages.IncidentAttribute_RemainingEffort, null, TaskAttribute.TYPE_SHORT_TEXT, "RemainingEffort", Flag.ATTRIBUTE),
+	INCIDENT_PROJECTED_EFFORT(Incident.Key.PROJECTED_EFFORT, Messages.IncidentAttribute_ProjectedEffort, null, TaskAttribute.TYPE_SHORT_TEXT, "", Flag.READ_ONLY, Flag.ATTRIBUTE),
 	INCIDENT_TRANSITION_STATUS(Incident.Key.TRANSITION_STATUS, null, null, TaskAttribute.TYPE_SHORT_TEXT, ""),
 	INCIDENT_NEW_RESOLUTION(Incident.Key.RESOLUTION, Messages.IncidentAttribute_NewResolution, TaskAttribute.COMMENT_NEW, TaskAttribute.TYPE_LONG_RICH_TEXT, "Resolution"),
 	

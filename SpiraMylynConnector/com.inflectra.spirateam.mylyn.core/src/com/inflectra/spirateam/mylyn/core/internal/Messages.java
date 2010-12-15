@@ -92,6 +92,8 @@ public class Messages extends NLS
 	public static String IncidentAttribute_CompletionPercentage;
 	public static String IncidentAttribute_EstimatedEffort;
 	public static String IncidentAttribute_ActualEffort;
+	public static String IncidentAttribute_RemainingEffort;
+	public static String IncidentAttribute_ProjectedEffort;
 	public static String IncidentAttribute_OpenerId;
 	public static String IncidentAttribute_NewResolution;
 

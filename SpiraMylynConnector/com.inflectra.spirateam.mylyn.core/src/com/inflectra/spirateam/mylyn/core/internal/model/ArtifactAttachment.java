@@ -3,6 +3,7 @@ package com.inflectra.spirateam.mylyn.core.internal.model;
 import java.util.Date;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteDocument;
 
 /**
@@ -23,6 +24,18 @@ public class ArtifactAttachment
 	
 	public final static String ATTACHMENT_PREFIX = "DC";
 	
+	/**
+	 * Creates a new artifact attachment for a specific artifact
+	 * @param remoteDocument
+	 */
+	public ArtifactAttachment(String filename, String description, Date creationDate, long size)
+	{
+		this.filename = filename;
+		this.description = description;
+		this.creationDate = creationDate;
+		this.size = size;
+	}
+	
     /**
      * Creates an artifact attachment based on its equivalent SOAP object
      * @param remoteDocument The SOAP artifact attachment
@@ -39,6 +52,20 @@ public class ArtifactAttachment
         this.authorName = remoteDocument.getAuthorName().getValue();
         this.urlAttachment = (remoteDocument.getAttachmentTypeId().equals(2));
 	}
+	
+    /**
+     * Converts this object into its soap equivalent
+     * @return
+     */
+    public RemoteDocument toSoapObject()
+    {
+    	RemoteDocument remoteDocument = new RemoteDocument();
+    	remoteDocument.setFilenameOrUrl(SpiraImportExport.CreateJAXBString("FilenameOrUrl", this.filename));
+    	remoteDocument.setDescription(SpiraImportExport.CreateJAXBString("Description", this.description));
+    	remoteDocument.setUploadDate(SpiraTeamUtil.convertDatesJava2Xml(this.creationDate));
+    	remoteDocument.setSize(new Integer((int)this.size));
+    	return remoteDocument;
+    }
 	
 	/**
 	 * @return The attachment id with its prefix

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.util.Date;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -118,8 +119,57 @@ public class SpiraTeamTaskAttachmentHandler extends
 			TaskAttribute attachmentAttribute, IProgressMonitor monitor)
 			throws CoreException
 	{
+		try
+		{
+			//Get an instance of the SpiraTeam client
+			SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(repository);
 
-
+			//Get the project id for this artifact
+			String taskKey = task.getTaskId();
+			SpiraTeamClientData data = client.getData();
+			if (data != null)
+			{
+				if (data.taskToProjectMapping != null)
+				{
+					if (data.taskToProjectMapping.containsKey(taskKey))
+					{
+						int projectId = data.taskToProjectMapping.get(taskKey);
+						
+						//Extract the input stream as a byte array
+						InputStream input = source.createInputStream(monitor);
+						ByteArrayOutputStream bos = new ByteArrayOutputStream();
+						int next = input.read();
+						while (next > -1)
+						{
+							bos.write(next);
+							next = input.read();
+						}
+						bos.flush();
+						byte[] attachmentData = bos.toByteArray();
+						
+						//Upload the new attachment
+						Date now = new Date();
+						ArtifactAttachment artifactAttachment = new ArtifactAttachment(source.getName(), source.getDescription(), now, source.getLength());
+						client.attachmentUpload(projectId, taskKey, artifactAttachment, attachmentData);
+						
+						//See if we need to add a new comment
+						//TODO Implement new comment feature
+					}
+				}
+			}
+		}
+		catch (SpiraException ex)
+		{
+			throw new CoreException(SpiraTeamCorePlugin.toStatus(repository, ex));
+		} 
+		catch (MalformedURLException ex)
+		{
+			throw new CoreException(SpiraTeamCorePlugin.toStatus(repository, ex));
+		}
+		catch (IOException ex)
+		{
+			throw new CoreException(SpiraTeamCorePlugin.toStatus(repository, ex));
+		}
 	}
 
 }

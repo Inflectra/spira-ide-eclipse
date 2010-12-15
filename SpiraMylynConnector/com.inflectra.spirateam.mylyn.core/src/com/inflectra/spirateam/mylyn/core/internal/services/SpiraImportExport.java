@@ -503,6 +503,83 @@ public class SpiraImportExport
 	}
 	
 	/**
+	 * Uploads an attachment into the system
+	 * @param artifactKey The artifact prefix + numeric ID (e.g. RQ45)
+	 * @param projectId The current project
+	 * @param artifactAttachment The artifact attachment info
+	 * @param attachmentData The actual data
+	 * @return
+	 */
+	public ArtifactAttachment attachmentUpload (int projectId, String artifactKey, ArtifactAttachment artifactAttachment, byte[] attachmentData)
+		throws SpiraException
+	{
+		try
+		{	
+			//First make sure that the artifact key is in the correct format
+			if (artifactKey == null)
+			{
+				throw new SpiraInvalidArtifactKeyException(Messages.SpiraImportExport_ArtifactKeyNull);
+			}
+			if (artifactKey.length() < 3)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
+			}
+			int artifactId;
+			try
+			{
+				artifactId = Integer.parseInt(artifactKey.substring(2));
+			}
+			catch (NumberFormatException e)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
+			}
+			
+			//Get the artifact type id from the prefix
+			int artifactTypeId = ArtifactType.byTaskKey(artifactKey).getArtifactTypeId();
+			
+			//Next we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+			
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Call the appropriate method
+			RemoteDocument remoteDocument = artifactAttachment.toSoapObject();
+			remoteDocument.setArtifactId(SpiraImportExport.CreateJAXBInteger("ArtifactId", artifactId));
+			remoteDocument.setArtifactTypeId(SpiraImportExport.CreateJAXBInteger("ArtifactTypeId", artifactTypeId));
+			remoteDocument = soap.documentAddFile(remoteDocument, attachmentData);
+						
+	        return new ArtifactAttachment(remoteDocument);
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportDocumentAddFileServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+	}
+	
+	/**
 	 * Gets a single requirement by its key (RQ prefix + requirement id)
 	 * @param artifactKey The key for the requirement (RQ prefix + requirement id)
 	 * @param monitor

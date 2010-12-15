@@ -31,6 +31,8 @@ public class Incident extends Artifact
     protected int completionPercent;
     protected Integer estimatedEffort;
     protected Integer actualEffort;
+    protected Integer remainingEffort;
+    protected Integer projectedEffort;
     protected String priorityName;
     protected String severityName;
     protected String incidentStatusName;
@@ -62,6 +64,8 @@ public class Incident extends Artifact
 		COMPLETION_PERCENTAGE("incident.completionPercentage"),
 		ESTIMATED_EFFORT("incident.estimatedEffort"),
 		ACTUAL_EFFORT("incident.actualEffort"),
+		REMAINING_EFFORT("incident.remainingEffort"),
+		PROJECTED_EFFORT("incident.projectedEffort"),
 		TRANSITION_STATUS("incident.internal.transitionStatus"),
 		RESOLUTION("incident.resolution");
 
@@ -124,6 +128,8 @@ public class Incident extends Artifact
         this.completionPercent = remoteIncident.getCompletionPercent();
         this.estimatedEffort = remoteIncident.getEstimatedEffort().getValue();
         this.actualEffort = remoteIncident.getActualEffort().getValue();
+        this.remainingEffort = remoteIncident.getRemainingEffort().getValue();
+        this.projectedEffort = remoteIncident.getProjectedEffort().getValue();
         this.priorityName = remoteIncident.getPriorityName().getValue();
         this.severityName = remoteIncident.getSeverityName().getValue();
         this.incidentStatusName = remoteIncident.getIncidentStatusName().getValue();
@@ -186,9 +192,9 @@ public class Incident extends Artifact
     	remoteIncident.setVerifiedReleaseId(SpiraImportExport.CreateJAXBInteger("VerifiedReleaseId",this.verifiedReleaseId));
     	remoteIncident.setStartDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("StartDate", SpiraTeamUtil.convertDatesJava2Xml(this.startDate)));
     	remoteIncident.setClosedDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("ClosedDate", SpiraTeamUtil.convertDatesJava2Xml(this.closedDate)));
-    	remoteIncident.setCompletionPercent(this.completionPercent);
     	remoteIncident.setEstimatedEffort(SpiraImportExport.CreateJAXBInteger("EstimatedEffort",this.estimatedEffort));
     	remoteIncident.setActualEffort(SpiraImportExport.CreateJAXBInteger("ActualEffort",this.actualEffort));
+    	remoteIncident.setRemainingEffort(SpiraImportExport.CreateJAXBInteger("RemainingEffort", this.remainingEffort));
         
         //Now the custom properties
     	remoteIncident.setText01(SpiraImportExport.CreateJAXBString("Text01", this.text01));
@@ -537,19 +543,6 @@ public class Incident extends Artifact
     }
 
     /**
-     * Sets the value of the completionPercent property.
-     * 
-     */
-    public void setCompletionPercent(int value)
-    {
-    	if (this.completionPercent != value)
-    	{
-    		this.dataChanged = true;
-    	}
-        this.completionPercent = value;
-    }
-
-    /**
      * Gets the value of the estimatedEffort property.
      * 
      * @return
@@ -756,5 +749,29 @@ public class Incident extends Artifact
 	public List<IncidentResolution> getResolutions()
 	{
 		return this.resolutions;
+	}
+
+	/**
+	 * @return the remainingEffort
+	 */
+	public Integer getRemainingEffort()
+	{
+		return this.remainingEffort;
+	}
+
+	/**
+	 * @param remainingEffort the remainingEffort to set
+	 */
+	public void setRemainingEffort(Integer remainingEffort)
+	{
+		this.remainingEffort = remainingEffort;
+	}
+
+	/**
+	 * @return the projectedEffort
+	 */
+	public Integer getProjectedEffort()
+	{
+		return this.projectedEffort;
 	}
 }

@@ -1440,10 +1440,35 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		List<IncidentWorkflowField> workflowFields = client.incidentRetrieveWorkflowFields(projectId, currentIncidentTypeId, currentIncidentStatusId);
 		for (String attributeKey : data.getRoot().getAttributes().keySet())
 		{
+			//See if this is a standard field or custom property
 			ArtifactAttribute artifactAttribute = ArtifactAttribute.getByArtifactKey(attributeKey);
-			if (artifactAttribute != null)
+			if (artifactAttribute == null)
 			{
-				//See if we have a workflow controlled field
+				//This is a custom property
+				String customPropertyName = attributeKey;
+
+				//See if we have this in the field list
+				boolean matched = false;
+				for(IncidentWorkflowField workflowField : workflowFields)
+				{
+					//We only care about the active flag (i.e. state = 1)
+					if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_ACTIVE && customPropertyName.equals(workflowField.getFieldName()))
+					{
+						matched = true;
+					}
+				}
+				TaskAttribute taskAttribute = data.getRoot().getAttributes().get(attributeKey);
+				if (taskAttribute != null)
+				{
+					//If we didn't find a match in the workflow, we need to
+					//make the field Read-Only
+					taskAttribute.getMetaData().setReadOnly(!matched);
+					changedAttributes.add(taskAttribute);						
+				}
+			}
+			else
+			{
+				//See if we have a workflow controlled standard field
 				String workflowFieldName = artifactAttribute.getWorkflowField();
 				if (!workflowFieldName.equals(""))
 				{

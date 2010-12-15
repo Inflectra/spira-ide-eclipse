@@ -1,19 +1,37 @@
 package com.inflectra.spirateam.mylyn.core.internal;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.mylyn.tasks.core.ITask;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
 import org.eclipse.mylyn.tasks.core.data.AbstractTaskAttachmentHandler;
 import org.eclipse.mylyn.tasks.core.data.AbstractTaskAttachmentSource;
+import org.eclipse.mylyn.tasks.core.data.TaskAttachmentMapper;
 import org.eclipse.mylyn.tasks.core.data.TaskAttribute;
+
+import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactAttachment;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
+import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 
 public class SpiraTeamTaskAttachmentHandler extends
 		AbstractTaskAttachmentHandler
 {
+	private final SpiraTeamRepositoryConnector connector;
 
+	public SpiraTeamTaskAttachmentHandler(SpiraTeamRepositoryConnector connector)
+	{
+		this.connector = connector;
+	}
+	
 	@Override
 	public boolean canGetContent(TaskRepository repository, ITask task)
 	{
@@ -26,13 +44,72 @@ public class SpiraTeamTaskAttachmentHandler extends
 		return true;
 	}
 
+
+	/**
+	 * Downloads an attachment from the repository
+	 * @param repository
+	 * @param task
+	 * @param attachmentId
+	 * @param out
+	 * @param monitor
+	 * @throws CoreException
+	 */
+	private byte[] downloadAttachment(TaskRepository repository, ITask task, String attachmentId, IProgressMonitor monitor)
+		throws CoreException
+	{
+		try
+		{
+			//Get an instance of the SpiraTeam client
+			SpiraImportExport client = connector.getClientManager().getSpiraTeamClient(repository);
+
+			//Get the project id for this artifact
+			String taskKey = task.getTaskId();
+			SpiraTeamClientData data = client.getData();
+			if (data != null)
+			{
+				if (data.taskToProjectMapping != null)
+				{
+					if (data.taskToProjectMapping.containsKey(taskKey))
+					{
+						int projectId = data.taskToProjectMapping.get(taskKey);
+						ArtifactAttachment artifactAttachment = client.attachmentRetrieveByKey(projectId, attachmentId);
+						if (artifactAttachment == null)
+						{
+							throw new CoreException(new Status(IStatus.ERROR, SpiraTeamCorePlugin.PLUGIN_ID, "Attachment with id \"" //$NON-NLS-1$
+									+ attachmentId + "\" not found")); //$NON-NLS-1$ //$NON-NLS-2$
+						}
+						
+						//Make sure we don't have a URL attachment
+						if (!artifactAttachment.isUrlAttachment())
+						{
+							byte[] attachmentData = client.downloadAttachment(projectId, attachmentId);
+							
+							//return the bytes
+							return attachmentData;
+						}
+					}
+				}
+			}
+			return null;
+		}
+		catch (SpiraException ex)
+		{
+			throw new CoreException(SpiraTeamCorePlugin.toStatus(repository, ex));
+		} 
+		catch (MalformedURLException ex)
+		{
+			throw new CoreException(SpiraTeamCorePlugin.toStatus(repository, ex));
+		}
+	}
+	
 	@Override
 	public InputStream getContent(TaskRepository repository, ITask task,
 			TaskAttribute attachmentAttribute, IProgressMonitor monitor)
 			throws CoreException
 	{
-		// TODO Auto-generated method stub
-		return null;
+		TaskAttachmentMapper attachment = TaskAttachmentMapper.createFrom(attachmentAttribute);
+		byte[] attachmentData = downloadAttachment(repository, task, attachment.getAttachmentId(), monitor);
+		return new ByteArrayInputStream(attachmentData);
 	}
 
 	@Override
@@ -41,7 +118,7 @@ public class SpiraTeamTaskAttachmentHandler extends
 			TaskAttribute attachmentAttribute, IProgressMonitor monitor)
 			throws CoreException
 	{
-		// TODO Auto-generated method stub
+
 
 	}
 

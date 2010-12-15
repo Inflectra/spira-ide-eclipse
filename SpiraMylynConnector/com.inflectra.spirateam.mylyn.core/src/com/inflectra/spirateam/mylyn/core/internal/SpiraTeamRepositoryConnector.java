@@ -38,7 +38,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	private SpiraTeamClientManager clientManager;
 	private File repositoryConfigurationCacheFile;
 	private final SpiraTeamTaskDataHandler taskDataHandler = new SpiraTeamTaskDataHandler(this);
-	private final SpiraTeamTaskAttachmentHandler taskAttachmentHandler = new SpiraTeamTaskAttachmentHandler();
+	private final SpiraTeamTaskAttachmentHandler taskAttachmentHandler = new SpiraTeamTaskAttachmentHandler(this);
 	private TaskRepositoryLocationFactory taskRepositoryLocationFactory = new TaskRepositoryLocationFactory();
 	
 	/**

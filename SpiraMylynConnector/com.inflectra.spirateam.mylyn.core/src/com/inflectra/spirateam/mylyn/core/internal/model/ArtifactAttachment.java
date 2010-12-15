@@ -21,7 +21,7 @@ public class ArtifactAttachment
 	protected long size;
 	protected boolean urlAttachment;
 	
-	private final String ATTACHMENT_PREFIX = "DC";
+	public final static String ATTACHMENT_PREFIX = "DC";
 	
     /**
      * Creates an artifact attachment based on its equivalent SOAP object

@@ -11,6 +11,8 @@ import javax.xml.ws.soap.SOAPFaultException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
+
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -347,6 +349,156 @@ public class SpiraImportExport
 		catch (IImportExportSystemGetProductVersionServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+		}
+	}
+	
+	/**
+	 * Retrieves an attachment by its key (DC prefix plus ID)
+	 * @param attachmentKey The id of the attachment prefixed by 'DC'
+	 * @param projectId The id of the current project
+	 * @return
+	 */
+	public ArtifactAttachment attachmentRetrieveByKey(int projectId, String attachmentKey)
+		throws SpiraException
+	{
+		try
+		{	
+			//First make sure that the attachment key is in the correct format
+			if (attachmentKey == null)
+			{
+				throw new SpiraInvalidArtifactKeyException(Messages.SpiraImportExport_ArtifactKeyNull);
+			}
+			if (attachmentKey.length() < 3)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, attachmentKey));
+			}
+			if (!attachmentKey.substring(0, 2).equals(ArtifactAttachment.ATTACHMENT_PREFIX))
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, attachmentKey));
+			}
+			int attachmentId;
+			try
+			{
+				attachmentId = Integer.parseInt(attachmentKey.substring(2));
+			}
+			catch (NumberFormatException e)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, attachmentKey));
+			}
+			
+			//Next we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+			
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Call the appropriate method
+			RemoteDocument remoteDocument = soap.documentRetrieveById(attachmentId);
+			
+			//Convert the SOAP document into the local version
+			ArtifactAttachment artifactAttachment = new ArtifactAttachment(remoteDocument);
+			
+	        return artifactAttachment;
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportDocumentRetrieveByIdServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+	}
+	
+	/**
+	 * Downloads a file attachment
+	 * @param attachmentKey
+	 * @param out
+	 * @author Inflectra Corporation
+	 * @param projectId
+	 */
+	public byte[] downloadAttachment(int projectId, String attachmentKey)
+		throws SpiraException
+	{
+		try
+		{	
+			//First make sure that the attachment key is in the correct format
+			if (attachmentKey == null)
+			{
+				throw new SpiraInvalidArtifactKeyException(Messages.SpiraImportExport_ArtifactKeyNull);
+			}
+			if (attachmentKey.length() < 3)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, attachmentKey));
+			}
+			if (!attachmentKey.substring(0, 2).equals(ArtifactAttachment.ATTACHMENT_PREFIX))
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, attachmentKey));
+			}
+			int attachmentId;
+			try
+			{
+				attachmentId = Integer.parseInt(attachmentKey.substring(2));
+			}
+			catch (NumberFormatException e)
+			{
+				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, attachmentKey));
+			}
+			
+			//Next we need to re-authenticate
+			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+			}
+			
+			//Next we need to connect to the appropriate project
+			success = soap.connectionConnectToProject(projectId);
+			if (!success)
+			{
+				//throw new SpiraException (this.userName + "/" + this.password);
+				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+			}
+				
+			//Call the appropriate method
+			byte[] attachmentData = soap.documentOpenFile(attachmentId);
+						
+	        return attachmentData;
+		}
+		catch (WebServiceException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportDocumentOpenFileServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
 		}
 	}
 	

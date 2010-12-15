@@ -37,7 +37,7 @@ public class ArtifactAttachment
         this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteDocument.getUploadDate());
         this.size = remoteDocument.getSize();
         this.authorName = remoteDocument.getAuthorName().getValue();
-        this.urlAttachment = (remoteDocument.getArtifactTypeId().getValue().equals(2));
+        this.urlAttachment = (remoteDocument.getAttachmentTypeId().equals(2));
 	}
 	
 	/**

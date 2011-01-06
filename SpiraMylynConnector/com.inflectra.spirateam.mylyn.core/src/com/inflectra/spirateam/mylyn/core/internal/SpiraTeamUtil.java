@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.soap.Detail;
@@ -149,6 +150,9 @@ public class SpiraTeamUtil
 			calendar.setTime(date);
 			DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
 			XMLGregorianCalendar xmlCal = datatypeFactory.newXMLGregorianCalendar(calendar);
+			//We need to unset the timezone because SpiraTeam is not expected it
+			//and it will break concurrency
+			xmlCal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
 			return xmlCal;
 		}
 		catch (DatatypeConfigurationException ex)

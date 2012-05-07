@@ -3,4 +3,5 @@
    <feature url="features/com.inflectra.spirateam.mylyn.feature_2.3.1.201005031237.jar" id="com.inflectra.spirateam.mylyn.feature" version="2.3.1.201005031237"/>
    <feature url="features/com.inflectra.spirateam.mylyn.feature_3.0.0.201012151032.jar" id="com.inflectra.spirateam.mylyn.feature" version="3.0.0.201012151032"/>
    <feature url="features/com.inflectra.spirateam.mylyn.feature_3.0.0.201101061548.jar" id="com.inflectra.spirateam.mylyn.feature" version="3.0.0.201101061548"/>
+   <feature url="features/com.inflectra.spirateam.mylyn.feature_3.0.0.201205071129.jar" id="com.inflectra.spirateam.mylyn.feature" version="3.0.0.201205071129"/>
 </site>

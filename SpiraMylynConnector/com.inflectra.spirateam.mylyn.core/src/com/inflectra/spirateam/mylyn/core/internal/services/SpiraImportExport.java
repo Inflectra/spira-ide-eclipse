@@ -140,6 +140,9 @@ public class SpiraImportExport
 	public SpiraImportExport(String baseUrl)
 		throws MalformedURLException, SpiraConnectionException
 	{
+		//Trust all SSL certificates
+		SSLUtilities.trustAllHttpsCertificates();
+		
 		//Set the web service URL
 		this.serviceUrl = new URL(baseUrl + WEB_SERVICE_SUFFIX);
 		
@@ -147,7 +150,44 @@ public class SpiraImportExport
 		try
 		{
 			this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
-			this.soap = this.service.getBasicHttpBindingIImportExport();
+
+			//Try both the HTTP and HTTPS ports
+			IImportExport soap1 = null;
+			IImportExport soap2 = null;
+			try
+			{
+				soap1 = service.getBasicHttpBindingIImportExport();
+			}
+			catch (WebServiceException ex)
+			{
+				//Ignore as the port will be left as null
+			}
+			try
+			{
+				soap2 = service.getBasicHttpBindingIImportExport1();
+			}
+			catch (WebServiceException ex)
+			{
+				//Ignore as the port will be left as null
+			}
+			
+			//If both are NULL, throw exception
+			if (soap1 == null && soap2 == null)
+			{
+				//Return the error
+				throw new SpiraConnectionException ("Unable to connect with either the SpiraTest HTTP or HTTPS APIs. Please check the URL and try again\n\n");
+			}
+			
+			//Set the SOAP handle to the non-null binding
+			if (soap1 != null)
+			{
+				this.soap = soap1;
+			}
+			else
+			{
+				this.soap = soap2;
+			}
+
 			
 			//Make sure that session is maintained
 			Map<String, Object> requestContext = ((BindingProvider)this.soap).getRequestContext();
@@ -165,6 +205,9 @@ public class SpiraImportExport
 	public SpiraImportExport(String baseUrl, String userName, String password)
 		throws MalformedURLException, SpiraConnectionException
 	{
+		//Trust all SSL certificates
+		SSLUtilities.trustAllHttpsCertificates();
+		
 		//Set the URL, username and password
 		this.serviceUrl = new URL(baseUrl + WEB_SERVICE_SUFFIX);
 		this.userName = userName;
@@ -174,7 +217,43 @@ public class SpiraImportExport
 		try
 		{
 			this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
-			this.soap = this.service.getBasicHttpBindingIImportExport();
+
+			//Try both the HTTP and HTTPS ports
+			IImportExport soap1 = null;
+			IImportExport soap2 = null;
+			try
+			{
+				soap1 = service.getBasicHttpBindingIImportExport();
+			}
+			catch (WebServiceException ex)
+			{
+				//Ignore as the port will be left as null
+			}
+			try
+			{
+				soap2 = service.getBasicHttpBindingIImportExport1();
+			}
+			catch (WebServiceException ex)
+			{
+				//Ignore as the port will be left as null
+			}
+			
+			//If both are NULL, throw exception
+			if (soap1 == null && soap2 == null)
+			{
+				//Return the error
+				throw new SpiraConnectionException ("Unable to connect with either the SpiraTest HTTP or HTTPS APIs. Please check the URL and try again\n\n");
+			}
+			
+			//Set the SOAP handle to the non-null binding
+			if (soap1 != null)
+			{
+				this.soap = soap1;
+			}
+			else
+			{
+				this.soap = soap2;
+			}
 			
 			//Make sure that session is maintained
 			Map<String, Object> requestContext = ((BindingProvider)this.soap).getRequestContext();

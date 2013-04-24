@@ -9,9 +9,9 @@ import org.eclipse.mylyn.tasks.ui.TasksUiUtil;
 import org.eclipse.mylyn.tasks.ui.editors.AbstractTaskEditorPageFactory;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditor;
 import org.eclipse.mylyn.tasks.ui.editors.TaskEditorInput;
+import org.eclipse.mylyn.commons.ui.CommonImages;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.forms.editor.FormPage;
-import org.eclipse.mylyn.internal.provisional.commons.ui.CommonImages;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
 import com.inflectra.spirateam.mylyn.ui.internal.SpiraTeamImages;

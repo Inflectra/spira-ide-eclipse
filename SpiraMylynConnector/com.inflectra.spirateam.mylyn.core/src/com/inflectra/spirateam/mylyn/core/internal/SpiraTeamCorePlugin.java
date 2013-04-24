@@ -34,8 +34,9 @@ public class SpiraTeamCorePlugin extends Plugin
 	public static final String PLUGIN_ID = "com.inflectra.spira.mylyn.core";	//$NON-NLS-1$
 	
 	//The connector name and description
-	public final static String CONNECTOR_KIND = "spira";
-	public final static String LABEL = NLS.bind(Messages.SpiraTeamCorePlugin_SpiraTeam_description, "v3.0");	//$NON-NLS-1$
+	public final static String CONNECTOR_KIND = "spira"; //$NON-NLS-1$
+	public final static String REPOSITORY_VERSION = "v4.0"; //$NON-NLS-1$
+	public final static String LABEL = NLS.bind(Messages.SpiraTeamCorePlugin_SpiraTeam_description, REPOSITORY_VERSION);	//$NON-NLS-1$
 
 	// The shared instance
 	private static SpiraTeamCorePlugin plugin;

@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="remoteProject" type="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects}RemoteProject" minOccurs="0"/>
+ *         &lt;element name="remoteProject" type="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects}RemoteProject" minOccurs="0"/>
  *         &lt;element name="existingProjectId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -37,9 +37,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "Project_Create")
 public class ProjectCreate {
 
-    @XmlElementRef(name = "remoteProject", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "remoteProject", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<RemoteProject> remoteProject;
-    @XmlElementRef(name = "existingProjectId", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "existingProjectId", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<Integer> existingProjectId;
 
     /**

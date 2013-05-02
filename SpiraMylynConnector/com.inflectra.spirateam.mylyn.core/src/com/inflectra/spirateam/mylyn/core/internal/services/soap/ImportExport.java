@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.1
  * 
  */
-@WebServiceClient(name = "ImportExport", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", wsdlLocation = "http://localhost/SpiraTeam/Services/v3_0/ImportExport.svc?WSDL")
+@WebServiceClient(name = "ImportExport", targetNamespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", wsdlLocation = "file:/C:/Subversion/Projects/SpiraTeam%20Add%20Ons/Trunk/IDE%20Integration/Eclipse/SpiraMylynConnector/com.inflectra.spirateam.mylyn.core/src/com/inflectra/spirateam/mylyn/core/internal/services/ImportExport40.wsdl")
 public class ImportExport
     extends Service
 {
@@ -30,9 +30,9 @@ public class ImportExport
         try {
             URL baseUrl;
             baseUrl = com.inflectra.spirateam.mylyn.core.internal.services.soap.ImportExport.class.getResource(".");
-            url = new URL(baseUrl, "http://localhost/SpiraTeam/Services/v3_0/ImportExport.svc?WSDL");
+            url = new URL(baseUrl, "file:/C:/Subversion/Projects/SpiraTeam%20Add%20Ons/Trunk/IDE%20Integration/Eclipse/SpiraMylynConnector/com.inflectra.spirateam.mylyn.core/src/com/inflectra/spirateam/mylyn/core/internal/services/ImportExport40.wsdl");
         } catch (MalformedURLException e) {
-            logger.warning("Failed to create URL for the wsdl Location: 'http://localhost/SpiraTeam/Services/v3_0/ImportExport.svc?WSDL', retrying as a local file");
+            logger.warning("Failed to create URL for the wsdl Location: 'file:/C:/Subversion/Projects/SpiraTeam%20Add%20Ons/Trunk/IDE%20Integration/Eclipse/SpiraMylynConnector/com.inflectra.spirateam.mylyn.core/src/com/inflectra/spirateam/mylyn/core/internal/services/ImportExport40.wsdl', retrying as a local file");
             logger.warning(e.getMessage());
         }
         IMPORTEXPORT_WSDL_LOCATION = url;
@@ -43,7 +43,7 @@ public class ImportExport
     }
 
     public ImportExport() {
-        super(IMPORTEXPORT_WSDL_LOCATION, new QName("http://www.inflectra.com/SpiraTest/Services/v3.0/", "ImportExport"));
+        super(IMPORTEXPORT_WSDL_LOCATION, new QName("http://www.inflectra.com/SpiraTest/Services/v4.0/", "ImportExport"));
     }
 
     /**
@@ -53,7 +53,7 @@ public class ImportExport
      */
     @WebEndpoint(name = "BasicHttpBinding_IImportExport")
     public IImportExport getBasicHttpBindingIImportExport() {
-        return super.getPort(new QName("http://www.inflectra.com/SpiraTest/Services/v3.0/", "BasicHttpBinding_IImportExport"), IImportExport.class);
+        return super.getPort(new QName("http://www.inflectra.com/SpiraTest/Services/v4.0/", "BasicHttpBinding_IImportExport"), IImportExport.class);
     }
 
     /**
@@ -65,7 +65,7 @@ public class ImportExport
      */
     @WebEndpoint(name = "BasicHttpBinding_IImportExport")
     public IImportExport getBasicHttpBindingIImportExport(WebServiceFeature... features) {
-        return super.getPort(new QName("http://www.inflectra.com/SpiraTest/Services/v3.0/", "BasicHttpBinding_IImportExport"), IImportExport.class, features);
+        return super.getPort(new QName("http://www.inflectra.com/SpiraTest/Services/v4.0/", "BasicHttpBinding_IImportExport"), IImportExport.class, features);
     }
 
     /**
@@ -75,7 +75,7 @@ public class ImportExport
      */
     @WebEndpoint(name = "BasicHttpBinding_IImportExport1")
     public IImportExport getBasicHttpBindingIImportExport1() {
-        return super.getPort(new QName("http://www.inflectra.com/SpiraTest/Services/v3.0/", "BasicHttpBinding_IImportExport1"), IImportExport.class);
+        return super.getPort(new QName("http://www.inflectra.com/SpiraTest/Services/v4.0/", "BasicHttpBinding_IImportExport1"), IImportExport.class);
     }
 
     /**
@@ -87,7 +87,7 @@ public class ImportExport
      */
     @WebEndpoint(name = "BasicHttpBinding_IImportExport1")
     public IImportExport getBasicHttpBindingIImportExport1(WebServiceFeature... features) {
-        return super.getPort(new QName("http://www.inflectra.com/SpiraTest/Services/v3.0/", "BasicHttpBinding_IImportExport1"), IImportExport.class, features);
+        return super.getPort(new QName("http://www.inflectra.com/SpiraTest/Services/v4.0/", "BasicHttpBinding_IImportExport1"), IImportExport.class, features);
     }
 
 }

@@ -44,7 +44,7 @@ public class SystemGetArtifactUrl {
     protected Integer navigationLinkId;
     protected Integer projectId;
     protected Integer artifactId;
-    @XmlElementRef(name = "tabName", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "tabName", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<String> tabName;
 
     /**

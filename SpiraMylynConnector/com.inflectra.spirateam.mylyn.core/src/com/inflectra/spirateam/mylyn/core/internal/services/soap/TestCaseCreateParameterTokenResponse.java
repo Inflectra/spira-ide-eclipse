@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "TestCase_CreateParameterTokenResponse")
 public class TestCaseCreateParameterTokenResponse {
 
-    @XmlElementRef(name = "TestCase_CreateParameterTokenResult", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "TestCase_CreateParameterTokenResult", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<String> testCaseCreateParameterTokenResult;
 
     /**

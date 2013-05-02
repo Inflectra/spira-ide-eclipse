@@ -19,9 +19,9 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="remoteTestSetTestCaseMapping" type="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects}RemoteTestSetTestCaseMapping" minOccurs="0"/>
+ *         &lt;element name="remoteTestSetTestCaseMapping" type="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects}RemoteTestSetTestCaseMapping" minOccurs="0"/>
  *         &lt;element name="existingTestSetTestCaseId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
- *         &lt;element name="parameters" type="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects}ArrayOfRemoteTestSetTestCaseParameter" minOccurs="0"/>
+ *         &lt;element name="parameters" type="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects}ArrayOfRemoteTestSetTestCaseParameter" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -39,11 +39,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "TestSet_AddTestMapping")
 public class TestSetAddTestMapping {
 
-    @XmlElementRef(name = "remoteTestSetTestCaseMapping", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "remoteTestSetTestCaseMapping", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<RemoteTestSetTestCaseMapping> remoteTestSetTestCaseMapping;
-    @XmlElementRef(name = "existingTestSetTestCaseId", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "existingTestSetTestCaseId", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<Integer> existingTestSetTestCaseId;
-    @XmlElementRef(name = "parameters", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "parameters", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<ArrayOfRemoteTestSetTestCaseParameter> parameters;
 
     /**

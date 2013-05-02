@@ -10,7 +10,7 @@ import javax.xml.ws.WebFault;
  * Generated source version: 2.1
  * 
  */
-@WebFault(name = "ServiceFaultMessage", targetNamespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0")
+@WebFault(name = "ServiceFaultMessage", targetNamespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0")
 public class IImportExportReleaseAddTestMappingServiceFaultMessageFaultFaultMessage
     extends Exception
 {

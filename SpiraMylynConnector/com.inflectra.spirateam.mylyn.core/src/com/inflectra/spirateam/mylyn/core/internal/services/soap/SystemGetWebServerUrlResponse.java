@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "System_GetWebServerUrlResponse")
 public class SystemGetWebServerUrlResponse {
 
-    @XmlElementRef(name = "System_GetWebServerUrlResult", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "System_GetWebServerUrlResult", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<String> systemGetWebServerUrlResult;
 
     /**

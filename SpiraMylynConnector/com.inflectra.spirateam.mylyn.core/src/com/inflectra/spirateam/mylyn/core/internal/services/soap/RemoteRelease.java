@@ -14,11 +14,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 /**
  * 
  * <pre>
- * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;comments xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;summary&gt;
- *             Represents a single Release or Iteration artifact in the system
- *             &lt;/summary&gt;&lt;remarks&gt;
- *             Although the fields refer to Release, they are the same fields for an Iteration
- *             &lt;/remarks&gt;&lt;/comments&gt;
+ * &lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;comments xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;&lt;summary&gt;
+ *                 Represents a single Release or Iteration artifact in the system
+ *               &lt;/summary&gt;&lt;remarks&gt;
+ *                 Although the fields refer to Release, they are the same fields for an Iteration
+ *               &lt;/remarks&gt;&lt;/comments&gt;
  * </pre>
  * 
  * 
@@ -29,7 +29,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <pre>
  * &lt;complexType name="RemoteRelease">
  *   &lt;complexContent>
- *     &lt;extension base="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects}RemoteArtifact">
+ *     &lt;extension base="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects}RemoteArtifact">
  *       &lt;sequence>
  *         &lt;element name="Active" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="AvailableEffort" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
@@ -45,7 +45,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="LastUpdateDate" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="Name" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="PlannedEffort" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
- *         &lt;element name="ProjectId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="ReleaseId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="ResourceCount" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="StartDate" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
@@ -63,7 +62,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RemoteRelease", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", propOrder = {
+@XmlType(name = "RemoteRelease", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", propOrder = {
     "active",
     "availableEffort",
     "creationDate",
@@ -78,7 +77,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "lastUpdateDate",
     "name",
     "plannedEffort",
-    "projectId",
     "releaseId",
     "resourceCount",
     "startDate",
@@ -94,38 +92,36 @@ public class RemoteRelease
 
     @XmlElement(name = "Active")
     protected Boolean active;
-    @XmlElementRef(name = "AvailableEffort", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "AvailableEffort", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> availableEffort;
     @XmlElement(name = "CreationDate")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar creationDate;
-    @XmlElementRef(name = "CreatorId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "CreatorId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> creatorId;
-    @XmlElementRef(name = "CreatorName", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "CreatorName", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<String> creatorName;
     @XmlElement(name = "DaysNonWorking")
     protected Integer daysNonWorking;
-    @XmlElementRef(name = "Description", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "Description", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<String> description;
     @XmlElement(name = "EndDate")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar endDate;
-    @XmlElementRef(name = "FullName", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "FullName", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<String> fullName;
-    @XmlElementRef(name = "IndentLevel", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "IndentLevel", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<String> indentLevel;
     @XmlElement(name = "Iteration")
     protected Boolean iteration;
     @XmlElement(name = "LastUpdateDate")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar lastUpdateDate;
-    @XmlElementRef(name = "Name", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "Name", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<String> name;
-    @XmlElementRef(name = "PlannedEffort", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "PlannedEffort", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> plannedEffort;
-    @XmlElementRef(name = "ProjectId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
-    protected JAXBElement<Integer> projectId;
-    @XmlElementRef(name = "ReleaseId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "ReleaseId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> releaseId;
     @XmlElement(name = "ResourceCount")
     protected Integer resourceCount;
@@ -134,13 +130,13 @@ public class RemoteRelease
     protected XMLGregorianCalendar startDate;
     @XmlElement(name = "Summary")
     protected Boolean summary;
-    @XmlElementRef(name = "TaskActualEffort", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "TaskActualEffort", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> taskActualEffort;
-    @XmlElementRef(name = "TaskCount", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "TaskCount", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> taskCount;
-    @XmlElementRef(name = "TaskEstimatedEffort", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "TaskEstimatedEffort", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> taskEstimatedEffort;
-    @XmlElementRef(name = "VersionNumber", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "VersionNumber", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<String> versionNumber;
 
     /**
@@ -477,30 +473,6 @@ public class RemoteRelease
      */
     public void setPlannedEffort(JAXBElement<Integer> value) {
         this.plannedEffort = ((JAXBElement<Integer> ) value);
-    }
-
-    /**
-     * Gets the value of the projectId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link JAXBElement }{@code <}{@link Integer }{@code >}
-     *     
-     */
-    public JAXBElement<Integer> getProjectId() {
-        return projectId;
-    }
-
-    /**
-     * Sets the value of the projectId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link Integer }{@code >}
-     *     
-     */
-    public void setProjectId(JAXBElement<Integer> value) {
-        this.projectId = ((JAXBElement<Integer> ) value);
     }
 
     /**

@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlType;
 public class TestRunCreateForAutomatedTestSet {
 
     protected Integer testSetId;
-    @XmlElementRef(name = "automationHostToken", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "automationHostToken", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<String> automationHostToken;
 
     /**

@@ -20,9 +20,12 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <pre>
  * &lt;complexType name="RemoteTestRun">
  *   &lt;complexContent>
- *     &lt;extension base="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects}RemoteArtifact">
+ *     &lt;extension base="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects}RemoteArtifact">
  *       &lt;sequence>
+ *         &lt;element name="ActualDuration" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         &lt;element name="BuildId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="EndDate" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
+ *         &lt;element name="EstimatedDuration" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="ExecutionStatusId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="Name" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="ReleaseId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
@@ -42,8 +45,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RemoteTestRun", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", propOrder = {
+@XmlType(name = "RemoteTestRun", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", propOrder = {
+    "actualDuration",
+    "buildId",
     "endDate",
+    "estimatedDuration",
     "executionStatusId",
     "name",
     "releaseId",
@@ -56,36 +62,90 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "testerId"
 })
 @XmlSeeAlso({
-    RemoteAutomatedTestRun.class,
-    RemoteManualTestRun.class
+    RemoteManualTestRun.class,
+    RemoteAutomatedTestRun.class
 })
 public class RemoteTestRun
     extends RemoteArtifact
 {
 
-    @XmlElementRef(name = "EndDate", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "ActualDuration", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
+    protected JAXBElement<Integer> actualDuration;
+    @XmlElementRef(name = "BuildId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
+    protected JAXBElement<Integer> buildId;
+    @XmlElementRef(name = "EndDate", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<XMLGregorianCalendar> endDate;
+    @XmlElementRef(name = "EstimatedDuration", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
+    protected JAXBElement<Integer> estimatedDuration;
     @XmlElement(name = "ExecutionStatusId")
     protected Integer executionStatusId;
-    @XmlElementRef(name = "Name", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "Name", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<String> name;
-    @XmlElementRef(name = "ReleaseId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "ReleaseId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> releaseId;
     @XmlElement(name = "StartDate")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar startDate;
     @XmlElement(name = "TestCaseId")
     protected Integer testCaseId;
-    @XmlElementRef(name = "TestRunId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "TestRunId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> testRunId;
     @XmlElement(name = "TestRunTypeId")
     protected Integer testRunTypeId;
-    @XmlElementRef(name = "TestSetId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "TestSetId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> testSetId;
-    @XmlElementRef(name = "TestSetTestCaseId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "TestSetTestCaseId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> testSetTestCaseId;
-    @XmlElementRef(name = "TesterId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects", type = JAXBElement.class)
+    @XmlElementRef(name = "TesterId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> testerId;
+
+    /**
+     * Gets the value of the actualDuration property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     *     
+     */
+    public JAXBElement<Integer> getActualDuration() {
+        return actualDuration;
+    }
+
+    /**
+     * Sets the value of the actualDuration property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     *     
+     */
+    public void setActualDuration(JAXBElement<Integer> value) {
+        this.actualDuration = ((JAXBElement<Integer> ) value);
+    }
+
+    /**
+     * Gets the value of the buildId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     *     
+     */
+    public JAXBElement<Integer> getBuildId() {
+        return buildId;
+    }
+
+    /**
+     * Sets the value of the buildId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     *     
+     */
+    public void setBuildId(JAXBElement<Integer> value) {
+        this.buildId = ((JAXBElement<Integer> ) value);
+    }
 
     /**
      * Gets the value of the endDate property.
@@ -109,6 +169,30 @@ public class RemoteTestRun
      */
     public void setEndDate(JAXBElement<XMLGregorianCalendar> value) {
         this.endDate = ((JAXBElement<XMLGregorianCalendar> ) value);
+    }
+
+    /**
+     * Gets the value of the estimatedDuration property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     *     
+     */
+    public JAXBElement<Integer> getEstimatedDuration() {
+        return estimatedDuration;
+    }
+
+    /**
+     * Sets the value of the estimatedDuration property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link Integer }{@code >}
+     *     
+     */
+    public void setEstimatedDuration(JAXBElement<Integer> value) {
+        this.estimatedDuration = ((JAXBElement<Integer> ) value);
     }
 
     /**

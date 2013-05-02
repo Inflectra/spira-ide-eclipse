@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "System_GetProductNameResponse")
 public class SystemGetProductNameResponse {
 
-    @XmlElementRef(name = "System_GetProductNameResult", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "System_GetProductNameResult", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<String> systemGetProductNameResult;
 
     /**

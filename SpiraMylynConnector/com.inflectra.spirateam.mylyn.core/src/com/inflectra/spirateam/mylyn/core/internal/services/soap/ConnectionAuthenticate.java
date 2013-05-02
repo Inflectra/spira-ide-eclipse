@@ -37,9 +37,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "Connection_Authenticate")
 public class ConnectionAuthenticate {
 
-    @XmlElementRef(name = "userName", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "userName", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<String> userName;
-    @XmlElementRef(name = "password", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "password", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<String> password;
 
     /**

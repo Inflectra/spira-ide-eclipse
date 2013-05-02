@@ -1,8 +1,10 @@
 
 package com.inflectra.spirateam.mylyn.core.internal.services.soap;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -17,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
+ *         &lt;element name="TestSet_AddTestMappingResult" type="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects}ArrayOfRemoteTestSetTestCaseMapping" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -26,9 +29,37 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
+@XmlType(name = "", propOrder = {
+    "testSetAddTestMappingResult"
+})
 @XmlRootElement(name = "TestSet_AddTestMappingResponse")
 public class TestSetAddTestMappingResponse {
 
+    @XmlElementRef(name = "TestSet_AddTestMappingResult", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
+    protected JAXBElement<ArrayOfRemoteTestSetTestCaseMapping> testSetAddTestMappingResult;
+
+    /**
+     * Gets the value of the testSetAddTestMappingResult property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link ArrayOfRemoteTestSetTestCaseMapping }{@code >}
+     *     
+     */
+    public JAXBElement<ArrayOfRemoteTestSetTestCaseMapping> getTestSetAddTestMappingResult() {
+        return testSetAddTestMappingResult;
+    }
+
+    /**
+     * Sets the value of the testSetAddTestMappingResult property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link ArrayOfRemoteTestSetTestCaseMapping }{@code >}
+     *     
+     */
+    public void setTestSetAddTestMappingResult(JAXBElement<ArrayOfRemoteTestSetTestCaseMapping> value) {
+        this.testSetAddTestMappingResult = ((JAXBElement<ArrayOfRemoteTestSetTestCaseMapping> ) value);
+    }
 
 }

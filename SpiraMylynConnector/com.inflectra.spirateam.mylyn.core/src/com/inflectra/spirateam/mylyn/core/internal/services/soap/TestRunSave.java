@@ -6,7 +6,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -21,7 +20,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="remoteTestRuns" type="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects}ArrayOfRemoteManualTestRun" minOccurs="0"/>
+ *         &lt;element name="remoteTestRuns" type="{http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects}ArrayOfRemoteManualTestRun" minOccurs="0"/>
  *         &lt;element name="endDate" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -39,10 +38,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 @XmlRootElement(name = "TestRun_Save")
 public class TestRunSave {
 
-    @XmlElementRef(name = "remoteTestRuns", namespace = "http://www.inflectra.com/SpiraTest/Services/v3.0/", type = JAXBElement.class)
+    @XmlElementRef(name = "remoteTestRuns", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
     protected JAXBElement<ArrayOfRemoteManualTestRun> remoteTestRuns;
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar endDate;
+    @XmlElementRef(name = "endDate", namespace = "http://www.inflectra.com/SpiraTest/Services/v4.0/", type = JAXBElement.class)
+    protected JAXBElement<XMLGregorianCalendar> endDate;
 
     /**
      * Gets the value of the remoteTestRuns property.
@@ -73,10 +72,10 @@ public class TestRunSave {
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link JAXBElement }{@code <}{@link XMLGregorianCalendar }{@code >}
      *     
      */
-    public XMLGregorianCalendar getEndDate() {
+    public JAXBElement<XMLGregorianCalendar> getEndDate() {
         return endDate;
     }
 
@@ -85,11 +84,11 @@ public class TestRunSave {
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link JAXBElement }{@code <}{@link XMLGregorianCalendar }{@code >}
      *     
      */
-    public void setEndDate(XMLGregorianCalendar value) {
-        this.endDate = value;
+    public void setEndDate(JAXBElement<XMLGregorianCalendar> value) {
+        this.endDate = ((JAXBElement<XMLGregorianCalendar> ) value);
     }
 
 }

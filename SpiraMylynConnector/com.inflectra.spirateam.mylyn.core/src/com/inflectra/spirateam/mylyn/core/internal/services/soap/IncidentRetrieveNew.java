@@ -20,6 +20,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="creationDate" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
+ *         &lt;element name="startRow" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         &lt;element name="numberOfRows" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -30,13 +32,17 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "creationDate"
+    "creationDate",
+    "startRow",
+    "numberOfRows"
 })
 @XmlRootElement(name = "Incident_RetrieveNew")
 public class IncidentRetrieveNew {
 
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar creationDate;
+    protected Integer startRow;
+    protected Integer numberOfRows;
 
     /**
      * Gets the value of the creationDate property.
@@ -60,6 +66,54 @@ public class IncidentRetrieveNew {
      */
     public void setCreationDate(XMLGregorianCalendar value) {
         this.creationDate = value;
+    }
+
+    /**
+     * Gets the value of the startRow property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getStartRow() {
+        return startRow;
+    }
+
+    /**
+     * Sets the value of the startRow property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setStartRow(Integer value) {
+        this.startRow = value;
+    }
+
+    /**
+     * Gets the value of the numberOfRows property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
+     */
+    public Integer getNumberOfRows() {
+        return numberOfRows;
+    }
+
+    /**
+     * Sets the value of the numberOfRows property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
+     */
+    public void setNumberOfRows(Integer value) {
+        this.numberOfRows = value;
     }
 
 }

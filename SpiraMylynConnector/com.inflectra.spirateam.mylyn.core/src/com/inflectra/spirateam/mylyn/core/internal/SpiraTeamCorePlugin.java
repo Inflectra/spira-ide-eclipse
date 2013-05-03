@@ -48,8 +48,24 @@ public class SpiraTeamCorePlugin extends Plugin
 	
 	//Custom Property types
 	public static int CustomPropertyType_Text = 1;
-	public static int CustomPropertyType_List = 2;
+	public static int CustomPropertyType_Integer = 2;
+	public static int CustomPropertyType_Decimal = 3;
+	public static int CustomPropertyType_Boolean = 4;
+	public static int CustomPropertyType_Date = 5;
+	public static int CustomPropertyType_List = 6;
+	public static int CustomPropertyType_MultiList = 7;
+	public static int CustomPropertyType_User = 8;
 	
+	//Custom Property options
+	public static int CustomPropertyOption_AllowEmpty = 1;
+	public static int CustomPropertyOption_MaxLength = 2;
+	public static int CustomPropertyOption_MinLength = 3;
+	public static int CustomPropertyOption_RichText = 4;
+	public static int CustomPropertyOption_Default = 5;
+	public static int CustomPropertyOption_MaxValue = 6;
+	public static int CustomPropertyOption_MinValue = 7;
+	public static int CustomPropertyOption_Precision = 8;
+
 	private SpiraTeamRepositoryConnector connector;
 	
 	/**

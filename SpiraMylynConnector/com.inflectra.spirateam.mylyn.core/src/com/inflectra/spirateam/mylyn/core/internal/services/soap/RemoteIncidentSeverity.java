@@ -113,7 +113,7 @@ public class RemoteIncidentSeverity {
      *     {@link JAXBElement }{@code <}{@link String }{@code >}
      *     
      */
-    public JAXBElement<String> getName2() {
+    public JAXBElement<String> getName() {
         return name2;
     }
 
@@ -125,7 +125,7 @@ public class RemoteIncidentSeverity {
      *     {@link JAXBElement }{@code <}{@link String }{@code >}
      *     
      */
-    public void setName2(JAXBElement<String> value) {
+    public void setName(JAXBElement<String> value) {
         this.name2 = ((JAXBElement<String> ) value);
     }
 

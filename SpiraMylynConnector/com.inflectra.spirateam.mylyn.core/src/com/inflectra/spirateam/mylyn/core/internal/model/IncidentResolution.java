@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
+import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteComment;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteIncidentResolution;
 
 /**
@@ -26,15 +27,15 @@ public class IncidentResolution
      * Creates an incident resolution based on its equivalent SOAP object
      * @param remoteIncidentResolution The SOAP incident resolution
      */
-    public IncidentResolution(RemoteIncidentResolution remoteIncidentResolution)
+    public IncidentResolution(RemoteComment remoteComment)
     {
     	//Set the various member variables
-    	this.incidentResolutionId = remoteIncidentResolution.getIncidentResolutionId().getValue();
-    	this.incidentId = remoteIncidentResolution.getIncidentId();
-    	this.creatorId = remoteIncidentResolution.getCreatorId().getValue();
-    	this.resolution = remoteIncidentResolution.getResolution().getValue();
-        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteIncidentResolution.getCreationDate());
-    	this.creatorName = remoteIncidentResolution.getCreatorName().getValue();
+    	this.incidentResolutionId = remoteComment.getCommentId().getValue();
+    	this.incidentId = remoteComment.getArtifactId();
+    	this.creatorId = remoteComment.getUserId().getValue();
+    	this.resolution = remoteComment.getText().getValue();
+        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteComment.getCreationDate().getValue());
+    	this.creatorName = remoteComment.getUserName().getValue();
     }
     
     /**

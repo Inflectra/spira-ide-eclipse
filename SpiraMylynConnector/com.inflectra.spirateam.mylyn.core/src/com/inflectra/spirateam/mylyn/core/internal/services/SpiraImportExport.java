@@ -48,9 +48,9 @@ import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionExcep
  */
 public class SpiraImportExport
 {
-	private static final String WEB_SERVICE_SUFFIX = "/Services/v3_0/ImportExport.svc";	//$NON-NLS-1$
-	private static final String WEB_SERVICE_NAMESPACE = "{http://www.inflectra.com/SpiraTest/Services/v3.0/}ImportExport";	//$NON-NLS-1$
-	private static final String WEB_SERVICE_NAMESPACE_DATA_OBJECTS = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v3_0.DataObjects";	//$NON-NLS-1$
+	private static final String WEB_SERVICE_SUFFIX = "/Services/v4_0/ImportExport.svc";	//$NON-NLS-1$
+	private static final String WEB_SERVICE_NAMESPACE = "{http://www.inflectra.com/SpiraTest/Services/v4.0/}ImportExport";	//$NON-NLS-1$
+	private static final String WEB_SERVICE_NAMESPACE_DATA_OBJECTS = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects";	//$NON-NLS-1$
 	private static final String SPIRA_PLUG_IN_NAME = "Eclipse-IDE";	//$NON-NLS-1$
 	
 	private URL serviceUrl = null;
@@ -656,13 +656,14 @@ public class SpiraImportExport
 				}
 				else if (artifactType.equals(ArtifactType.INCIDENT))
 				{
-					RemoteIncidentResolution remoteIncidentResolution = new RemoteIncidentResolution();
-					remoteIncidentResolution.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(artifactAttachment.getCreationDate()));
-					remoteIncidentResolution.setIncidentId(artifactId);
-					remoteIncidentResolution.setResolution(CreateJAXBString("Resolution", comment));
-					ArrayOfRemoteIncidentResolution remoteIncidentResolutions = new ArrayOfRemoteIncidentResolution();
-					remoteIncidentResolutions.getRemoteIncidentResolution().add(remoteIncidentResolution);
-					soap.incidentAddResolutions(remoteIncidentResolutions);
+					//Add the new comment
+					RemoteComment remoteComment = new RemoteComment();
+					remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(artifactAttachment.getCreationDate())));
+					remoteComment.setArtifactId(artifactId);
+					remoteComment.setText(CreateJAXBString("Text", comment));
+					ArrayOfRemoteComment remoteComments = new ArrayOfRemoteComment();
+					remoteComments.getRemoteComment().add(remoteComment);
+					soap.incidentAddComments(remoteComments);
 
 				}
 				else if (artifactType.equals(ArtifactType.TASK))
@@ -702,7 +703,7 @@ public class SpiraImportExport
 		{
 			throw new SpiraException(exception.getMessage());
 		}
-		catch (IImportExportIncidentAddResolutionsServiceFaultMessageFaultFaultMessage exception)
+		catch (IImportExportIncidentAddCommentsServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
 		}
@@ -929,13 +930,13 @@ public class SpiraImportExport
 			//Convert the SOAP incident into the local version
 			Incident incident = new Incident(remoteIncident);
 			
-			//Now get the resolutions
-			List<RemoteIncidentResolution> remoteResolutions = soap.incidentRetrieveResolutions(incidentId).getRemoteIncidentResolution();
+			//Now get the comments
+			List<RemoteComment> remoteComments = soap.incidentRetrieveComments(incidentId).getRemoteComment();
 			
-			//Convert the SOAP resolutions into the local version
-			for (RemoteIncidentResolution remoteResolution : remoteResolutions)
+			//Convert the SOAP comments into the local version
+			for (RemoteComment remoteComment : remoteComments)
 			{
-				IncidentResolution incidentResolution = new IncidentResolution(remoteResolution);
+				IncidentResolution incidentResolution = new IncidentResolution(remoteComment);
 				incident.getResolutions().add(incidentResolution);
 			}
 					
@@ -969,10 +970,12 @@ public class SpiraImportExport
 		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
-		} catch (IImportExportIncidentRetrieveResolutionsServiceFaultMessageFaultFaultMessage exception)
+		}
+		catch (IImportExportDocumentRetrieveForArtifactServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
-		} catch (IImportExportDocumentRetrieveForArtifactServiceFaultMessageFaultFaultMessage exception)
+		}
+		catch (IImportExportIncidentRetrieveCommentsServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
 		}
@@ -1506,22 +1509,35 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
 			}
 				
-			//Get the list of custom properties
-			List<RemoteCustomProperty> remoteCustomProperties = soap.customPropertyRetrieveForArtifactType(artifactType.getArtifactTypeId()).getRemoteCustomProperty();
+			//Get the list of custom property definitions
+			List<RemoteCustomProperty> remoteCustomProperties = soap.customPropertyRetrieveForArtifactType(artifactType.getArtifactTypeId(), false).getRemoteCustomProperty();
 			
 			//Convert the SOAP custom properties into the ArtifactField class
 			ArrayList<ArtifactField> artifactFields = new ArrayList<ArtifactField>();
 			for (RemoteCustomProperty remoteCustomProperty : remoteCustomProperties)
 			{
-				ArtifactField artifactField = new ArtifactField(remoteCustomProperty.getCustomPropertyName().getValue());
-				artifactField.setLabel(remoteCustomProperty.getAlias().getValue());
+				ArtifactField artifactField = new ArtifactField(remoteCustomProperty.getCustomPropertyFieldName().getValue());
+				artifactField.setLabel(remoteCustomProperty.getName().getValue());
 				artifactField.setCustom(true);
-				artifactField.setOptional(true);
-				if (remoteCustomProperty.getCustomPropertyTypeId().getValue() == SpiraTeamCorePlugin.CustomPropertyType_Text)
+				boolean allowEmpty = true;
+				//Check to see if we have the allow-empty option specified
+				if (!remoteCustomProperty.getOptions().isNil() && !remoteCustomProperty.getOptions().getValue().getRemoteCustomPropertyOption().isEmpty())
+				{
+					List<RemoteCustomPropertyOption> remoteCustomPropertyOptions = remoteCustomProperty.getOptions().getValue().getRemoteCustomPropertyOption();
+					for (RemoteCustomPropertyOption remoteCustomPropertyOption : remoteCustomPropertyOptions)
+					{
+						if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_AllowEmpty && !remoteCustomPropertyOption.getValue().isNil())
+						{
+							allowEmpty = (remoteCustomPropertyOption.getValue().getValue().equals("Y"));
+						}
+					}
+				}
+				artifactField.setOptional(allowEmpty);
+				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Text)
 				{
 					artifactField.setType(Type.TEXT);
 				}
-				if (remoteCustomProperty.getCustomPropertyTypeId().getValue() == SpiraTeamCorePlugin.CustomPropertyType_List)
+				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_List)
 				{
 					artifactField.setType(Type.SELECT);
 					
@@ -1802,17 +1818,26 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 		catch (WebServiceException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		}
+		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
-		} catch (IImportExportTaskUpdateServiceFaultMessageFaultFaultMessage exception)
+		}
+		catch (IImportExportTaskUpdateServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
-		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
-		} catch (IImportExportTaskCreateCommentServiceFaultMessageFaultFaultMessage exception)
+		}
+		catch (IImportExportTaskCreateCommentServiceFaultMessageFaultFaultMessage exception)
 		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportTaskUpdateValidationFaultMessageFaultFaultMessage exception)
+		{
+			// TODO May need to add more intelligent handling of validation messages
 			throw new SpiraException(exception.getMessage());
 		}
 	}
@@ -1883,6 +1908,11 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 		{
 			throw new SpiraException(exception.getMessage());
 		}
+		catch (IImportExportRequirementUpdateValidationFaultMessageFaultFaultMessage exception)
+		{
+			// TODO May need to add more intelligent handling of validation messages
+			throw new SpiraException(exception.getMessage());
+		}
 	}
 	
 	/**
@@ -1922,13 +1952,13 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			{
 				//Add the new resolution
 				Date date = new Date();	//Defaults to now
-				RemoteIncidentResolution remoteIncidentResolution = new RemoteIncidentResolution();
-				remoteIncidentResolution.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(date));
-				remoteIncidentResolution.setIncidentId(incident.getArtifactId());
-				remoteIncidentResolution.setResolution(CreateJAXBString("Resolution", newComment));
-				ArrayOfRemoteIncidentResolution remoteIncidentResolutions = new ArrayOfRemoteIncidentResolution();
-				remoteIncidentResolutions.getRemoteIncidentResolution().add(remoteIncidentResolution);
-				soap.incidentAddResolutions(remoteIncidentResolutions);
+				RemoteComment remoteComment = new RemoteComment();
+				remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(date)));
+				remoteComment.setArtifactId(incident.getArtifactId());
+				remoteComment.setText(CreateJAXBString("Resolution", newComment));
+				ArrayOfRemoteComment remoteComments = new ArrayOfRemoteComment();
+				remoteComments.getRemoteComment().add(remoteComment);
+				soap.incidentAddComments(remoteComments);
 			}
 		}
 		catch (SOAPFaultException ex)
@@ -1941,13 +1971,20 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 		} catch (IImportExportIncidentUpdateServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
-		} catch (IImportExportIncidentAddResolutionsServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		} catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		}
+		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
 		} catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		{
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportIncidentUpdateValidationFaultMessageFaultFaultMessage exception)
+		{
+			// TODO Add better validation message handling
+			throw new SpiraException(exception.getMessage());
+		}
+		catch (IImportExportIncidentAddCommentsServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
 		}

@@ -95,26 +95,7 @@ public class Requirement
         this.plannedEffort = remoteRequirement.getPlannedEffort().getValue();
         
         //Now the custom properties
-        this.text01 = remoteRequirement.getText01().getValue();
-        this.text02 = remoteRequirement.getText02().getValue();
-        this.text03 = remoteRequirement.getText03().getValue();
-        this.text04 = remoteRequirement.getText04().getValue();
-        this.text05 = remoteRequirement.getText05().getValue();
-        this.text06 = remoteRequirement.getText06().getValue();
-        this.text07 = remoteRequirement.getText07().getValue();
-        this.text08 = remoteRequirement.getText08().getValue();
-        this.text09 = remoteRequirement.getText09().getValue();
-        this.text10 = remoteRequirement.getText10().getValue();
-        this.list01 = remoteRequirement.getList01().getValue();
-        this.list02 = remoteRequirement.getList02().getValue();
-        this.list03 = remoteRequirement.getList03().getValue();
-        this.list04 = remoteRequirement.getList04().getValue();
-        this.list05 = remoteRequirement.getList05().getValue();
-        this.list06 = remoteRequirement.getList06().getValue();
-        this.list07 = remoteRequirement.getList07().getValue();
-        this.list08 = remoteRequirement.getList08().getValue();
-        this.list09 = remoteRequirement.getList09().getValue();
-        this.list10 = remoteRequirement.getList10().getValue();
+        PopulateCustomProperties(remoteRequirement);
     }
     
     /**
@@ -140,27 +121,7 @@ public class Requirement
     	remoteRequirement.setPlannedEffort(SpiraImportExport.CreateJAXBInteger("PlannedEffort", this.plannedEffort));
         
         //Now the custom properties
-    	remoteRequirement.setText01(SpiraImportExport.CreateJAXBString("Text01", this.text01));
-    	remoteRequirement.setText02(SpiraImportExport.CreateJAXBString("Text02", this.text02));
-    	remoteRequirement.setText03(SpiraImportExport.CreateJAXBString("Text03", this.text03));
-    	remoteRequirement.setText04(SpiraImportExport.CreateJAXBString("Text04", this.text04));
-    	remoteRequirement.setText05(SpiraImportExport.CreateJAXBString("Text05", this.text05));
-    	remoteRequirement.setText06(SpiraImportExport.CreateJAXBString("Text06", this.text06));
-    	remoteRequirement.setText07(SpiraImportExport.CreateJAXBString("Text07", this.text07));
-    	remoteRequirement.setText08(SpiraImportExport.CreateJAXBString("Text08", this.text08));
-    	remoteRequirement.setText09(SpiraImportExport.CreateJAXBString("Text09", this.text09));
-    	remoteRequirement.setText10(SpiraImportExport.CreateJAXBString("Text10", this.text10));
-    	remoteRequirement.setList01(SpiraImportExport.CreateJAXBInteger("List01", this.list01));
-    	remoteRequirement.setList02(SpiraImportExport.CreateJAXBInteger("List02", this.list02));
-    	remoteRequirement.setList03(SpiraImportExport.CreateJAXBInteger("List03", this.list03));
-    	remoteRequirement.setList04(SpiraImportExport.CreateJAXBInteger("List04", this.list04));
-    	remoteRequirement.setList05(SpiraImportExport.CreateJAXBInteger("List05", this.list05));
-    	remoteRequirement.setList06(SpiraImportExport.CreateJAXBInteger("List06", this.list06));
-    	remoteRequirement.setList07(SpiraImportExport.CreateJAXBInteger("List07", this.list07));
-    	remoteRequirement.setList08(SpiraImportExport.CreateJAXBInteger("List08", this.list08));
-    	remoteRequirement.setList09(SpiraImportExport.CreateJAXBInteger("List09", this.list09));
-    	remoteRequirement.setList10(SpiraImportExport.CreateJAXBInteger("List10", this.list10));
-        
+    	ExtractCustomProperties(remoteRequirement);        
         return remoteRequirement;
     }
     

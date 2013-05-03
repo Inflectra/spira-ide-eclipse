@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class SpiraImportExport
 {
 	private static final String WEB_SERVICE_SUFFIX = "/Services/v4_0/ImportExport.svc";	//$NON-NLS-1$
 	private static final String WEB_SERVICE_NAMESPACE = "{http://www.inflectra.com/SpiraTest/Services/v4.0/}ImportExport";	//$NON-NLS-1$
-	private static final String WEB_SERVICE_NAMESPACE_DATA_OBJECTS = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects";	//$NON-NLS-1$
+	public static final String WEB_SERVICE_NAMESPACE_DATA_OBJECTS = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects";	//$NON-NLS-1$
 	private static final String SPIRA_PLUG_IN_NAME = "Eclipse-IDE";	//$NON-NLS-1$
 	
 	private URL serviceUrl = null;
@@ -104,6 +105,72 @@ public class SpiraImportExport
 			jaxInteger.setNil(true);
 		}
 		return jaxInteger;
+	}
+	
+	/***
+	 * Creates a JAXB web service Boolean element from a Java Boolean
+	 * @param value
+	 * @return
+	 */
+	public static JAXBElement<Boolean> CreateJAXBBoolean(String fieldName, Boolean value)
+	{
+		JAXBElement<Boolean> jaxBoolean = new JAXBElement<Boolean>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), Boolean.class, value);
+		if (value == null)
+		{
+			jaxBoolean.setNil(true);
+		}
+		return jaxBoolean;
+	}
+	
+	/***
+	 * Creates a JAXB web service IntegerList element from a Java IntegerList
+	 * @param value
+	 * @return
+	 */
+	public static JAXBElement<ArrayOfint> CreateJAXBArrayOfInt(String fieldName, ArrayOfint value)
+	{
+		JAXBElement<ArrayOfint> jaxIntegerList = new JAXBElement<ArrayOfint>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), ArrayOfint.class, value);
+		if (value == null)
+		{
+			jaxIntegerList.setNil(true);
+		}
+		return jaxIntegerList;
+	}
+	
+	/***
+	 * Creates a JAXB web service IntegerList element from a Java IntegerList
+	 * @param value
+	 * @return
+	 */
+	public static JAXBElement<ArrayOfint> CreateJAXBArrayOfInt(String fieldName, List<Integer> value)
+	{
+		//Convert List<Integer> to ArrayOfint
+		ArrayOfint arrayOfint = new ArrayOfint();
+		for (Integer integer : value)
+		{
+			arrayOfint.getInt().add(integer);
+		}
+		JAXBElement<ArrayOfint> jaxIntegerList = new JAXBElement<ArrayOfint>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), ArrayOfint.class, arrayOfint);
+		if (value == null)
+		{
+			jaxIntegerList.setNil(true);
+		}
+		return jaxIntegerList;
+	}
+	
+	/***
+	 * Creates a JAXB web service BigDecimal element from a Java BigDecimal
+	 * @param value
+	 * @return
+	 */
+	public static JAXBElement<BigDecimal> CreateJAXBBigDecimal(String fieldName, BigDecimal value)
+	{
+		JAXBElement<BigDecimal> jaxBigDecimal = new JAXBElement<BigDecimal>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), BigDecimal.class, value);
+		if (value == null)
+		{
+			jaxBigDecimal.setNil(true);
+		}
+		return jaxBigDecimal;
 	}
 	
 	/***

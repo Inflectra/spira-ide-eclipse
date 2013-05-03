@@ -143,26 +143,7 @@ public class Incident extends Artifact
         this.incidentStatusOpenStatus = remoteIncident.getIncidentStatusOpenStatus().getValue();
         
         //Now the custom properties
-        this.text01 = remoteIncident.getText01().getValue();
-        this.text02 = remoteIncident.getText02().getValue();
-        this.text03 = remoteIncident.getText03().getValue();
-        this.text04 = remoteIncident.getText04().getValue();
-        this.text05 = remoteIncident.getText05().getValue();
-        this.text06 = remoteIncident.getText06().getValue();
-        this.text07 = remoteIncident.getText07().getValue();
-        this.text08 = remoteIncident.getText08().getValue();
-        this.text09 = remoteIncident.getText09().getValue();
-        this.text10 = remoteIncident.getText10().getValue();
-        this.list01 = remoteIncident.getList01().getValue();
-        this.list02 = remoteIncident.getList02().getValue();
-        this.list03 = remoteIncident.getList03().getValue();
-        this.list04 = remoteIncident.getList04().getValue();
-        this.list05 = remoteIncident.getList05().getValue();
-        this.list06 = remoteIncident.getList06().getValue();
-        this.list07 = remoteIncident.getList07().getValue();
-        this.list08 = remoteIncident.getList08().getValue();
-        this.list09 = remoteIncident.getList09().getValue();
-        this.list10 = remoteIncident.getList10().getValue();
+        PopulateCustomProperties(remoteIncident);
     }
     
     /**
@@ -197,27 +178,8 @@ public class Incident extends Artifact
     	remoteIncident.setRemainingEffort(SpiraImportExport.CreateJAXBInteger("RemainingEffort", this.remainingEffort));
         
         //Now the custom properties
-    	remoteIncident.setText01(SpiraImportExport.CreateJAXBString("Text01", this.text01));
-    	remoteIncident.setText02(SpiraImportExport.CreateJAXBString("Text02", this.text02));
-    	remoteIncident.setText03(SpiraImportExport.CreateJAXBString("Text03", this.text03));
-    	remoteIncident.setText04(SpiraImportExport.CreateJAXBString("Text04", this.text04));
-    	remoteIncident.setText05(SpiraImportExport.CreateJAXBString("Text05", this.text05));
-    	remoteIncident.setText06(SpiraImportExport.CreateJAXBString("Text06", this.text06));
-    	remoteIncident.setText07(SpiraImportExport.CreateJAXBString("Text07", this.text07));
-    	remoteIncident.setText08(SpiraImportExport.CreateJAXBString("Text08", this.text08));
-    	remoteIncident.setText09(SpiraImportExport.CreateJAXBString("Text09", this.text09));
-    	remoteIncident.setText10(SpiraImportExport.CreateJAXBString("Text10", this.text10));
-    	remoteIncident.setList01(SpiraImportExport.CreateJAXBInteger("List01",this.list01));
-    	remoteIncident.setList02(SpiraImportExport.CreateJAXBInteger("List02",this.list02));
-    	remoteIncident.setList03(SpiraImportExport.CreateJAXBInteger("List03",this.list03));
-    	remoteIncident.setList04(SpiraImportExport.CreateJAXBInteger("List04",this.list04));
-    	remoteIncident.setList05(SpiraImportExport.CreateJAXBInteger("List05",this.list05));
-    	remoteIncident.setList06(SpiraImportExport.CreateJAXBInteger("List06",this.list06));
-    	remoteIncident.setList07(SpiraImportExport.CreateJAXBInteger("List07",this.list07));
-    	remoteIncident.setList08(SpiraImportExport.CreateJAXBInteger("List08",this.list08));
-    	remoteIncident.setList09(SpiraImportExport.CreateJAXBInteger("List09",this.list09));
-    	remoteIncident.setList10(SpiraImportExport.CreateJAXBInteger("List10",this.list10));
-        
+    	ExtractCustomProperties(remoteIncident);
+       
         return remoteIncident;
     }
     

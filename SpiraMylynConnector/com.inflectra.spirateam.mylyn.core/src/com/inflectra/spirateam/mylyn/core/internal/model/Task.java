@@ -124,26 +124,7 @@ public class Task extends Artifact
         this.releaseVersionNumber = remoteTask.getReleaseVersionNumber().getValue();
         
         //Now the custom properties
-        this.text01 = remoteTask.getText01().getValue();
-        this.text02 = remoteTask.getText02().getValue();
-        this.text03 = remoteTask.getText03().getValue();
-        this.text04 = remoteTask.getText04().getValue();
-        this.text05 = remoteTask.getText05().getValue();
-        this.text06 = remoteTask.getText06().getValue();
-        this.text07 = remoteTask.getText07().getValue();
-        this.text08 = remoteTask.getText08().getValue();
-        this.text09 = remoteTask.getText09().getValue();
-        this.text10 = remoteTask.getText10().getValue();
-        this.list01 = remoteTask.getList01().getValue();
-        this.list02 = remoteTask.getList02().getValue();
-        this.list03 = remoteTask.getList03().getValue();
-        this.list04 = remoteTask.getList04().getValue();
-        this.list05 = remoteTask.getList05().getValue();
-        this.list06 = remoteTask.getList06().getValue();
-        this.list07 = remoteTask.getList07().getValue();
-        this.list08 = remoteTask.getList08().getValue();
-        this.list09 = remoteTask.getList09().getValue();
-        this.list10 = remoteTask.getList10().getValue();
+        PopulateCustomProperties(remoteTask);
     }
     
     /**
@@ -174,27 +155,8 @@ public class Task extends Artifact
     	remoteTask.setRemainingEffort(SpiraImportExport.CreateJAXBInteger("RemainingEffort", this.remainingEffort));
         
         //Now the custom properties
-    	remoteTask.setText01(SpiraImportExport.CreateJAXBString("Text01", this.text01));
-    	remoteTask.setText02(SpiraImportExport.CreateJAXBString("Text02", this.text02));
-    	remoteTask.setText03(SpiraImportExport.CreateJAXBString("Text03", this.text03));
-    	remoteTask.setText04(SpiraImportExport.CreateJAXBString("Text04", this.text04));
-    	remoteTask.setText05(SpiraImportExport.CreateJAXBString("Text05", this.text05));
-    	remoteTask.setText06(SpiraImportExport.CreateJAXBString("Text06", this.text06));
-    	remoteTask.setText07(SpiraImportExport.CreateJAXBString("Text07", this.text07));
-    	remoteTask.setText08(SpiraImportExport.CreateJAXBString("Text08", this.text08));
-    	remoteTask.setText09(SpiraImportExport.CreateJAXBString("Text09", this.text09));
-    	remoteTask.setText10(SpiraImportExport.CreateJAXBString("Text10", this.text10));
-    	remoteTask.setList01(SpiraImportExport.CreateJAXBInteger("List01", this.list01));
-    	remoteTask.setList02(SpiraImportExport.CreateJAXBInteger("List02", this.list02));
-    	remoteTask.setList03(SpiraImportExport.CreateJAXBInteger("List03", this.list03));
-    	remoteTask.setList04(SpiraImportExport.CreateJAXBInteger("List04", this.list04));
-    	remoteTask.setList05(SpiraImportExport.CreateJAXBInteger("List05", this.list05));
-    	remoteTask.setList06(SpiraImportExport.CreateJAXBInteger("List06", this.list06));
-    	remoteTask.setList07(SpiraImportExport.CreateJAXBInteger("List07", this.list07));
-    	remoteTask.setList08(SpiraImportExport.CreateJAXBInteger("List08", this.list08));
-    	remoteTask.setList09(SpiraImportExport.CreateJAXBInteger("List09", this.list09));
-    	remoteTask.setList10(SpiraImportExport.CreateJAXBInteger("List10", this.list10));
-        
+    	ExtractCustomProperties(remoteTask);
+    	
         return remoteTask;
     }
     

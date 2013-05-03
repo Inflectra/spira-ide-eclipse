@@ -8,7 +8,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteComment;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteIncidentResolution;
 
 /**
  * @author Inflectra Corporation

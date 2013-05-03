@@ -59,7 +59,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 {
 	//The TASK_DATA_VERSION should be the version number (e.g. v2.3.1) in XXYYZZ format
 	//So that we can migrate old tasks if necessary when we add new attributes
-	private static final String TASK_DATA_VERSION = "030000"; //$NON-NLS-1$
+	private static final String TASK_DATA_VERSION = "040000"; //$NON-NLS-1$
 	private static final String ATTRIBUTE_ARTIFACT_KEY = "spira.key"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_PROJECT_ID = "spira.projectId"; //$NON-NLS-1$
 	
@@ -925,6 +925,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	
 	private void updateCustomPropertiesFromTaskData(Artifact artifact, TaskData taskData)
 	{
+		/*
 		artifact.setText01(getCustomPropertyStringValue(taskData, "TEXT_01"));
 		artifact.setText02(getCustomPropertyStringValue(taskData, "TEXT_02"));
 		artifact.setText03(getCustomPropertyStringValue(taskData, "TEXT_03"));
@@ -945,6 +946,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		artifact.setList08(getCustomPropertyIntegerValue(taskData, "LIST_08"));
 		artifact.setList09(getCustomPropertyIntegerValue(taskData, "LIST_09"));
 		artifact.setList10(getCustomPropertyIntegerValue(taskData, "LIST_10"));
+		*/
 	}
 	
 	/**
@@ -1258,6 +1260,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.LAST_UPDATE_DATE, SpiraTeamUtil.dateToString(artifact.getLastUpdateDate()), projectId);
 		
 		//Next we do the custom properties
+		/*
 		updateCustomTaskAttribute(data, changedAttributes, "TEXT_01", artifact.getText01(), projectId);
 		updateCustomTaskAttribute(data, changedAttributes, "TEXT_02", artifact.getText02(), projectId);
 		updateCustomTaskAttribute(data, changedAttributes, "TEXT_03", artifact.getText03(), projectId);
@@ -1278,6 +1281,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		updateCustomTaskAttribute(data, changedAttributes, "LIST_08", artifact.getList08(), projectId);
 		updateCustomTaskAttribute(data, changedAttributes, "LIST_09", artifact.getList09(), projectId);
 		updateCustomTaskAttribute(data, changedAttributes, "LIST_10", artifact.getList10(), projectId);
+		*/
 		
 		//Need to detect each type of artifact, for the other attributes
 		if (artifact instanceof Requirement)

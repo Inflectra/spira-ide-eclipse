@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element name="Active" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="Color" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="Name2" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="Name" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="PriorityId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "RemoteIncidentPriority", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", propOrder = {
     "active",
     "color",
-    "name2",
+    "name",
     "priorityId"
 })
 public class RemoteIncidentPriority {
@@ -53,7 +53,7 @@ public class RemoteIncidentPriority {
     @XmlElementRef(name = "Color", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<String> color;
     @XmlElementRef(name = "Name", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
-    protected JAXBElement<String> name2;
+    protected JAXBElement<String> name;
     @XmlElementRef(name = "PriorityId", namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", type = JAXBElement.class)
     protected JAXBElement<Integer> priorityId;
 
@@ -106,7 +106,7 @@ public class RemoteIncidentPriority {
     }
 
     /**
-     * Gets the value of the name2 property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
@@ -114,11 +114,11 @@ public class RemoteIncidentPriority {
      *     
      */
     public JAXBElement<String> getName() {
-        return name2;
+        return name;
     }
 
     /**
-     * Sets the value of the name2 property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
@@ -126,7 +126,7 @@ public class RemoteIncidentPriority {
      *     
      */
     public void setName(JAXBElement<String> value) {
-        this.name2 = ((JAXBElement<String> ) value);
+        this.name = ((JAXBElement<String> ) value);
     }
 
     /**

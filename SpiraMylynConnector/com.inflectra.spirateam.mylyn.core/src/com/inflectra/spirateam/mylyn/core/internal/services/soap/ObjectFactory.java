@@ -239,7 +239,7 @@ public class ObjectFactory {
     private final static QName _CustomPropertyAddCustomListRemoteCustomList_QNAME = new QName("http://www.inflectra.com/SpiraTest/Services/v4.0/", "remoteCustomList");
     private final static QName _TestCaseAddStepRemoteTestStep_QNAME = new QName("http://www.inflectra.com/SpiraTest/Services/v4.0/", "remoteTestStep");
     private final static QName _IncidentRetrieveCommentsResponseIncidentRetrieveCommentsResult_QNAME = new QName("http://www.inflectra.com/SpiraTest/Services/v4.0/", "Incident_RetrieveCommentsResult");
-    private final static QName _RemoteIncidentPriorityName2_QNAME = new QName("http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", "Name2");
+    private final static QName _RemoteIncidentPriorityName2_QNAME = new QName("http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", "Name");
     private final static QName _RemoteIncidentPriorityColor_QNAME = new QName("http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", "Color");
     private final static QName _RemoteIncidentPriorityPriorityId_QNAME = new QName("http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", "PriorityId");
     private final static QName _AutomationEngineRetrieveResponseAutomationEngineRetrieveResult_QNAME = new QName("http://www.inflectra.com/SpiraTest/Services/v4.0/", "AutomationEngine_RetrieveResult");
@@ -6366,7 +6366,7 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", name = "Name2", scope = RemoteIncidentPriority.class)
+    @XmlElementDecl(namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", name = "Name", scope = RemoteIncidentPriority.class)
     public JAXBElement<String> createRemoteIncidentPriorityName2(String value) {
         return new JAXBElement<String>(_RemoteIncidentPriorityName2_QNAME, String.class, RemoteIncidentPriority.class, value);
     }
@@ -9822,7 +9822,7 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link String }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", name = "Name2", scope = RemoteIncidentSeverity.class)
+    @XmlElementDecl(namespace = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects", name = "Name", scope = RemoteIncidentSeverity.class)
     public JAXBElement<String> createRemoteIncidentSeverityName2(String value) {
         return new JAXBElement<String>(_RemoteIncidentPriorityName2_QNAME, String.class, RemoteIncidentSeverity.class, value);
     }

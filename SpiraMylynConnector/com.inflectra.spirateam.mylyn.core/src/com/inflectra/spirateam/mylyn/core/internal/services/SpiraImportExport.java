@@ -221,13 +221,16 @@ public class SpiraImportExport
 			//Try both the HTTP and HTTPS ports
 			IImportExport soap1 = null;
 			IImportExport soap2 = null;
+			String message = "";
 			try
 			{
 				soap1 = service.getBasicHttpBindingIImportExport();
 			}
 			catch (WebServiceException ex)
 			{
-				//Ignore as the port will be left as null
+				message = message.concat("HTTP: ");
+				message = message.concat(ex.getMessage());
+				message = message.concat("\n");
 			}
 			try
 			{
@@ -235,14 +238,16 @@ public class SpiraImportExport
 			}
 			catch (WebServiceException ex)
 			{
-				//Ignore as the port will be left as null
+				message = message.concat("HTTPS: ");
+				message = message.concat(ex.getMessage());
+				message = message.concat("\n");
 			}
 			
 			//If both are NULL, throw exception
 			if (soap1 == null && soap2 == null)
 			{
 				//Return the error
-				throw new SpiraConnectionException ("Unable to connect with either the SpiraTest HTTP or HTTPS APIs. Please check the URL and try again\n\n");
+				throw new SpiraConnectionException ("Unable to connect with either the SpiraTest HTTP or HTTPS APIs. Please check the URL and try again (" + message + ")\n");
 			}
 			
 			//Set the SOAP handle to the non-null binding
@@ -288,28 +293,34 @@ public class SpiraImportExport
 			//Try both the HTTP and HTTPS ports
 			IImportExport soap1 = null;
 			IImportExport soap2 = null;
+			String message = "";
 			try
 			{
 				soap1 = service.getBasicHttpBindingIImportExport();
 			}
 			catch (WebServiceException ex)
 			{
-				//Ignore as the port will be left as null
+				message = message.concat("HTTP: ");
+				message = message.concat(ex.getMessage());
+				message = message.concat("\n");
 			}
 			try
 			{
+				
 				soap2 = service.getBasicHttpBindingIImportExport1();
 			}
 			catch (WebServiceException ex)
 			{
-				//Ignore as the port will be left as null
+				message = message.concat("HTTPS: ");
+				message = message.concat(ex.getMessage());
+				message = message.concat("\n");
 			}
 			
 			//If both are NULL, throw exception
 			if (soap1 == null && soap2 == null)
 			{
 				//Return the error
-				throw new SpiraConnectionException ("Unable to connect with either the SpiraTest HTTP or HTTPS APIs. Please check the URL and try again\n\n");
+				throw new SpiraConnectionException ("Unable to connect with either the SpiraTest HTTP or HTTPS APIs. Please check the URL and try again (" + message + ")\n");
 			}
 			
 			//Set the SOAP handle to the non-null binding

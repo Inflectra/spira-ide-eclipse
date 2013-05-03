@@ -121,7 +121,8 @@ public class Requirement
     	remoteRequirement.setPlannedEffort(SpiraImportExport.CreateJAXBInteger("PlannedEffort", this.plannedEffort));
         
         //Now the custom properties
-    	ExtractCustomProperties(remoteRequirement);        
+    	ExtractCustomProperties(remoteRequirement);
+    	
         return remoteRequirement;
     }
     

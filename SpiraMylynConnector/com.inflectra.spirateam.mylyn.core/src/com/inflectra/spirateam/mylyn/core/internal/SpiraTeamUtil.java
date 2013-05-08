@@ -6,6 +6,7 @@ package com.inflectra.spirateam.mylyn.core.internal;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
@@ -134,6 +135,9 @@ public class SpiraTeamUtil
 			return null;
 		}
 		GregorianCalendar calendar = xmlCal.toGregorianCalendar();
+		//We need to specify that these dates are really in UTC - Spira 4.0 and later APIs
+		TimeZone utc = TimeZone.getTimeZone("UTC");
+		calendar.setTimeZone(utc);
 		Date date = calendar.getTime();
 		return date;
 	}
@@ -222,6 +226,11 @@ public class SpiraTeamUtil
 		return null;
 	}
 	
+	/**
+	 * Converts a Java date into the appropriate localized time string
+	 * @param date
+	 * @return
+	 */
 	public static String dateToString(Date date)
 	{
 		if (date == null)

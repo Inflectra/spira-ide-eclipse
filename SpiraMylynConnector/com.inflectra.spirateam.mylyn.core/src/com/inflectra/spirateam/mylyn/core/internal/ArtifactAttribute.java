@@ -27,8 +27,8 @@ public enum ArtifactAttribute
 	ARTIFACT_KEY(Artifact.Key.ARTIFACT_KEY, Messages.ArtifactAttribute_ArtifactKey, TaskAttribute.TASK_KEY, TaskAttribute.TYPE_SHORT_TEXT, ""),
 	NAME(Artifact.Key.NAME, Messages.ArtifactAttribute_Name, TaskAttribute.SUMMARY, TaskAttribute.TYPE_SHORT_RICH_TEXT, "Name"),
 	DESCRIPTION(Artifact.Key.DESCRIPTION, Messages.ArtifactAttribute_Description, TaskAttribute.DESCRIPTION, TaskAttribute.TYPE_LONG_RICH_TEXT, "Description"),
-	CREATION_DATE(Artifact.Key.CREATION_DATE, Messages.ArtifactAttribute_CreationDate, TaskAttribute.DATE_CREATION, TaskAttribute.TYPE_DATE, "", Flag.READ_ONLY),
-	LAST_UPDATE_DATE(Artifact.Key.LAST_UPDATE_DATE, Messages.ArtifactAttribute_LastUpdateDate, TaskAttribute.DATE_MODIFICATION, TaskAttribute.TYPE_DATE, ""),
+	CREATION_DATE(Artifact.Key.CREATION_DATE, Messages.ArtifactAttribute_CreationDate, TaskAttribute.DATE_CREATION, TaskAttribute.TYPE_DATETIME, "", Flag.READ_ONLY),
+	LAST_UPDATE_DATE(Artifact.Key.LAST_UPDATE_DATE, Messages.ArtifactAttribute_LastUpdateDate, TaskAttribute.DATE_MODIFICATION, TaskAttribute.TYPE_DATETIME, ""),
 	OWNER_ID(Artifact.Key.OWNER_ID, Messages.ArtifactAttribute_OwnerId, TaskAttribute.USER_ASSIGNED, TaskAttribute.TYPE_SINGLE_SELECT, "OwnerId", Flag.PEOPLE),
 	URL(Artifact.Key.URL, Messages.ArtifactAttribute_Url, TaskAttribute.TASK_URL, TaskAttribute.TYPE_URL, ""),
 	CONCURRENCY_DATE(Artifact.Key.CONCURRENCY_DATE, Messages.ArtifactAttribute_ConcurrencyDate, null, TaskAttribute.TYPE_DATE, ""),
@@ -39,7 +39,7 @@ public enum ArtifactAttribute
 	REQUIREMENT_AUTHOR_ID(Requirement.Key.AUTHOR_ID, Messages.RequirementAttribute_AuthorId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_SHORT_TEXT, Flag.PEOPLE, Flag.READ_ONLY),
 	REQUIREMENT_IMPORTANCE_ID(Requirement.Key.IMPORTANCE_ID, Messages.RequirementAttribute_ImportanceId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
 	REQUIREMENT_RELEASE_ID(Requirement.Key.RELEASE_ID, Messages.RequirementAttribute_ReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
-	REQUIREMENT_PLANNED_EFFORT(Requirement.Key.PLANNED_EFFORT, Messages.RequirementAttribute_PlannedEffort, null, TaskAttribute.TYPE_SHORT_TEXT, Flag.ATTRIBUTE),
+	REQUIREMENT_PLANNED_EFFORT(Requirement.Key.PLANNED_EFFORT, Messages.RequirementAttribute_PlannedEffort, null, TaskAttribute.TYPE_DOUBLE, Flag.ATTRIBUTE),
 	REQUIREMENT_NEW_COMMENT(Requirement.Key.COMMENT, Messages.RequirementAttribute_NewComment, TaskAttribute.COMMENT_NEW, TaskAttribute.TYPE_LONG_RICH_TEXT),
 	
 	//Incident attributes
@@ -54,10 +54,10 @@ public enum ArtifactAttribute
 	INCIDENT_START_DATE(Incident.Key.START_DATE, Messages.IncidentAttribute_StartDate, TaskAttribute.DATE_DUE, TaskAttribute.TYPE_DATE, "StartDate", Flag.ATTRIBUTE),
 	INCIDENT_CLOSED_DATE(Incident.Key.CLOSED_DATE, Messages.IncidentAttribute_ClosedDate, TaskAttribute.DATE_COMPLETION, TaskAttribute.TYPE_DATE, "ClosedDate", Flag.ATTRIBUTE),
 	INCIDENT_COMPLETION_PERCENTAGE(Incident.Key.COMPLETION_PERCENTAGE, Messages.IncidentAttribute_CompletionPercentage, null, TaskAttribute.TYPE_SHORT_TEXT, "", Flag.READ_ONLY, Flag.ATTRIBUTE),
-	INCIDENT_ESTIMATED_EFFORT(Incident.Key.ESTIMATED_EFFORT, Messages.IncidentAttribute_EstimatedEffort, null, TaskAttribute.TYPE_SHORT_TEXT, "EstimatedEffort", Flag.ATTRIBUTE),
-	INCIDENT_ACTUAL_EFFORT(Incident.Key.ACTUAL_EFFORT, Messages.IncidentAttribute_ActualEffort, null, TaskAttribute.TYPE_SHORT_TEXT, "ActualEffort", Flag.ATTRIBUTE),
-	INCIDENT_REMAINING_EFFORT(Incident.Key.REMAINING_EFFORT, Messages.IncidentAttribute_RemainingEffort, null, TaskAttribute.TYPE_SHORT_TEXT, "RemainingEffort", Flag.ATTRIBUTE),
-	INCIDENT_PROJECTED_EFFORT(Incident.Key.PROJECTED_EFFORT, Messages.IncidentAttribute_ProjectedEffort, null, TaskAttribute.TYPE_SHORT_TEXT, "", Flag.READ_ONLY, Flag.ATTRIBUTE),
+	INCIDENT_ESTIMATED_EFFORT(Incident.Key.ESTIMATED_EFFORT, Messages.IncidentAttribute_EstimatedEffort, null, TaskAttribute.TYPE_DOUBLE, "EstimatedEffort", Flag.ATTRIBUTE),
+	INCIDENT_ACTUAL_EFFORT(Incident.Key.ACTUAL_EFFORT, Messages.IncidentAttribute_ActualEffort, null, TaskAttribute.TYPE_DOUBLE, "ActualEffort", Flag.ATTRIBUTE),
+	INCIDENT_REMAINING_EFFORT(Incident.Key.REMAINING_EFFORT, Messages.IncidentAttribute_RemainingEffort, null, TaskAttribute.TYPE_DOUBLE, "RemainingEffort", Flag.ATTRIBUTE),
+	INCIDENT_PROJECTED_EFFORT(Incident.Key.PROJECTED_EFFORT, Messages.IncidentAttribute_ProjectedEffort, null, TaskAttribute.TYPE_DOUBLE, "", Flag.READ_ONLY, Flag.ATTRIBUTE),
 	INCIDENT_TRANSITION_STATUS(Incident.Key.TRANSITION_STATUS, null, null, TaskAttribute.TYPE_SHORT_TEXT, ""),
 	INCIDENT_NEW_RESOLUTION(Incident.Key.RESOLUTION, Messages.IncidentAttribute_NewResolution, TaskAttribute.COMMENT_NEW, TaskAttribute.TYPE_LONG_RICH_TEXT, "Resolution"),
 	
@@ -71,10 +71,10 @@ public enum ArtifactAttribute
 	TASK_START_DATE(Task.Key.START_DATE, Messages.TaskAttribute_StartDate, null, TaskAttribute.TYPE_DATE, Flag.ATTRIBUTE),
 	TASK_END_DATE(Task.Key.END_DATE, Messages.TaskAttribute_EndDate, TaskAttribute.DATE_DUE, TaskAttribute.TYPE_DATE, Flag.ATTRIBUTE),
 	TASK_COMPLETION_PERCENTAGE(Task.Key.COMPLETION_PERCENTAGE, Messages.TaskAttribute_CompletionPercentage, null, TaskAttribute.TYPE_SHORT_TEXT, Flag.READ_ONLY, Flag.ATTRIBUTE),
-	TASK_ESTIMATED_EFFORT(Task.Key.ESTIMATED_EFFORT, Messages.TaskAttribute_EstimatedEffort, null, TaskAttribute.TYPE_SHORT_TEXT, Flag.ATTRIBUTE),
-	TASK_ACTUAL_EFFORT(Task.Key.ACTUAL_EFFORT, Messages.TaskAttribute_ActualEffort, null, TaskAttribute.TYPE_SHORT_TEXT, Flag.ATTRIBUTE),
-	TASK_REMAINING_EFFORT(Task.Key.REMAINING_EFFORT, Messages.TaskAttribute_RemainingEffort, null, TaskAttribute.TYPE_SHORT_TEXT, Flag.ATTRIBUTE),
-	TASK_PROJECTED_EFFORT(Task.Key.PROJECTED_EFFORT, Messages.TaskAttribute_ProjectedEffort, null, TaskAttribute.TYPE_SHORT_TEXT, Flag.READ_ONLY, Flag.ATTRIBUTE),
+	TASK_ESTIMATED_EFFORT(Task.Key.ESTIMATED_EFFORT, Messages.TaskAttribute_EstimatedEffort, null, TaskAttribute.TYPE_DOUBLE, Flag.ATTRIBUTE),
+	TASK_ACTUAL_EFFORT(Task.Key.ACTUAL_EFFORT, Messages.TaskAttribute_ActualEffort, null, TaskAttribute.TYPE_DOUBLE, Flag.ATTRIBUTE),
+	TASK_REMAINING_EFFORT(Task.Key.REMAINING_EFFORT, Messages.TaskAttribute_RemainingEffort, null, TaskAttribute.TYPE_DOUBLE, Flag.ATTRIBUTE),
+	TASK_PROJECTED_EFFORT(Task.Key.PROJECTED_EFFORT, Messages.TaskAttribute_ProjectedEffort, null, TaskAttribute.TYPE_DOUBLE, Flag.READ_ONLY, Flag.ATTRIBUTE),
 	TASK_NEW_COMMENT(Task.Key.COMMENT, Messages.TaskAttribute_NewComment, TaskAttribute.COMMENT_NEW, TaskAttribute.TYPE_LONG_RICH_TEXT);
 	
 	static Map<String, ArtifactAttribute> attributeByArtifactKey = new HashMap<String, ArtifactAttribute>();

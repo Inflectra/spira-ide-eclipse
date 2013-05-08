@@ -1600,7 +1600,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 
 				//Get the list of options
 				List<RemoteCustomPropertyOption> remoteCustomPropertyOptions = null;
-				if (!remoteCustomProperty.getOptions().isNil() && !remoteCustomProperty.getOptions().getValue().getRemoteCustomPropertyOption().isEmpty())
+				if (remoteCustomProperty.getOptions() != null && remoteCustomProperty.getOptions().getValue() != null && !remoteCustomProperty.getOptions().getValue().getRemoteCustomPropertyOption().isEmpty())
 				{
 					remoteCustomPropertyOptions = remoteCustomProperty.getOptions().getValue().getRemoteCustomPropertyOption();
 				}
@@ -1613,13 +1613,13 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 					for (RemoteCustomPropertyOption remoteCustomPropertyOption : remoteCustomPropertyOptions)
 					{
 						//Check for allow-empty option
-						if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_AllowEmpty && !remoteCustomPropertyOption.getValue().isNil())
+						if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_AllowEmpty && remoteCustomPropertyOption.getValue() != null)
 						{
 							allowEmpty = (remoteCustomPropertyOption.getValue().getValue().equals("Y"));
 						}
 
 						//Check for default-value option
-						if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_Default && !remoteCustomPropertyOption.getValue().isNil())
+						if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_Default && remoteCustomPropertyOption.getValue() != null)
 						{
 							defaultValue = remoteCustomPropertyOption.getValue().getValue();
 						}
@@ -1636,7 +1636,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 					{
 						for (RemoteCustomPropertyOption remoteCustomPropertyOption : remoteCustomPropertyOptions)
 						{
-							if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_RichText && !remoteCustomPropertyOption.getValue().isNil())
+							if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_RichText && remoteCustomPropertyOption.getValue() != null)
 							{
 								isRichText = (remoteCustomPropertyOption.getValue().getValue().equals("Y"));
 							}
@@ -2240,30 +2240,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			
 			//Convert the SOAP task into the local version
 			Task task = new Task(remoteTask);
-			
-			//We need to also get the requirement if one is set to get the name
-			try
-			{
-				if (task.getRequirementId() != null)
-				{					
-					//Call the appropriate method
-					RemoteRequirement remoteRequirement = soap.requirementRetrieveById(task.getRequirementId());
-					if (remoteRequirement != null)
-					{
-						task.setRequirementName(remoteRequirement.getName().getValue() + " [RQ:" + task.getRequirementId() + "]");
-					}
-				}
-			}
-			catch (WebServiceException ex)
-			{
-				//The user might not have permissions so just use the ID in that case
-				task.setRequirementName("[RQ:" + task.getRequirementId() + "]");
-			} catch (IImportExportRequirementRetrieveByIdServiceFaultMessageFaultFaultMessage exception)
-			{
-				//The user might not have permissions so just use the ID in that case
-				task.setRequirementName("[RQ:" + task.getRequirementId() + "]");
-			}
-			
+						
 			//Now get any associated comments
 			List<RemoteComment> remoteComments = soap.taskRetrieveComments(taskId).getRemoteComment();
 			

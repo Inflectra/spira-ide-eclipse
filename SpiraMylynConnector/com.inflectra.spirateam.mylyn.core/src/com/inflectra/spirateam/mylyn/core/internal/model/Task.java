@@ -95,10 +95,12 @@ public class Task extends Artifact
      */
     public Task(RemoteTask remoteTask)
     {
+    	//Populate the cross-artifact type properties
+    	PopulateGeneralProperties(remoteTask);
+
     	//Set the various member variables
     	this.dataChanged = false;
         this.artifactId = remoteTask.getTaskId().getValue();
-        this.projectId = remoteTask.getProjectId().getValue();
         this.ownerId = remoteTask.getOwnerId().getValue();
         this.releaseId = remoteTask.getReleaseId().getValue();
         this.creatorId = remoteTask.getCreatorId().getValue();
@@ -122,9 +124,7 @@ public class Task extends Artifact
         this.taskPriorityName = remoteTask.getTaskPriorityName().getValue();
         this.projectName = remoteTask.getProjectName().getValue();
         this.releaseVersionNumber = remoteTask.getReleaseVersionNumber().getValue();
-        
-        //Now the custom properties
-        PopulateCustomProperties(remoteTask);
+        this.requirementName = remoteTask.getRequirementName().getValue();
     }
     
     /**
@@ -135,8 +135,12 @@ public class Task extends Artifact
     {
     	//Set the properties on the SOAP object
     	RemoteTask remoteTask = new RemoteTask();
+
+    	//First the artifact base properties
+    	ExtractGeneralProperties(remoteTask);
+
+    	//Next the task-specific ones
     	remoteTask.setTaskId(SpiraImportExport.CreateJAXBInteger("TaskId", this.artifactId));
-    	remoteTask.setProjectId(SpiraImportExport.CreateJAXBInteger("ProjectId", this.projectId));
     	remoteTask.setOwnerId(SpiraImportExport.CreateJAXBInteger("OwnerId", this.ownerId));
     	remoteTask.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
     	remoteTask.setCreatorId(SpiraImportExport.CreateJAXBInteger("Creator", this.creatorId));
@@ -153,10 +157,7 @@ public class Task extends Artifact
     	remoteTask.setEstimatedEffort(SpiraImportExport.CreateJAXBInteger("EstimatedEffort", this.estimatedEffort));
     	remoteTask.setActualEffort(SpiraImportExport.CreateJAXBInteger("ActualEffort", this.actualEffort));
     	remoteTask.setRemainingEffort(SpiraImportExport.CreateJAXBInteger("RemainingEffort", this.remainingEffort));
-        
-        //Now the custom properties
-    	ExtractCustomProperties(remoteTask);
-    	
+            	
         return remoteTask;
     }
     

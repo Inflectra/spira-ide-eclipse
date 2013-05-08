@@ -393,14 +393,18 @@ public class Artifact
 	 }
 
 	 /**
-	  * Populates the custom properties from the SOAP API object
+	  * Populates all the artifact generic properties and custom properties
 	  * @param remoteArtifact
 	  */
-	 protected void PopulateCustomProperties(RemoteArtifact remoteArtifact)
+	 protected void PopulateGeneralProperties(RemoteArtifact remoteArtifact)
 	 {
+		 //First the standard properties
+         this.projectId = remoteArtifact.getProjectId().getValue();
+		 this.concurrencyDate = SpiraTeamUtil.convertDatesXml2Java(remoteArtifact.getConcurrencyDate());
+		 
 		 //Make sure we have custom properties
 		 this.customProperties.clear();
-		 if (!remoteArtifact.getCustomProperties().isNil() && !remoteArtifact.getCustomProperties().getValue().getRemoteArtifactCustomProperty().isEmpty())
+		 if (remoteArtifact.getCustomProperties() != null && !remoteArtifact.getCustomProperties().getValue().getRemoteArtifactCustomProperty().isEmpty())
 		 {
 			 //Loop through each of the custom properties and populate the local object
 			 List<RemoteArtifactCustomProperty> remoteArtifactCustomProperties = remoteArtifact.getCustomProperties().getValue().getRemoteArtifactCustomProperty();
@@ -418,7 +422,7 @@ public class Artifact
  					 acp.setBooleanValue(remoteArtifactCustomProperty.getBooleanValue().getValue());
  					 acp.setDateTimeValue(SpiraTeamUtil.convertDatesXml2Java(remoteArtifactCustomProperty.getDateTimeValue().getValue()));
  					 acp.setDecimalValue(remoteArtifactCustomProperty.getDecimalValue().getValue());
- 					 if (remoteArtifactCustomProperty.getIntegerListValue().isNil())
+ 					 if (remoteArtifactCustomProperty.getIntegerListValue() == null || remoteArtifactCustomProperty.getIntegerListValue().getValue() == null)
  					 {
  						 acp.setIntegerListValue(null);
  					 }
@@ -432,11 +436,15 @@ public class Artifact
 	 }
 	 
 	 /**
-	  * Populates the SOAP API object from the custom properties
+	  * Populates the SOAP API object from the artifact general fields and custom properties
 	  * @param remoteArtifact
 	  */
-	 protected void ExtractCustomProperties(RemoteArtifact remoteArtifact)
+	 protected void ExtractGeneralProperties(RemoteArtifact remoteArtifact)
 	 {
+		 //First the standard fields
+		 remoteArtifact.setProjectId(SpiraImportExport.CreateJAXBInteger("ProjectId", this.projectId));
+		 remoteArtifact.setConcurrencyDate(SpiraTeamUtil.convertDatesJava2Xml(this.concurrencyDate));
+
 		 //Make sure we have custom properties
 		 ArrayOfRemoteArtifactCustomProperty arrayOfRemoteArtifactCustomProperty = new ArrayOfRemoteArtifactCustomProperty();
 		 List<RemoteArtifactCustomProperty> remoteArtifactCustomProperties = arrayOfRemoteArtifactCustomProperty.getRemoteArtifactCustomProperty();

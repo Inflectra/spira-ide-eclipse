@@ -234,6 +234,18 @@ public class SpiraTeamUtil
 		}
 	}
 	
+	public static String booleanToString(Boolean bool)
+	{
+		if (bool == null)
+		{
+			return ""; //$NON-NLS-1$
+		}
+		else
+		{
+			return (bool) ? "1" : "0"; //$NON-NLS-1$
+		}
+	}
+	
 	/**
 	 * Converts an effort value in minutes (integer)
 	 * into an hours/mins one that can be displayed in Eclipse

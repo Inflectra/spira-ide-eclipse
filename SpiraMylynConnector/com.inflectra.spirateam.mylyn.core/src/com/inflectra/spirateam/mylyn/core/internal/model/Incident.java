@@ -106,9 +106,11 @@ public class Incident extends Artifact
      */
     public Incident(RemoteIncident remoteIncident)
     {
+    	//Populate the cross-artifact type properties
+    	PopulateGeneralProperties(remoteIncident);
+
     	//Set the various member variables
         this.artifactId = remoteIncident.getIncidentId().getValue();
-        this.projectId = remoteIncident.getProjectId().getValue();
         this.ownerId = remoteIncident.getOwnerId().getValue();
         this.name = remoteIncident.getName().getValue();
         this.description = remoteIncident.getDescription().getValue();
@@ -141,9 +143,6 @@ public class Incident extends Artifact
         this.resolvedReleaseVersionNumber = remoteIncident.getResolvedReleaseVersionNumber().getValue();
         this.verifiedReleaseVersionNumber = remoteIncident.getVerifiedReleaseVersionNumber().getValue();
         this.incidentStatusOpenStatus = remoteIncident.getIncidentStatusOpenStatus().getValue();
-        
-        //Now the custom properties
-        PopulateCustomProperties(remoteIncident);
     }
     
     /**
@@ -154,8 +153,12 @@ public class Incident extends Artifact
     {
     	//Set the properties on the SOAP object
     	RemoteIncident remoteIncident = new RemoteIncident();
+    	
+        //First the artifact base properties
+    	ExtractGeneralProperties(remoteIncident);
+
+    	//Next the incident-specific ones
     	remoteIncident.setIncidentId(SpiraImportExport.CreateJAXBInteger("IncidentId",this.artifactId));
-    	remoteIncident.setProjectId(SpiraImportExport.CreateJAXBInteger("ProjectId",this.projectId));
     	remoteIncident.setOwnerId(SpiraImportExport.CreateJAXBInteger("OwnerId",this.ownerId));
     	remoteIncident.setName(SpiraImportExport.CreateJAXBString("Name", this.name));
     	remoteIncident.setDescription(SpiraImportExport.CreateJAXBString("Description", this.description));
@@ -176,10 +179,7 @@ public class Incident extends Artifact
     	remoteIncident.setEstimatedEffort(SpiraImportExport.CreateJAXBInteger("EstimatedEffort",this.estimatedEffort));
     	remoteIncident.setActualEffort(SpiraImportExport.CreateJAXBInteger("ActualEffort",this.actualEffort));
     	remoteIncident.setRemainingEffort(SpiraImportExport.CreateJAXBInteger("RemainingEffort", this.remainingEffort));
-        
-        //Now the custom properties
-    	ExtractCustomProperties(remoteIncident);
-       
+               
         return remoteIncident;
     }
     

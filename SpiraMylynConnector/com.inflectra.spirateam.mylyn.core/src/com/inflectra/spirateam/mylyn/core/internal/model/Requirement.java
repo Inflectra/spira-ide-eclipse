@@ -76,9 +76,15 @@ public class Requirement
      */
     public Requirement(RemoteRequirement remoteRequirement)
     {
+    	//Populate the cross-artifact type properties
+    	PopulateGeneralProperties(remoteRequirement);
+    	
     	//Set the various member variables
+        this.name = remoteRequirement.getName().getValue();
+        this.description = remoteRequirement.getDescription().getValue();
+        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getCreationDate());
+        this.lastUpdateDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getLastUpdateDate());
         this.artifactId = remoteRequirement.getRequirementId().getValue();
-        this.projectId = remoteRequirement.getProjectId().getValue();
         this.statusId = remoteRequirement.getStatusId().getValue();
         this.authorId = remoteRequirement.getAuthorId().getValue();
         this.authorName = remoteRequirement.getAuthorName().getValue();
@@ -87,15 +93,8 @@ public class Requirement
         this.importanceName = remoteRequirement.getImportanceName().getValue();
         this.releaseId = remoteRequirement.getReleaseId().getValue();
         this.releaseVersionNumber = remoteRequirement.getReleaseVersionNumber().getValue();
-        this.name = remoteRequirement.getName().getValue();
-        this.description = remoteRequirement.getDescription().getValue();
-        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getCreationDate());
-        this.lastUpdateDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getLastUpdateDate());
         this.summary = remoteRequirement.isSummary();
         this.plannedEffort = remoteRequirement.getPlannedEffort().getValue();
-        
-        //Now the custom properties
-        PopulateCustomProperties(remoteRequirement);
     }
     
     /**
@@ -106,8 +105,12 @@ public class Requirement
     {
     	//Set the properties on the SOAP object
     	RemoteRequirement remoteRequirement = new RemoteRequirement();
+    	
+        //First the artifact base properties
+    	ExtractGeneralProperties(remoteRequirement);
+
+    	//Next the requirement-specific ones
     	remoteRequirement.setRequirementId(SpiraImportExport.CreateJAXBInteger("RequirementId", this.artifactId));
-    	remoteRequirement.setProjectId(SpiraImportExport.CreateJAXBInteger("ProjectId", this.projectId));
     	remoteRequirement.setOwnerId(SpiraImportExport.CreateJAXBInteger("OwnerId", this.ownerId));
     	remoteRequirement.setAuthorId(SpiraImportExport.CreateJAXBInteger("AuthorId", this.authorId));
     	remoteRequirement.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
@@ -119,10 +122,7 @@ public class Requirement
     	remoteRequirement.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
     	remoteRequirement.setImportanceId(SpiraImportExport.CreateJAXBInteger("ImportanceId", this.importanceId));
     	remoteRequirement.setPlannedEffort(SpiraImportExport.CreateJAXBInteger("PlannedEffort", this.plannedEffort));
-        
-        //Now the custom properties
-    	ExtractCustomProperties(remoteRequirement);
-    	
+            	
         return remoteRequirement;
     }
     

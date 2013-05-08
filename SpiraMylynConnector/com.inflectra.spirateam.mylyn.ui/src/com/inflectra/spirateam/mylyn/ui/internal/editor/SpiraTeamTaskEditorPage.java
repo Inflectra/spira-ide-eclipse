@@ -66,12 +66,7 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 			
 			if (taskEditorPartDescriptor.getId().equals(ID_PART_COMMENTS))
 			{
-				//All artifacts now support comments (since v3.0)
-				/*
-				if (artifactType.equals(ArtifactType.REQUIREMENT) || artifactType.equals(ArtifactType.TASK))
-				{
-					it.remove();
-				}*/
+				//All artifacts support comments
 			}
 			if (taskEditorPartDescriptor.getId().equals(ID_PART_ACTIONS) && artifactType.equals(ArtifactType.INCIDENT))
 			{

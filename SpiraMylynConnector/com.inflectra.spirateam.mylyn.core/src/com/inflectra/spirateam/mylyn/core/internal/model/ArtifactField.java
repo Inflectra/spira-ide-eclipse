@@ -19,7 +19,7 @@ public class ArtifactField implements Serializable
 
 	public enum Type
 	{
-		TEXT, CHECKBOX, SELECT, RADIO, TEXTAREA;
+		TEXT, CHECKBOX, SINGLE_SELECT, MULTI_SELECT, PERSON, RICH_TEXT, DATE, INTEGER, DOUBLE;
 
 		public static Type fromString(String value)
 		{
@@ -32,17 +32,33 @@ public class ArtifactField implements Serializable
 			{
 				return CHECKBOX;
 			}
-			else if ("select".equals(value)) //$NON-NLS-1$
+			else if ("single_select".equals(value)) //$NON-NLS-1$
 			{
-				return SELECT;
+				return SINGLE_SELECT;
 			}
-			else if ("radio".equals(value)) //$NON-NLS-1$
+			else if ("person".equals(value)) //$NON-NLS-1$
 			{
-				return RADIO;
+				return PERSON;
 			}
-			else if ("textarea".equals(value)) //$NON-NLS-1$
+			else if ("single_select".equals(value)) //$NON-NLS-1$
 			{
-				return TEXTAREA;
+				return MULTI_SELECT;
+			}
+			else if ("rich_text".equals(value)) //$NON-NLS-1$
+			{
+				return RICH_TEXT;
+			}
+			else if ("integer".equals(value)) //$NON-NLS-1$
+			{
+				return INTEGER;
+			}
+			else if ("double".equals(value)) //$NON-NLS-1$
+			{
+				return DOUBLE;
+			}
+			else if ("date".equals(value)) //$NON-NLS-1$
+			{
+				return DATE;
 			}
 			return TEXT;
 		}

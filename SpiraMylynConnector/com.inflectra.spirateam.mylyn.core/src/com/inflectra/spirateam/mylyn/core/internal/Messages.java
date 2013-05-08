@@ -56,6 +56,7 @@ public class Messages extends NLS
 	public static String ArtifactAttribute_LastUpdateDate;
 	public static String ArtifactAttribute_OwnerId;
 	public static String ArtifactAttribute_Url;
+	public static String ArtifactAttribute_ConcurrencyDate;
 	
 	public static String RequirementAttribute_Type;
 	public static String RequirementAttribute_StatusId;

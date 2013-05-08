@@ -1597,27 +1597,142 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 				ArtifactField artifactField = new ArtifactField(remoteCustomProperty.getCustomPropertyFieldName().getValue());
 				artifactField.setLabel(remoteCustomProperty.getName().getValue());
 				artifactField.setCustom(true);
-				boolean allowEmpty = true;
-				//Check to see if we have the allow-empty option specified
+
+				//Get the list of options
+				List<RemoteCustomPropertyOption> remoteCustomPropertyOptions = null;
 				if (!remoteCustomProperty.getOptions().isNil() && !remoteCustomProperty.getOptions().getValue().getRemoteCustomPropertyOption().isEmpty())
 				{
-					List<RemoteCustomPropertyOption> remoteCustomPropertyOptions = remoteCustomProperty.getOptions().getValue().getRemoteCustomPropertyOption();
+					remoteCustomPropertyOptions = remoteCustomProperty.getOptions().getValue().getRemoteCustomPropertyOption();
+				}
+				
+				//Check to see if we have the allow-empty or default value option specified
+				boolean allowEmpty = true;
+				String defaultValue = null;
+				if (remoteCustomPropertyOptions != null)
+				{
 					for (RemoteCustomPropertyOption remoteCustomPropertyOption : remoteCustomPropertyOptions)
 					{
+						//Check for allow-empty option
 						if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_AllowEmpty && !remoteCustomPropertyOption.getValue().isNil())
 						{
 							allowEmpty = (remoteCustomPropertyOption.getValue().getValue().equals("Y"));
 						}
+
+						//Check for default-value option
+						if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_Default && !remoteCustomPropertyOption.getValue().isNil())
+						{
+							defaultValue = remoteCustomPropertyOption.getValue().getValue();
+						}
 					}
 				}
 				artifactField.setOptional(allowEmpty);
+				artifactField.setDefaultValue(defaultValue);
+				
 				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Text)
 				{
-					artifactField.setType(Type.TEXT);
+					//See if we have a rich-text or plain text custom property
+					boolean isRichText = false;
+					if (remoteCustomPropertyOptions != null)
+					{
+						for (RemoteCustomPropertyOption remoteCustomPropertyOption : remoteCustomPropertyOptions)
+						{
+							if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_RichText && !remoteCustomPropertyOption.getValue().isNil())
+							{
+								isRichText = (remoteCustomPropertyOption.getValue().getValue().equals("Y"));
+							}
+						}
+					}
+					artifactField.setType((isRichText) ? Type.RICH_TEXT : Type.TEXT);
 				}
-				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_List)
+				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Integer)
 				{
-					artifactField.setType(Type.SELECT);
+					artifactField.setType(Type.INTEGER);
+				}
+				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Boolean)
+				{
+					artifactField.setType(Type.CHECKBOX);
+				}
+				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Decimal)
+				{
+					artifactField.setType(Type.DOUBLE);
+				}
+				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Date)
+				{
+					artifactField.setType(Type.DATE);
+				}
+				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_User)
+				{
+					artifactField.setType(Type.PERSON);
+					
+					//Now we need to get the list of project users
+					try
+					{
+						//Get the list of users from the SOAP API
+						//First we need to re-authenticate
+						success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+						if (!success)
+						{
+							//throw new SpiraException (this.userName + "/" + this.password);
+							throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
+						}
+				
+						//Next we need to connect to the appropriate project
+						success = soap.connectionConnectToProject(projectId);
+						if (!success)
+						{
+							//throw new SpiraException (this.userName + "/" + this.password);
+							throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+						}
+							
+						//Get the list of users
+						List<RemoteProjectUser> remoteProjectUsers = soap.projectRetrieveUserMembership().getRemoteProjectUser();
+						
+						//Now populate the list of custom property option values
+						if (!remoteProjectUsers.isEmpty())
+						{
+							ArtifactFieldValue[] values = new ArtifactFieldValue[remoteProjectUsers.size()];
+							int i = 0;
+							for (RemoteProjectUser remoteProjectUser : remoteProjectUsers)
+							{
+								int userId = remoteProjectUser.getUserId().getValue();
+								values[i] = new ArtifactFieldValue(userId, remoteProjectUser.getFirstName().getValue() + " " + remoteProjectUser.getLastName().getValue() + " [" + remoteProjectUser.getEmailAddress().getValue() + "]");
+								i++;
+							}
+							artifactField.setValues(values);
+						}
+					}
+					catch (SpiraException ex)
+					{
+						//Leave the list unpopulated
+					}
+					catch (WebServiceException ex)
+					{
+						//Leave the list unpopulated
+					}
+					catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+					{
+						//Leave the list unpopulated
+					}
+					catch (IImportExportProjectRetrieveUserMembershipServiceFaultMessageFaultFaultMessage exception)
+					{
+						//Leave the list unpopulated
+					}
+					catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+					{
+						//Leave the list unpopulated
+					}
+				}
+				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_List
+						|| remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_MultiList)
+				{
+					if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_List)
+					{
+						artifactField.setType(Type.SINGLE_SELECT);
+					}
+					else
+					{
+						artifactField.setType(Type.MULTI_SELECT);
+					}
 					
 					//Now we need to get the custom list values
 					RemoteCustomList remoteCustomList = remoteCustomProperty.getCustomList().getValue();

@@ -46,7 +46,8 @@ public class Artifact
 		CREATION_DATE("common.creationDate"),
 		LAST_UPDATE_DATE("common.lastUpdateDate"),
 		OWNER_ID("common.ownerId"),
-		URL("common.url");
+		URL("common.url"),
+		CONCURRENCY_DATE("common.concurrencyDate");
 
 		public static Key fromKey(String name)
 		{
@@ -417,7 +418,14 @@ public class Artifact
  					 acp.setBooleanValue(remoteArtifactCustomProperty.getBooleanValue().getValue());
  					 acp.setDateTimeValue(SpiraTeamUtil.convertDatesXml2Java(remoteArtifactCustomProperty.getDateTimeValue().getValue()));
  					 acp.setDecimalValue(remoteArtifactCustomProperty.getDecimalValue().getValue());
- 					 acp.setIntegerListValue(remoteArtifactCustomProperty.getIntegerListValue().getValue().getInt());
+ 					 if (remoteArtifactCustomProperty.getIntegerListValue().isNil())
+ 					 {
+ 						 acp.setIntegerListValue(null);
+ 					 }
+ 					 else
+ 					 {
+ 						 acp.setIntegerListValue(remoteArtifactCustomProperty.getIntegerListValue().getValue().getInt());
+ 					 }
 				 }
 			 }
 		 }

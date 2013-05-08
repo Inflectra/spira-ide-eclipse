@@ -185,13 +185,13 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		TaskAttributeMetaData metaData = attr.getMetaData();
 		metaData.defaults();
 		metaData.setLabel(field.getLabel() + ":"); //$NON-NLS-1$
-		metaData.setKind(TaskAttribute.KIND_DEFAULT);
+		
+		//All custom properties appear in the default section
 		metaData.setReadOnly(false);
+		metaData.setKind(TaskAttribute.KIND_DEFAULT);
 		metaData.putValue(ATTRIBUTE_ARTIFACT_KEY, field.getName());
 		if (field.getType() == ArtifactField.Type.CHECKBOX)
 		{
-			// attr.addOption("True", "1");
-			// attr.addOption("False", "0");
 			metaData.setType(TaskAttribute.TYPE_BOOLEAN);
 			attr.putOption("1", "1"); //$NON-NLS-1$ //$NON-NLS-2$
 			attr.putOption("0", "0"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -200,8 +200,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				attr.setValue(field.getDefaultValue());
 			}
 		}
-		else if (field.getType() == ArtifactField.Type.SELECT || field.getType() == ArtifactField.Type.RADIO)
+		else if (field.getType() == ArtifactField.Type.SINGLE_SELECT || field.getType() == ArtifactField.Type.PERSON)
 		{
+			//User fields are mapped to Single-Selects because they seem to work better than
+			//the controls created when you specify TYPE_PERSON
 			metaData.setType(TaskAttribute.TYPE_SINGLE_SELECT);
 			ArtifactFieldValue[] values = field.getValues();
 			if (values != null && values.length > 0)
@@ -238,9 +240,71 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				}
 			}
 		}
-		else if (field.getType() == ArtifactField.Type.TEXTAREA)
+		else if (field.getType() == ArtifactField.Type.MULTI_SELECT)
 		{
-			metaData.setType(TaskAttribute.TYPE_LONG_TEXT);
+			metaData.setType(TaskAttribute.TYPE_MULTI_SELECT);
+			ArtifactFieldValue[] values = field.getValues();
+			if (values != null && values.length > 0)
+			{
+				if (field.isOptional())
+				{
+					attr.putOption("", ""); //$NON-NLS-1$ //$NON-NLS-2$
+				}
+				for (ArtifactFieldValue value : values)
+				{
+					attr.putOption(value.getId() + "", value.getName());
+				}
+				if (field.getDefaultValue() != null)
+				{
+					try
+					{
+						int index = Integer.parseInt(field.getDefaultValue());
+						if (index > 0 && index < values.length)
+						{
+							attr.setValue(values[index].getName());
+						}
+					}
+					catch (NumberFormatException e)
+					{
+						for (ArtifactFieldValue value : values)
+						{
+							if (field.getDefaultValue().equals(value.toString()))
+							{
+								attr.setValue(value.getName());
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+		else if (field.getType() == ArtifactField.Type.RICH_TEXT)
+		{
+			metaData.setType(TaskAttribute.TYPE_LONG_RICH_TEXT);
+			if (field.getDefaultValue() != null)
+			{
+				attr.setValue(field.getDefaultValue());
+			}
+		}
+		else if (field.getType() == ArtifactField.Type.DATE)
+		{
+			metaData.setType(TaskAttribute.TYPE_DATE);
+			if (field.getDefaultValue() != null)
+			{
+				attr.setValue(field.getDefaultValue());
+			}
+		}
+		else if (field.getType() == ArtifactField.Type.INTEGER)
+		{
+			metaData.setType(TaskAttribute.TYPE_INTEGER);
+			if (field.getDefaultValue() != null)
+			{
+				attr.setValue(field.getDefaultValue());
+			}
+		}
+		else if (field.getType() == ArtifactField.Type.DOUBLE)
+		{
+			metaData.setType(TaskAttribute.TYPE_DOUBLE);
 			if (field.getDefaultValue() != null)
 			{
 				attr.setValue(field.getDefaultValue());
@@ -923,6 +987,11 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 	}
 	
+	/**
+	 * Updates the Spira custom property values from the Mylyn task
+	 * @param artifact The Spira artifact
+	 * @param taskData The Mylyn task
+	 */
 	private void updateCustomPropertiesFromTaskData(Artifact artifact, TaskData taskData)
 	{
 		/*
@@ -1246,18 +1315,25 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 	}
 	
+	/**
+	 * Updates the Mylyn task from the Spira artifact
+	 * @param artifact The Spira artifact
+	 * @param data The Mylyn task
+	 * @param client The Spira client
+	 */
 	public static Set<TaskAttribute> updateTaskData(SpiraImportExport client, TaskRepository repository, TaskData data, Artifact artifact)
 		throws SpiraException
 	{
 		Set<TaskAttribute> changedAttributes = new HashSet<TaskAttribute>();
 
-		//First we set the cross-attribute properties
+		//First we set the cross-artifact properties
 		int projectId = artifact.getProjectId();
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.NAME, artifact.getName(), projectId);
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.DESCRIPTION, SpiraTeamUtil.HtmlRenderAsPlainText(artifact.getDescription()), projectId);
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.OWNER_ID, artifact.getOwnerId().toString(), projectId);
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.CREATION_DATE, SpiraTeamUtil.dateToString(artifact.getCreationDate()), projectId);
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.LAST_UPDATE_DATE, SpiraTeamUtil.dateToString(artifact.getLastUpdateDate()), projectId);
+		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.CONCURRENCY_DATE, SpiraTeamUtil.dateToString(artifact.getConcurrencyDate()), projectId);
 		
 		//Next we do the custom properties
 		/*
@@ -1280,7 +1356,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		updateCustomTaskAttribute(data, changedAttributes, "LIST_07", artifact.getList07(), projectId);
 		updateCustomTaskAttribute(data, changedAttributes, "LIST_08", artifact.getList08(), projectId);
 		updateCustomTaskAttribute(data, changedAttributes, "LIST_09", artifact.getList09(), projectId);
-		updateCustomTaskAttribute(data, changedAttributes, "LIST_10", artifact.getList10(), projectId);
+		updateCustomTaskAttribute(data, changedAttributes, "LIST_10", artifact.getList10(), projectId);	
 		*/
 		
 		//Need to detect each type of artifact, for the other attributes

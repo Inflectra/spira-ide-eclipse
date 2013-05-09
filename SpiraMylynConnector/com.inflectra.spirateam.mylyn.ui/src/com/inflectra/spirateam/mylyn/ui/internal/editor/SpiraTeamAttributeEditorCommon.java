@@ -27,7 +27,8 @@ public class SpiraTeamAttributeEditorCommon
 		}
 		
 		String isRequired = taskAttribute.getMetaData().getValue(SpiraTeamTaskDataHandler.ATTRIBUTE_REQUIRED);
-		if (isRequired != null && isRequired.equals("true"))
+		String isAllowEmpty = taskAttribute.getMetaData().getValue(SpiraTeamTaskDataHandler.ATTRIBUTE_ALLOW_EMPTY);
+		if ((isRequired != null && isRequired.equals("true")) || (isAllowEmpty != null && isAllowEmpty.equals("false")))
 		{
 			Font f = label.getFont();
 			FontData[] fontData = f.getFontData();

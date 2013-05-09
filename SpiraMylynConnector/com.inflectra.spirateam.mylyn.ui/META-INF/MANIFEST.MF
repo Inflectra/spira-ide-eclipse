@@ -20,3 +20,5 @@ Eclipse-AutoStart: true
 Export-Package: com.inflectra.spirateam.mylyn.ui.internal;x-internal:=true,
  com.inflectra.spirateam.mylyn.ui.internal.editor;x-internal:=true,
  com.inflectra.spirateam.mylyn.ui.internal.wizards;x-internal:=true
+Import-Package: org.eclipse.jface.text,
+ org.eclipse.jface.text.source

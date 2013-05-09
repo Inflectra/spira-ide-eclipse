@@ -3,7 +3,9 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal;
 
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -63,6 +65,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	private static final String TASK_DATA_VERSION = "040000"; //$NON-NLS-1$
 	private static final String ATTRIBUTE_ARTIFACT_KEY = "spira.key"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_PROJECT_ID = "spira.projectId"; //$NON-NLS-1$
+	public static final String ATTRIBUTE_PRECISION = "spira.precision"; //$NON-NLS-1$
+	public static final String ATTRIBUTE_REQUIRED = "spira.required"; //$NON-NLS-1$
+	public static final String ATTRIBUTE_HIDDEN = "spira.hidden"; //$NON-NLS-1$
 	
 	private final SpiraTeamRepositoryConnector connector;
 	
@@ -194,8 +199,6 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		if (field.getType() == ArtifactField.Type.CHECKBOX)
 		{
 			metaData.setType(TaskAttribute.TYPE_BOOLEAN);
-			attr.putOption("1", "1"); //$NON-NLS-1$ //$NON-NLS-2$
-			attr.putOption("0", "0"); //$NON-NLS-1$ //$NON-NLS-2$
 			if (field.getDefaultValue() != null)
 			{
 				attr.setValue(field.getDefaultValue());
@@ -306,6 +309,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		else if (field.getType() == ArtifactField.Type.DOUBLE)
 		{
 			metaData.setType(TaskAttribute.TYPE_DOUBLE);
+			if (field.getPrecision() != null)
+			{
+				metaData.putValue(ATTRIBUTE_PRECISION, field.getPrecision().toString());
+			}
 			if (field.getDefaultValue() != null)
 			{
 				attr.setValue(field.getDefaultValue());
@@ -1262,7 +1269,32 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 			else if (artifactCustomProperty.getDecimalValue() != null)
 			{
-				taskAttribute.setValue(artifactCustomProperty.getDecimalValue().toString());
+				//See if we have a precision specified
+				String precision = taskAttribute.getMetaData().getValue(ATTRIBUTE_PRECISION);
+				String displayValue;
+				if (precision != null)
+				{
+					try
+					{
+						int precisionInt = Integer.parseInt(precision);
+						NumberFormat df = DecimalFormat.getInstance();
+						df.setMinimumFractionDigits(precisionInt);
+						df.setMaximumFractionDigits(precisionInt);
+						df.setRoundingMode(RoundingMode.DOWN);
+						displayValue = df.format(artifactCustomProperty.getDecimalValue());
+
+					}
+					catch (NumberFormatException ex)
+					{
+						displayValue = artifactCustomProperty.getDecimalValue().toString();						
+					}
+				}
+				else
+				{
+					displayValue = artifactCustomProperty.getDecimalValue().toString();
+				}
+					
+				taskAttribute.setValue(displayValue);
 				valueSet = true;
 			}
 			else if (artifactCustomProperty.getIntegerListValue() != null && !artifactCustomProperty.getIntegerListValue().isEmpty())
@@ -1482,6 +1514,16 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		return changedAttributes;
 	}
 	
+	/**
+	 * Sets the task attributes to be hidden, disabled or required
+	 * @param client
+	 * @param data
+	 * @param projectId
+	 * @param currentIncidentTypeId
+	 * @param currentIncidentStatusId
+	 * @param changedAttributes
+	 * @throws SpiraException
+	 */
 	private static void updateAttributesForWorkflow(SpiraImportExport client, TaskData data, int projectId, int currentIncidentTypeId, int currentIncidentStatusId, Set<TaskAttribute> changedAttributes)
 		throws SpiraException
 	{
@@ -1496,21 +1538,32 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				String customPropertyName = attributeKey;
 
 				//See if we have this in the field list
-				boolean matched = false;
+				boolean isInactive = false;
+				boolean isRequired = false;
+				boolean isHidden = false;
 				for(IncidentWorkflowField workflowField : workflowFields)
 				{
-					//We only care about the active flag (i.e. state = 1)
-					if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_ACTIVE && customPropertyName.equals(workflowField.getFieldName()))
+					if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_INACTIVE && customPropertyName.equals(workflowField.getFieldName()))
 					{
-						matched = true;
+						isInactive = true;
+					}
+					if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_REQUIRED && customPropertyName.equals(workflowField.getFieldName()))
+					{
+						isRequired = true;
+					}
+					if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_HIDDEN && customPropertyName.equals(workflowField.getFieldName()))
+					{
+						isHidden = true;
 					}
 				}
 				TaskAttribute taskAttribute = data.getRoot().getAttributes().get(attributeKey);
 				if (taskAttribute != null)
 				{
-					//If we didn't find a match in the workflow, we need to
+					//If we found a match in the workflow, we need to
 					//make the field Read-Only
-					taskAttribute.getMetaData().setReadOnly(!matched);
+					taskAttribute.getMetaData().setReadOnly(isInactive);
+					taskAttribute.getMetaData().putValue(ATTRIBUTE_HIDDEN, (isHidden) ? "true" : "false");
+					taskAttribute.getMetaData().putValue(ATTRIBUTE_REQUIRED, (isRequired) ? "true" : "false");
 					changedAttributes.add(taskAttribute);						
 				}
 			}
@@ -1521,22 +1574,34 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				if (!workflowFieldName.equals(""))
 				{
 					//See if we have this in the field list
-					boolean matched = false;
+					boolean isInactive = false;
+					boolean isRequired = false;
+					boolean isHidden = false;
 					for(IncidentWorkflowField workflowField : workflowFields)
 					{
 						//We only care about the active flag (i.e. state = 1)
-						if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_ACTIVE && workflowFieldName.equals(workflowField.getFieldName()))
+						if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_INACTIVE && workflowFieldName.equals(workflowField.getFieldName()))
 						{
-							matched = true;
+							isInactive = true;
+						}
+						if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_REQUIRED && workflowFieldName.equals(workflowField.getFieldName()))
+						{
+							isRequired = true;
+						}
+						if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_HIDDEN && workflowFieldName.equals(workflowField.getFieldName()))
+						{
+							isHidden = true;
 						}
 					}
 					TaskAttribute taskAttribute = data.getRoot().getAttributes().get(attributeKey);
 					if (taskAttribute != null)
 					{
-						//If we didn't find a match in the workflow, we need to
+						//If we found a match in the workflow, we need to
 						//make the field Read-Only
-						taskAttribute.getMetaData().setReadOnly(!matched);
-						changedAttributes.add(taskAttribute);						
+						taskAttribute.getMetaData().setReadOnly(isInactive);
+						taskAttribute.getMetaData().putValue(ATTRIBUTE_HIDDEN, (isHidden) ? "true" : "false");
+						taskAttribute.getMetaData().putValue(ATTRIBUTE_REQUIRED, (isRequired) ? "true" : "false");
+						changedAttributes.add(taskAttribute);
 					}
 				}
 			}

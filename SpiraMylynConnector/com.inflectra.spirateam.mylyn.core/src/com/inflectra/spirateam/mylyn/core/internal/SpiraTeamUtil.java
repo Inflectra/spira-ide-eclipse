@@ -38,8 +38,9 @@ public class SpiraTeamUtil
 	private static final String KEY_FILTER_ID = "FilterID"; //$NON-NLS-1$
 	private static final String KEY_FILTER_NAME = "FilterName"; //$NON-NLS-1$
 	
-	public static final int WORKFLOW_FIELD_STATE_ACTIVE = 1;
+	public static final int WORKFLOW_FIELD_STATE_INACTIVE = 1;
 	public static final int WORKFLOW_FIELD_STATE_REQUIRED = 2;
+	public static final int WORKFLOW_FIELD_STATE_HIDDEN = 3;
 
 	public static final String WORKFLOW_TRANSITION_STATUS_ACTIVE = "active";
 	public static final String WORKFLOW_TRANSITION_STATUS_EXECUTED = "executed";
@@ -251,7 +252,8 @@ public class SpiraTeamUtil
 		}
 		else
 		{
-			return (bool) ? "1" : "0"; //$NON-NLS-1$
+			boolean boolValue = bool.booleanValue();
+			return (boolValue) ? "true" : "false"; //$NON-NLS-1$
 		}
 	}
 	

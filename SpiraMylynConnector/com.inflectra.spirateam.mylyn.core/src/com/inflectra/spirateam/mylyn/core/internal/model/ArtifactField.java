@@ -85,6 +85,8 @@ public class ArtifactField implements Serializable
 	private int width = DEFAULT_SIZE;
 
 	private int height = DEFAULT_SIZE;
+	
+	private Integer precision = null;
 
 	public ArtifactField(String name)
 	{
@@ -170,6 +172,16 @@ public class ArtifactField implements Serializable
 		this.height = height;
 	}
 
+	public Integer getPrecision()
+	{
+		return this.precision;
+	}
+
+	public void setPrecision(Integer precision)
+	{
+		this.precision = precision;
+	}
+	
 	public String getDefaultValue()
 	{
 		return defaultValue;

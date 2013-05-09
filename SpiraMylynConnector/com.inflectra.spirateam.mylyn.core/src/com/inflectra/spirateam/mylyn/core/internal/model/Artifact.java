@@ -404,7 +404,7 @@ public class Artifact
 		 
 		 //Make sure we have custom properties
 		 this.customProperties.clear();
-		 if (remoteArtifact.getCustomProperties() != null && !remoteArtifact.getCustomProperties().getValue().getRemoteArtifactCustomProperty().isEmpty())
+		 if (remoteArtifact.getCustomProperties() != null && remoteArtifact.getCustomProperties().getValue() != null && !remoteArtifact.getCustomProperties().getValue().getRemoteArtifactCustomProperty().isEmpty())
 		 {
 			 //Loop through each of the custom properties and populate the local object
 			 List<RemoteArtifactCustomProperty> remoteArtifactCustomProperties = remoteArtifact.getCustomProperties().getValue().getRemoteArtifactCustomProperty();

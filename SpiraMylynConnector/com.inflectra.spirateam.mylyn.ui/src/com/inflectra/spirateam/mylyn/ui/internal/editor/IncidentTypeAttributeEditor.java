@@ -120,12 +120,15 @@ public class IncidentTypeAttributeEditor extends AbstractAttributeEditor
 	
 	public void enableModifyListener()
 	{
-		this.modifyListener = new IncidentTypeModifyListener(this);
-		combo.addModifyListener(this.modifyListener);
+		if (this.combo != null)
+		{
+			this.modifyListener = new IncidentTypeModifyListener(this);
+			this.combo.addModifyListener(this.modifyListener);
+		}
 	}
 	public void disableModifyListener()
 	{
-		if (this.modifyListener != null)
+		if (this.modifyListener != null && this.combo != null)
 		{
 			combo.removeModifyListener(this.modifyListener);
 		}

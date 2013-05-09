@@ -1293,6 +1293,14 @@ public class SpiraImportExport
 	return this.incidentRetrieveWorkflowFields(projectId, currentIncidentTypeId, currentIncidentStatusId);
 }
 
+/**
+ * Gets the list of incident workflow fields and custom properties for the current incident
+ * @param projectId
+ * @param currentIncidentTypeId
+ * @param currentIncidentStatusId
+ * @return
+ * @throws SpiraException
+ */
 public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId, int currentIncidentTypeId, int currentIncidentStatusId)
 	throws SpiraException
 {
@@ -1315,7 +1323,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
 		}
 			
-		//Get the list of workflow fields (active/required)
+		//Get the list of workflow fields (inactive/required/hidden)
 		List<RemoteWorkflowIncidentFields> remoteFields = soap.incidentRetrieveWorkflowFields(currentIncidentTypeId, currentIncidentStatusId).getRemoteWorkflowIncidentFields();
 		
 		//Convert the SOAP workflow fields into local versions
@@ -1325,7 +1333,7 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 			fields.add(new IncidentWorkflowField(remoteField));
 		}	
 		
-		//Get the list of workflow-controlled custom-properties (active/required)
+		//Get the list of workflow-controlled custom-properties (inactive/required/hidden)
 		List<RemoteWorkflowIncidentCustomProperties> remoteWorkflowCustomProperties = soap.incidentRetrieveWorkflowCustomProperties(currentIncidentTypeId, currentIncidentStatusId).getRemoteWorkflowIncidentCustomProperties();
 		for (RemoteWorkflowIncidentCustomProperties remoteWorkflowCustomProperty : remoteWorkflowCustomProperties)
 		{
@@ -1655,6 +1663,30 @@ public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId,
 				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Decimal)
 				{
 					artifactField.setType(Type.DOUBLE);
+					
+					//Determine what precision is set (if any)
+					Integer precision = null;
+					if (remoteCustomPropertyOptions != null)
+					{
+						for (RemoteCustomPropertyOption remoteCustomPropertyOption : remoteCustomPropertyOptions)
+						{
+							if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_Precision && remoteCustomPropertyOption.getValue() != null)
+							{
+								String rawValue = remoteCustomPropertyOption.getValue().getValue();
+								try
+								{
+									int intValue = Integer.parseInt(rawValue);
+									precision = new Integer(intValue);
+								}
+								catch (NumberFormatException ex)
+								{
+									//Do nothing as it will leave the precision null
+								}
+							}
+						}
+					}
+
+					artifactField.setPrecision(precision);
 				}
 				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Date)
 				{

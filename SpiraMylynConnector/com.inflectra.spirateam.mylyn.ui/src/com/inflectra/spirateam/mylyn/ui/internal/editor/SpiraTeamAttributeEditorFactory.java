@@ -41,6 +41,7 @@ public class SpiraTeamAttributeEditorFactory extends AttributeEditorFactory
 		}
 		else
 		{
+			//Just create the standard Spira attribute editor
 			return super.createEditor(type, taskAttribute);
 		}
 	}

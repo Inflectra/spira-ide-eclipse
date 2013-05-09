@@ -68,6 +68,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	public static final String ATTRIBUTE_PRECISION = "spira.precision"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_REQUIRED = "spira.required"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_HIDDEN = "spira.hidden"; //$NON-NLS-1$
+	public static final String ATTRIBUTE_ALLOW_EMPTY = "spira.allowEmpty"; //$NON-NLS-1$
 	
 	private final SpiraTeamRepositoryConnector connector;
 	
@@ -196,6 +197,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		metaData.setReadOnly(false);
 		metaData.setKind(TaskAttribute.KIND_DEFAULT);
 		metaData.putValue(ATTRIBUTE_ARTIFACT_KEY, field.getName());
+		metaData.putValue(ATTRIBUTE_ALLOW_EMPTY, (field.isOptional()) ? "true" : "false");
 		if (field.getType() == ArtifactField.Type.CHECKBOX)
 		{
 			metaData.setType(TaskAttribute.TYPE_BOOLEAN);

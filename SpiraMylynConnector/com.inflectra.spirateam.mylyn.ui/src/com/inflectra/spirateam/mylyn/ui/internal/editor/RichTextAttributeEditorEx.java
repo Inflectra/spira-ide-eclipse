@@ -67,6 +67,8 @@ public class RichTextAttributeEditorEx extends RichTextAttributeEditor
 		catch (SAXException e)
 		{
 			//Fail quietly
+			@SuppressWarnings("unused")
+			String error = e.getMessage();
 		}
 		catch (IOException e)
 		{

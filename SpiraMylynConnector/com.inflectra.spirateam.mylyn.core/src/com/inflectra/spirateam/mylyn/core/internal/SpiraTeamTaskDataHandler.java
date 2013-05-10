@@ -3,11 +3,14 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal;
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -699,9 +702,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 						if (data.taskToProjectMapping.containsKey(taskKey))
 						{
 							int projectId = data.taskToProjectMapping.get(taskKey);
-
+							
 							//See what kind of artifact we have
-
 							ArtifactType artifactType = ArtifactType.byTaskKey(taskKey);
 							if (artifactType.equals(ArtifactType.REQUIREMENT))
 							{
@@ -866,17 +868,23 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 		
 		//Next we need to validate that required text fields are populated
-		//[None for requirements]
+		String valueToTest = getTaskAttributeStringValue(taskData, ArtifactAttribute.NAME);
+		if (valueToTest == null || valueToTest.equals(""))
+		{
+			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, ArtifactAttribute.NAME.toString()));
+		}
 			
 		//Next we need to update the requirement with the values from IDE
 		
 		//First we set the cross-attribute properties
+		Date lastUpdateDate = new Date();	//UTC Now
 		requirement.setName(getTaskAttributeStringValue(taskData, ArtifactAttribute.NAME));
 		requirement.setDescription(getTaskAttributeStringValue(taskData, ArtifactAttribute.DESCRIPTION));
 		requirement.setOwnerId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.OWNER_ID));
+		requirement.setLastUpdateDate(lastUpdateDate);
 		//This will be checked by the server to see if it matches the current record
 		//since the server uses optimistic concurrency
-		requirement.setLastUpdateDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.LAST_UPDATE_DATE));
+		requirement.setConcurrencyDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.CONCURRENCY_DATE));
 
 		//Now we need to set the requirement-specific attributes
 		//requirement.setAuthorId(getTaskAttributeIntValue(taskData, ArtifactAttribute.REQUIREMENT_AUTHOR_ID));
@@ -922,21 +930,23 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 		
 		//Next we need to validate that required fields are populated
-		String valueToTest = getTaskAttributeStringValue(taskData, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE);
+		String valueToTest = getTaskAttributeStringValue(taskData, ArtifactAttribute.NAME);
 		if (valueToTest == null || valueToTest.equals(""))
 		{
-			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, ArtifactAttribute.TASK_COMPLETION_PERCENTAGE.toString()));
+			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, ArtifactAttribute.NAME.toString()));
 		}
 				
 		//Next we need to update the task with the values from IDE
 		
 		//First we set the cross-attribute properties
+		Date lastUpdateDate = new Date();	//UTC Now
 		task.setName(getTaskAttributeStringValue(taskData, ArtifactAttribute.NAME));
 		task.setDescription(getTaskAttributeStringValue(taskData, ArtifactAttribute.DESCRIPTION));
 		task.setOwnerId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.OWNER_ID));
+		task.setLastUpdateDate(lastUpdateDate);
 		//This will be checked by the server to see if it matches the current record
 		//since the server uses optimistic concurrency
-		task.setLastUpdateDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.LAST_UPDATE_DATE));
+		task.setConcurrencyDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.CONCURRENCY_DATE));
 
 		//Now we need to set the task-specific attributes
 		task.setTaskStatusId(getTaskAttributeIntValue(taskData, ArtifactAttribute.TASK_STATUS_ID));
@@ -972,29 +982,143 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	 * @param taskData The Mylyn task
 	 */
 	private void updateCustomPropertiesFromTaskData(Artifact artifact, TaskData taskData)
+			throws SpiraDataValidationException
 	{
-		/*
-		artifact.setText01(getCustomPropertyStringValue(taskData, "TEXT_01"));
-		artifact.setText02(getCustomPropertyStringValue(taskData, "TEXT_02"));
-		artifact.setText03(getCustomPropertyStringValue(taskData, "TEXT_03"));
-		artifact.setText04(getCustomPropertyStringValue(taskData, "TEXT_04"));
-		artifact.setText05(getCustomPropertyStringValue(taskData, "TEXT_05"));
-		artifact.setText06(getCustomPropertyStringValue(taskData, "TEXT_06"));
-		artifact.setText07(getCustomPropertyStringValue(taskData, "TEXT_07"));
-		artifact.setText08(getCustomPropertyStringValue(taskData, "TEXT_08"));
-		artifact.setText09(getCustomPropertyStringValue(taskData, "TEXT_09"));
-		artifact.setText10(getCustomPropertyStringValue(taskData, "TEXT_10"));
-		artifact.setList01(getCustomPropertyIntegerValue(taskData, "LIST_01"));
-		artifact.setList02(getCustomPropertyIntegerValue(taskData, "LIST_02"));
-		artifact.setList03(getCustomPropertyIntegerValue(taskData, "LIST_03"));
-		artifact.setList04(getCustomPropertyIntegerValue(taskData, "LIST_04"));
-		artifact.setList05(getCustomPropertyIntegerValue(taskData, "LIST_05"));
-		artifact.setList06(getCustomPropertyIntegerValue(taskData, "LIST_06"));
-		artifact.setList07(getCustomPropertyIntegerValue(taskData, "LIST_07"));
-		artifact.setList08(getCustomPropertyIntegerValue(taskData, "LIST_08"));
-		artifact.setList09(getCustomPropertyIntegerValue(taskData, "LIST_09"));
-		artifact.setList10(getCustomPropertyIntegerValue(taskData, "LIST_10"));
-		*/
+		//We need to clear out the custom property values
+		List<ArtifactCustomProperty> artifactCustomProperties = artifact.getCustomProperties();
+		artifactCustomProperties.clear();
+		
+		//Now loop through the task attributes and add the appropriate custom properties
+		List<TaskAttribute> attributes = new ArrayList<TaskAttribute>(taskData.getRoot()
+				.getAttributes()
+				.values());
+		for (TaskAttribute attribute : attributes)
+		{
+			String fieldName = attribute.getId();
+			String attributeValue = attribute.getValue();
+			TaskAttributeMetaData metaData = attribute.getMetaData();
+			if (metaData != null && attributeValue != null)
+			{
+				boolean isRequired = (metaData.getValue(ATTRIBUTE_ALLOW_EMPTY) != null && metaData.getValue(ATTRIBUTE_ALLOW_EMPTY) == "false");
+				String attributeType = metaData.getType();
+				
+				//Make sure that this is a custom property
+				Integer customPropertyNumber = ArtifactCustomProperty.GetPropertyNumber(fieldName);
+				if (customPropertyNumber != null && attributeType != null)
+				{
+					//Create the new entry
+					ArtifactCustomProperty acp = new ArtifactCustomProperty(customPropertyNumber.intValue());
+				
+					//Set the appropriate custom property value based on the type
+					boolean valueSet = false;
+					if (attributeType.equals(TaskAttribute.TYPE_BOOLEAN))
+					{
+						if (attributeValue.equals("true"))
+						{
+							acp.setBooleanValue(true);
+							valueSet = true;
+						}
+						if (attributeValue.equals("false"))
+						{
+							acp.setBooleanValue(false);
+							valueSet = true;
+						}
+					}
+					if (attributeType.equals(TaskAttribute.TYPE_DATE))
+					{
+						try
+						{
+							long milliseconds = Long.parseLong(attributeValue);
+							Date dateTimeValue = new Date(milliseconds);
+							acp.setDateTimeValue(dateTimeValue);
+							valueSet = true;
+						}
+						catch (NumberFormatException ex)
+						{
+							//Do Nothing
+						}
+					}
+					if (attributeType.equals(TaskAttribute.TYPE_DOUBLE))
+					{
+						try
+						{
+							BigDecimal decValue = new BigDecimal (attributeValue);
+							acp.setDecimalValue(decValue);
+							valueSet = true;
+						}
+						catch (NumberFormatException ex)
+						{
+							//Do Nothing
+						}												
+					}
+					if (attributeType.equals(TaskAttribute.TYPE_INTEGER))
+					{
+						try
+						{
+							int intValue = Integer.parseInt(attributeValue);
+							acp.setIntegerValue(intValue);
+							valueSet = true;
+						}
+						catch (NumberFormatException ex)
+						{
+							//Do Nothing
+						}
+					}
+					if (attributeType.equals(TaskAttribute.TYPE_LONG_RICH_TEXT) || attributeType.equals(TaskAttribute.TYPE_SHORT_TEXT)
+							|| attributeType.equals(TaskAttribute.TYPE_SHORT_RICH_TEXT) || attributeType.equals(TaskAttribute.TYPE_LONG_TEXT))
+					{
+						acp.setStringValue(attributeValue);
+						valueSet = true;
+					}
+					if (attributeType.equals(TaskAttribute.TYPE_SINGLE_SELECT))
+					{
+						try
+						{
+							int intValue = Integer.parseInt(attributeValue);
+							acp.setIntegerValue(intValue);
+							valueSet = true;
+						}
+						catch (NumberFormatException ex)
+						{
+							//Do Nothing
+						}						
+					}
+					if (attributeType.equals(TaskAttribute.TYPE_MULTI_SELECT))
+					{
+						if (attribute.getValues() != null && attribute.getValues().size() > 0)
+						{
+							List<Integer> values = new ArrayList<Integer>();
+							for (String value : attribute.getValues())
+							{
+								try
+								{
+									int intValue = Integer.parseInt(value);
+									values.add(intValue);
+									valueSet = true;
+								}
+								catch (NumberFormatException ex)
+								{
+									//Do nothing
+								}
+							}
+							acp.setIntegerListValue(values);
+						}
+					}
+					
+					//Add the property if we have a value
+					//Check to see if we have a required field that has no value
+					if (valueSet)
+					{
+						artifactCustomProperties.add(acp);
+					}
+					else if (isRequired)
+					{
+						//Convert into data validation exception
+						throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, attribute.toString()));						
+					}
+				}
+			}
+		}		
 	}
 	
 	/**
@@ -1035,12 +1159,14 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		//Next we need to update the incident with the values from IDE
 		
 		//First we set the cross-attribute properties
+		Date lastUpdateDate = new Date();	//UTC Now
 		incident.setName(getTaskAttributeStringValue(taskData, ArtifactAttribute.NAME));
 		incident.setDescription(getTaskAttributeStringValue(taskData, ArtifactAttribute.DESCRIPTION));
 		incident.setOwnerId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.OWNER_ID));
+		incident.setLastUpdateDate(lastUpdateDate);
 		//This will be checked by the server to see if it matches the current record
 		//since the server uses optimistic concurrency
-		incident.setLastUpdateDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.LAST_UPDATE_DATE));
+		incident.setConcurrencyDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.CONCURRENCY_DATE));
 
 		//Now we need to set the incident-specific attributes
 		incident.setPriorityId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.INCIDENT_PRIORITY_ID));

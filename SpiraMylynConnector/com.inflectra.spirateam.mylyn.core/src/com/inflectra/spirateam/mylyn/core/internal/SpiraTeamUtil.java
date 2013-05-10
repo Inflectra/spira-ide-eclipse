@@ -3,6 +3,7 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal;
 
+import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -28,6 +29,7 @@ import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataConcurrency
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataValidationException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
+import com.inflectra.spirateam.mylyn.core.internal.services.soap.ServiceFaultMessage;
 
 /**
  * @author Inflectra Corporation
@@ -153,9 +155,12 @@ public class SpiraTeamUtil
 		{
 			GregorianCalendar calendar = new GregorianCalendar();
 			calendar.setTime(date);
+			//We need to specify that these dates are really in UTC - Spira 4.0 and later APIs
+			TimeZone utc = TimeZone.getTimeZone("UTC");
+			calendar.setTimeZone(utc);
 			DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
 			XMLGregorianCalendar xmlCal = datatypeFactory.newXMLGregorianCalendar(calendar);
-			//We need to unset the timezone because SpiraTeam is not expected it
+			//We need to unset the timezone from the XML because SpiraTeam is not expecting it
 			//and it will break concurrency
 			xmlCal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
 			return xmlCal;
@@ -206,9 +211,13 @@ public class SpiraTeamUtil
 		String exceptionMessage = exceptionMessageNode.getTextContent();
 		
 		//See if we have a known exception type
+		if (exceptionMessage == null || exceptionMessage.equals(""))
+		{
+			return new SpiraException(ex.getMessage());		
+		}
 		if (exceptionType.equals("DataAccessConcurrencyException"))	//$NON-NLS-1$
 		{
-			return new SpiraDataConcurrencyException(exceptionMessage);
+			return new SpiraDataConcurrencyException(Messages.SpiraTeamCorePlugin_DataConcurrencyError);
 		}
 		if (exceptionType.equals("DataValidationException"))	//$NON-NLS-1$
 		{
@@ -216,6 +225,61 @@ public class SpiraTeamUtil
 		}
 		return new SpiraException(exceptionMessage);
 	}
+
+	public static SpiraException convertFaultException(Exception ex)
+	{
+		//See if we have the authentication or authorization exceptions
+		//unfortunately SpiraTeam doesn't use special exception types for them
+		//so we have to look for the exception message name
+		if (ex.getMessage().contains("Session Not Authenticated"))	//$NON-NLS-1$
+		{
+			return new SpiraAuthenticationException(ex.getMessage());
+		}
+		if (ex.getMessage().contains("Not Connected to a Project"))	//$NON-NLS-1$
+		{
+			return new SpiraAuthorizationException(ex.getMessage());
+		}
+		
+		//See if we have data validation exceptions or data concurrency exceptions
+		//as those need to be handled separately
+		//Need to use reflection because the various fault messages don't have a shared super class
+		ServiceFaultMessage faultInfo = null;
+		try
+		{
+			Class noparams[] = {};
+			Class cls = ex.getClass();
+			Method getFaultInfo = cls.getDeclaredMethod("getFaultInfo", noparams);
+			faultInfo = (ServiceFaultMessage)getFaultInfo.invoke(ex, null);
+		}
+		catch (Exception ex2)
+		{
+			//Not able to access by reflection so just return the message
+			return new SpiraException(ex.getMessage());
+		}
+		if (faultInfo == null)
+		{
+			return new SpiraException(ex.getMessage());				
+		}
+		
+		String exceptionType = faultInfo.getType().getValue();
+		String exceptionMessage = faultInfo.getMessage().getValue();
+		
+		//See if we have a known exception type
+		if (exceptionMessage == null || exceptionMessage.equals(""))
+		{
+			return new SpiraException(ex.getMessage());		
+		}
+		if (exceptionType.equals("DataAccessConcurrencyException"))	//$NON-NLS-1$
+		{
+			return new SpiraDataConcurrencyException(Messages.SpiraTeamCorePlugin_DataConcurrencyError);
+		}
+		if (exceptionType.equals("DataValidationException"))	//$NON-NLS-1$
+		{
+			return new SpiraDataValidationException(exceptionMessage);
+		}
+		return new SpiraException(exceptionMessage);
+	}
+
 	
 	public static Date parseDate(String time)
 		throws NumberFormatException

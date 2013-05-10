@@ -21,6 +21,15 @@ public class ArtifactCustomProperty
     protected BigDecimal DecimalValue;
     protected List<Integer> IntegerListValue;
     
+    public ArtifactCustomProperty()
+    {    	
+    }
+    
+    public ArtifactCustomProperty(int propertyNumber)
+    {
+    	this.PropertyNumber = propertyNumber;
+    }
+    
 	public int getPropertyNumber()
 	{
 		return PropertyNumber;
@@ -91,5 +100,36 @@ public class ArtifactCustomProperty
 	public void setIntegerListValue(List<Integer> integerListValue)
 	{
 		IntegerListValue = integerListValue;
+	}
+	
+	/* Static methods */
+	
+	/**
+	 * Gets the custom property number for a specific field name (or null if not a custom field)
+	 * @param fieldName
+	 * @return
+	 */
+	public static Integer GetPropertyNumber(String fieldName)
+	{
+		if (fieldName == null)
+		{
+			return null;
+		}
+		
+		if (!fieldName.startsWith(FIELD_PREPEND))
+		{
+			return null;			
+		}
+		
+		String propNumber = fieldName.substring(FIELD_PREPEND.length());
+		try
+		{
+			int propNumberInt = Integer.parseInt(propNumber);
+			return propNumberInt;
+		}
+		catch (NumberFormatException ex)
+		{
+			return null;
+		}
 	}
 }

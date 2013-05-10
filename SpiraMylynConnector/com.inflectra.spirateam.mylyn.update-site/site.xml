@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/com.inflectra.spirateam.mylyn.feature_2.3.1.201005031237.jar" id="com.inflectra.spirateam.mylyn.feature" version="2.3.1.201005031237"/>
-   <feature url="features/com.inflectra.spirateam.mylyn.feature_3.0.0.201012151032.jar" id="com.inflectra.spirateam.mylyn.feature" version="3.0.0.201012151032"/>
-   <feature url="features/com.inflectra.spirateam.mylyn.feature_3.0.0.201101061548.jar" id="com.inflectra.spirateam.mylyn.feature" version="3.0.0.201101061548"/>
-   <feature url="features/com.inflectra.spirateam.mylyn.feature_3.0.0.201205071237.jar" id="com.inflectra.spirateam.mylyn.feature" version="3.0.0.201205071237"/>
-   <feature url="features/com.inflectra.spirateam.mylyn.feature_4.0.0.201305101649.jar" id="com.inflectra.spirateam.mylyn.feature" version="4.0.0.201305101649"/>
+   <feature url="features/com.inflectra.spirateam.mylyn.feature_4.0.0.201305101649.jar" id="com.inflectra.spirateam.mylyn.feature" version="4.0.0.201305101649">
+      <category name="spirateam"/>
+   </feature>
+   <feature url="features/com.inflectra.spirateam.mylyn.feature_4.0.0.201305101751.jar" id="com.inflectra.spirateam.mylyn.feature" version="4.0.0.201305101751">
+      <category name="spirateam"/>
+   </feature>
+   <category-def name="spirateam" label="SpiraTeam">
+      <description>
+         Features related to SpiraTest, SpiraPlan and SpiraTeam from Inflectra Corporation.
+      </description>
+   </category-def>
 </site>

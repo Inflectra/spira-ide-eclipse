@@ -2,7 +2,7 @@
 <feature
       id="com.inflectra.spirateam.mylyn.feature"
       label="SpiraTeam Feature"
-      version="3.0.0.qualifier"
+      version="4.0.0.qualifier"
       provider-name="Inflectra Corporation"
       plugin="com.inflectra.spirateam.mylyn.ui">
 

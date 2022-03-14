@@ -6,8 +6,12 @@ package com.inflectra.spirateam.mylyn.core.internal.services;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -195,8 +199,7 @@ public class SpiraImportExport
 	}
 
 	/**
-	 * Authenticates the user/password and stores the cookie for accessing
-	 * future methods of the API
+	 * Authenticates the user/password and stores the Spira version information
 	 * 
 	 * @return true if the username/password authenticates successfully
 	 */
@@ -206,8 +209,19 @@ public class SpiraImportExport
 		{
 			boolean success = false;
 
-			// Call the appropriate method
-			success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			
+			//Trust all SSL certificates
+			SSLUtilities.trustAllHttpsCertificates();
+			
+			// Call the /users method
+			String url = this.fullUrl + "/users";
+			String json = httpGet(url, this.userName, this.apiKey);
+
+			//Parse the returned data to make sure it is a valid list of projects
+			Gson gson = new Gson();
+			ArrayList<Project> projects;
+			Type listOfProjects = new TypeToken<ArrayList<Project>>(){}.getType();
+			projects = gson.fromJson(json, listOfProjects);
 
 			// Now get the version and product information
 			this.productName = soap.systemGetProductName();
@@ -263,6 +277,57 @@ public class SpiraImportExport
 		catch (IImportExportSystemGetProductVersionServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+		}
+	}
+	
+	/**
+	 * Performs an HTTP GET request ot the specified URL
+	 *
+	 * @param input The URL to perform the query on
+	 * @param apiKey The Spira API Key to use
+	 * @param login The Spira login to use
+	 * @return An InputStream containing the JSON returned from the POST request
+	 * @throws IOException
+	 * @throws InvalidCredentialsException
+	 */
+	public static String httpGet(String input, String login, String apiKey) throws IOException, InvalidCredentialsException {
+		URL url = new URL(input);
+
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		//allow sending a request body
+		connection.setDoOutput(true);
+		connection.setRequestMethod("GET");
+		//have the connection send and retrieve JSON
+		connection.setRequestProperty("accept", "application/json; charset=utf-8");
+		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+		//Set the authentication headers
+		connection.setRequestProperty("username", login);
+		connection.setRequestProperty("api-key", apiKey);
+		connection.connect();
+		int responseCode = connection.getResponseCode();
+		if (responseCode == HttpURLConnection.HTTP_OK) { // success
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			// return result
+			return response.toString();
+		} else {
+			if (responseCode == 403)
+			{
+				throw new InvalidCredentialsException("Invalid Spira login and API Key were provided!");
+			}
+			if (responseCode == 400)
+			{
+				throw new InvalidCredentialsException("Invalid Spira login and API Key were provided!");
+			}
+			throw new IOException("GET request not worked: " + responseCode);
 		}
 	}
 

@@ -15,7 +15,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.mylyn.commons.core;bundle-version="3.8.0",
  org.eclipse.mylyn.commons.net;bundle-version="3.8.0",
  org.eclipse.mylyn.commons.ui;bundle-version="3.8.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Eclipse-AutoStart: true
 Export-Package: com.inflectra.spirateam.mylyn.ui.internal;x-internal:=true,
  com.inflectra.spirateam.mylyn.ui.internal.editor;x-internal:=true,

@@ -48,7 +48,7 @@ public class SpiraTeamUtil
 	public static final String WORKFLOW_TRANSITION_STATUS_EXECUTED = "executed";
 	
 	/***
-	 * Make sure that the server is running v3.0 patch 009 or higher
+	 * Make sure that the server is running v6.0 or higher
 	 * @param spiraImportExport
 	 * @return
 	 */

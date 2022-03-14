@@ -3,12 +3,6 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal.services;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
-import javax.xml.ws.*;
-import javax.xml.ws.soap.SOAPFaultException;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 
@@ -21,6 +15,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
@@ -38,27 +36,28 @@ import com.inflectra.spirateam.mylyn.core.internal.model.RequirementComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.model.TaskComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField.Type;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.*;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
 
 /**
- * This is a facade over the auto-generated proxy class that simplifies the
- * inner-workings of the SOAP/WSDL classes
+ * This defines the 'SpiraImportExport' class that provides the Java facade
+ * for calling the REST web service exposed by SpiraTest
  * 
- * @author Inflectra Corporation
+ * @author		Inflectra Corporation
+ * @version		6.0.0
+ *
  */
 public class SpiraImportExport
 {
-	private static final String WEB_SERVICE_SUFFIX = "/Services/v4_0/ImportExport.svc"; //$NON-NLS-1$
-	private static final String WEB_SERVICE_NAMESPACE = "{http://www.inflectra.com/SpiraTest/Services/v4.0/}ImportExport"; //$NON-NLS-1$
-	public static final String WEB_SERVICE_NAMESPACE_DATA_OBJECTS = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects"; //$NON-NLS-1$
+	private static final String WEB_SERVICE_SUFFIX = "/Services/v6_0/RestService.svc"; //$NON-NLS-1$
 	private static final String SPIRA_PLUG_IN_NAME = "Eclipse-IDE"; //$NON-NLS-1$
 
-	private URL serviceUrl = null;
-	private String userName = "";
-	private String password = "";
-	private ImportExport service = null;
-	private IImportExport soap = null;
+	//The JSON date format used by the Spira 6.0 API
+	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	
+	private String url;
+	private URL fullUrl;
+	private String userName;
+	private String apiKey;
 	private Integer storedProjectId = null;
 	private String productName = "";
 	private Integer authenticatedUserId = null;
@@ -77,130 +76,6 @@ public class SpiraImportExport
 
 	protected SpiraTeamClientData data;
 
-	/***
-	 * Creates a JAXB web service string element from a Java string
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<String> CreateJAXBString(String fieldName, String value)
-	{
-		JAXBElement<String> jaxString = new JAXBElement<String>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), String.class, value);
-		if (value == null)
-		{
-			jaxString.setNil(true);
-		}
-		return jaxString;
-	}
-
-	/***
-	 * Creates a JAXB web service integer element from a Java integer
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<Integer> CreateJAXBInteger(String fieldName, Integer value)
-	{
-		JAXBElement<Integer> jaxInteger = new JAXBElement<Integer>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), Integer.class, value);
-		if (value == null)
-		{
-			jaxInteger.setNil(true);
-		}
-		return jaxInteger;
-	}
-
-	/***
-	 * Creates a JAXB web service Boolean element from a Java Boolean
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<Boolean> CreateJAXBBoolean(String fieldName, Boolean value)
-	{
-		JAXBElement<Boolean> jaxBoolean = new JAXBElement<Boolean>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), Boolean.class, value);
-		if (value == null)
-		{
-			jaxBoolean.setNil(true);
-		}
-		return jaxBoolean;
-	}
-
-	/***
-	 * Creates a JAXB web service IntegerList element from a Java IntegerList
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<ArrayOfint> CreateJAXBArrayOfInt(String fieldName, ArrayOfint value)
-	{
-		JAXBElement<ArrayOfint> jaxIntegerList = new JAXBElement<ArrayOfint>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), ArrayOfint.class, value);
-		if (value == null)
-		{
-			jaxIntegerList.setNil(true);
-		}
-		return jaxIntegerList;
-	}
-
-	/***
-	 * Creates a JAXB web service IntegerList element from a Java IntegerList
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<ArrayOfint> CreateJAXBArrayOfInt(String fieldName, List<Integer> value)
-	{
-		// Convert List<Integer> to ArrayOfint
-		ArrayOfint arrayOfint = new ArrayOfint();
-		if (value != null)
-		{
-			for (Integer integer : value)
-			{
-				arrayOfint.getInt().add(integer);
-			}
-		}
-		JAXBElement<ArrayOfint> jaxIntegerList = new JAXBElement<ArrayOfint>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), ArrayOfint.class,
-				arrayOfint);
-		if (value == null)
-		{
-			jaxIntegerList.setNil(true);
-		}
-		return jaxIntegerList;
-	}
-
-	/***
-	 * Creates a JAXB web service BigDecimal element from a Java BigDecimal
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<BigDecimal> CreateJAXBBigDecimal(String fieldName, BigDecimal value)
-	{
-		JAXBElement<BigDecimal> jaxBigDecimal = new JAXBElement<BigDecimal>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), BigDecimal.class, value);
-		if (value == null)
-		{
-			jaxBigDecimal.setNil(true);
-		}
-		return jaxBigDecimal;
-	}
-
-	/***
-	 * Creates a JAXB web service XMLGregorianCalendar element from a Java
-	 * XMLGregorianCalendar object
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<XMLGregorianCalendar> CreateJAXBXMLGregorianCalendar(String fieldName, XMLGregorianCalendar value)
-	{
-		JAXBElement<XMLGregorianCalendar> jaxXMLGregorianCalendar = new JAXBElement<XMLGregorianCalendar>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS,
-				fieldName), XMLGregorianCalendar.class, value);
-		if (value == null)
-		{
-			jaxXMLGregorianCalendar.setNil(true);
-		}
-		return jaxXMLGregorianCalendar;
-	}
-
 	public boolean hasAttributes()
 	{
 		return (data.lastUpdate != 0);
@@ -214,146 +89,26 @@ public class SpiraImportExport
 		}
 	}
 
-	/**
-	 * The constructor
-	 */
-	public SpiraImportExport(String baseUrl) throws MalformedURLException, SpiraConnectionException
+	public SpiraImportExport(String url) throws MalformedURLException
 	{
-		// Trust all SSL certificates
-		SSLUtilities.trustAllHttpsCertificates();
-
-		// Set the web service URL
-		this.serviceUrl = new URL(baseUrl + WEB_SERVICE_SUFFIX);
-
-		// Instantiate the SOAP proxy
-		try
-		{
-			this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
-
-			// Try both the HTTP and HTTPS ports
-			IImportExport soap1 = null;
-			IImportExport soap2 = null;
-			String message = "";
-			try
-			{
-				soap1 = service.getBasicHttpBindingIImportExport();
-			}
-			catch (WebServiceException ex)
-			{
-				message = message.concat("HTTP: ");
-				message = message.concat(ex.getMessage());
-				message = message.concat("\n");
-			}
-			try
-			{
-				soap2 = service.getBasicHttpBindingIImportExport1();
-			}
-			catch (WebServiceException ex)
-			{
-				message = message.concat("HTTPS: ");
-				message = message.concat(ex.getMessage());
-				message = message.concat("\n");
-			}
-
-			// If both are NULL, throw exception
-			if (soap1 == null && soap2 == null)
-			{
-				// Return the error
-				throw new SpiraConnectionException("Unable to connect with either the SpiraTest HTTP or HTTPS APIs. Please check the URL and try again ("
-						+ message + ")\n");
-			}
-
-			// Set the SOAP handle to the non-null binding
-			if (soap1 != null)
-			{
-				this.soap = soap1;
-			}
-			else
-			{
-				this.soap = soap2;
-			}
-
-			// Make sure that session is maintained
-			Map<String, Object> requestContext = ((BindingProvider) this.soap).getRequestContext();
-			requestContext.put(BindingProvider.SESSION_MAINTAIN_PROPERTY, true);
-		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
-		}
+		// Trust all SSL certificates 
+		SSLUtilities.trustAllHttpsCertificates(); 
+ 
+		// Verify the url is OK
+		this.fullUrl = new URL(url + WEB_SERVICE_SUFFIX); 
+		this.url = url;
 	}
 
-	/**
-	 * The constructor
-	 */
-	public SpiraImportExport(String baseUrl, String userName, String password) throws MalformedURLException, SpiraConnectionException
+	public SpiraImportExport(String url, String userName, String apiKey) throws MalformedURLException
 	{
-		// Trust all SSL certificates
-		SSLUtilities.trustAllHttpsCertificates();
-
-		// Set the URL, username and password
-		this.serviceUrl = new URL(baseUrl + WEB_SERVICE_SUFFIX);
+		// Trust all SSL certificates 
+		SSLUtilities.trustAllHttpsCertificates(); 
+ 
+		// Verify the url is OK
+		this.fullUrl = new URL(url + WEB_SERVICE_SUFFIX); 
+		this.url = url;
 		this.userName = userName;
-		this.password = password;
-
-		// Instantiate the SOAP proxy
-		try
-		{
-			this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
-
-			// Try both the HTTP and HTTPS ports
-			IImportExport soap1 = null;
-			IImportExport soap2 = null;
-			String message = "";
-			try
-			{
-				soap1 = service.getBasicHttpBindingIImportExport();
-			}
-			catch (WebServiceException ex)
-			{
-				message = message.concat("HTTP: ");
-				message = message.concat(ex.getMessage());
-				message = message.concat("\n");
-			}
-			try
-			{
-
-				soap2 = service.getBasicHttpBindingIImportExport1();
-			}
-			catch (WebServiceException ex)
-			{
-				message = message.concat("HTTPS: ");
-				message = message.concat(ex.getMessage());
-				message = message.concat("\n");
-			}
-
-			// If both are NULL, throw exception
-			if (soap1 == null && soap2 == null)
-			{
-				// Return the error
-				throw new SpiraConnectionException("Unable to connect with either the SpiraTest HTTP or HTTPS APIs. Please check the URL and try again ("
-						+ message + ")\n");
-			}
-
-			// Set the SOAP handle to the non-null binding
-			if (soap1 != null)
-			{
-				this.soap = soap1;
-			}
-			else
-			{
-				this.soap = soap2;
-			}
-
-			// Make sure that session is maintained
-			Map<String, Object> requestContext = ((BindingProvider) this.soap).getRequestContext();
-			requestContext.put(BindingProvider.SESSION_MAINTAIN_PROPERTY, true);
-
-		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message + " (" + ex.getMessage() + ")");
-		}
+		this.apiKey = apiKey;
 	}
 
 	public Integer getStoredProjectId()
@@ -413,40 +168,21 @@ public class SpiraImportExport
 	}
 
 	/**
-	 * The password
+	 * The API key
 	 */
-	public String getPassword()
+	public String getApiKey()
 	{
-		return this.password;
+		return this.apiKey;
 	}
 
 	/**
-	 * The password
+	 * The API key
 	 */
-	public void setPassword(String password)
+	public void setPassword(String apiKey)
 	{
-		this.password = password;
+		this.apiKey = apiKey;
 	}
 
-	/**
-	 * Returns the web service client handle
-	 * 
-	 * @return Handle to the web service client
-	 */
-	public ImportExport getService()
-	{
-		return this.service;
-	}
-
-	/**
-	 * Returns the soap proxy handle
-	 * 
-	 * @return Handle to the soap proxy
-	 */
-	public IImportExport getSoap()
-	{
-		return this.soap;
-	}
 
 	public void setData(SpiraTeamClientData data)
 	{

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.inflectra.spirateam.mylyn.core;singleton:=true
-Bundle-Version: 4.0.0.qualifier
+Bundle-Version: 6.0.0.qualifier
 Bundle-Activator: com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime,
@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
  javax.xml;bundle-version="1.3.4",
  javax.xml.bind;bundle-version="2.0.0",
  javax.xml.ws;bundle-version="2.0.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Eclipse-AutoStart: true
 Export-Package: com.inflectra.spirateam.mylyn.core.internal,
  com.inflectra.spirateam.mylyn.core.internal.model,

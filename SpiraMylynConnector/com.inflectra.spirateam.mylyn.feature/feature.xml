@@ -2,7 +2,7 @@
 <feature
       id="com.inflectra.spirateam.mylyn.feature"
       label="SpiraTeam Feature"
-      version="4.0.0.qualifier"
+      version="6.0.0.qualifier"
       provider-name="Inflectra Corporation"
       plugin="com.inflectra.spirateam.mylyn.ui">
 
@@ -14,7 +14,7 @@ from within their existing Eclipse IDE user interface.
    </description>
 
    <copyright url="http://www.inflectra.com/SpiraTeam/Downloads">
-      Copyright (C) 2006-2010 Inflectra Corporation
+      Copyright (C) 2006-2022 Inflectra Corporation
    </copyright>
 
    <license url="http://www.inflectra.com/Company/Legal%20Notices.aspx">

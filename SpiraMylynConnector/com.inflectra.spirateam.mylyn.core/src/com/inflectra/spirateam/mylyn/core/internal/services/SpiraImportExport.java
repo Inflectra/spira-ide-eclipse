@@ -24,6 +24,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
+import org.apache.http.auth.InvalidCredentialsException;
+
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamCorePlugin;
@@ -41,7 +43,7 @@ import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.model.TaskComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField.Type;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
-
+import com.inflectra.spirateam.mylyn.core.internal.rest.*;
 /**
  * This defines the 'SpiraImportExport' class that provides the Java facade
  * for calling the REST web service exposed by SpiraTest
@@ -203,7 +205,7 @@ public class SpiraImportExport
 	 * 
 	 * @return true if the username/password authenticates successfully
 	 */
-	public boolean connectionAuthenticate2() throws SpiraConnectionException
+	public boolean connectionAuthenticate2() throws SpiraConnectionException, InvalidCredentialsException
 	{
 		try
 		{
@@ -217,18 +219,27 @@ public class SpiraImportExport
 			String url = this.fullUrl + "/users";
 			String json = httpGet(url, this.userName, this.apiKey);
 
-			//Parse the returned data to make sure it is a valid list of projects
+			//Parse the returned data to make sure it is a valid user
 			Gson gson = new Gson();
-			ArrayList<Project> projects;
-			Type listOfProjects = new TypeToken<ArrayList<Project>>(){}.getType();
-			projects = gson.fromJson(json, listOfProjects);
+			RemoteUser remoteUser = gson.fromJson(json, RemoteUser.class);
+
+			//Store the user id
+			if (remoteUser != null)
+			{
+				this.authenticatedUserId = remoteUser.UserId;
+			}
 
 			// Now get the version and product information
-			this.productName = soap.systemGetProductName();
+			url = this.fullUrl + "/system/settings/product-name";
+			json = httpGet(url, this.userName, this.apiKey);
+			this.productName = json;
 
 			// Version number
-			RemoteVersion productVersion = soap.systemGetProductVersion();
-			String versionString = productVersion.getVersion().getValue();
+			url = this.fullUrl + "/system/product-version";
+			json = httpGet(url, this.userName, this.apiKey);
+			RemoteVersion productVersion = gson.fromJson(json, RemoteVersion.class);
+			
+			String versionString = productVersion.Version;
 			String[] versionElements = versionString.split("\\.");
 			this.productVersionPrimary = 0;
 			this.productVersionSecondary = 0;
@@ -247,34 +258,11 @@ public class SpiraImportExport
 			}
 
 			// Patch Number
-			this.patchNumber = productVersion.getPatch().getValue();
-
-			// Get the ID of the currently authenticated user
-			RemoteUser remoteUser = soap.userRetrieveByUserName(userName);
-			if (remoteUser != null)
-			{
-				this.authenticatedUserId = remoteUser.getUserId().getValue();
-			}
+			this.patchNumber = productVersion.Patch;
 
 			return success;
 		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
-		}
-		catch (IImportExportUserRetrieveByUserNameServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
-		}
-		catch (IImportExportSystemGetProductNameServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
-		}
-		catch (IImportExportSystemGetProductVersionServiceFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
 		}

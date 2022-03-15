@@ -8,5 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Git/spira-ide-eclipse/SpiraMylynConnector/com.inflectra.spirateam.mylyn.core/lib/gson-2.8.6.jar"/>
+	<classpathentry kind="lib" path="C:/Git/spira-ide-eclipse/SpiraMylynConnector/com.inflectra.spirateam.mylyn.core/lib/httpclient-4.5.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -13,9 +13,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.soap.Detail;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
 
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
@@ -29,7 +26,6 @@ import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataConcurrency
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataValidationException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.ServiceFaultMessage;
 
 /**
  * @author Inflectra Corporation
@@ -170,117 +166,7 @@ public class SpiraTeamUtil
 			return null;
 		}
 	}
-	
-	public static SpiraException convertSoapFaults(SOAPFaultException ex)
-	{
-		//See if we have the authentication or authorization exceptions
-		//unfortunately SpiraTeam doesn't use special exception types for them
-		//so we have to look for the exception message name
-		if (ex.getMessage().contains("Session Not Authenticated"))	//$NON-NLS-1$
-		{
-			return new SpiraAuthenticationException(ex.getMessage());
-		}
-		if (ex.getMessage().contains("Not Connected to a Project"))	//$NON-NLS-1$
-		{
-			return new SpiraAuthorizationException(ex.getMessage());
-		}
 		
-		//See if we have data validation exceptions or data concurrency exceptions
-		//as those need to be handled separately
-		SOAPFault fault = ex.getFault();
-		if (fault == null)
-		{
-			return new SpiraException(ex.getMessage());				
-		}
-		Detail faultDetail = fault.getDetail();
-		if (faultDetail == null)
-		{
-			return new SpiraException(ex.getMessage());				
-		}
-		Node exceptionTypeNode = faultDetail.getFirstChild();
-		if (exceptionTypeNode == null)
-		{
-			return new SpiraException(ex.getMessage());				
-		}
-		Node exceptionMessageNode = exceptionTypeNode.getFirstChild();
-		if (exceptionTypeNode == null)
-		{
-			return new SpiraException(ex.getMessage());				
-		}
-		String exceptionType = exceptionTypeNode.getLocalName();
-		String exceptionMessage = exceptionMessageNode.getTextContent();
-		
-		//See if we have a known exception type
-		if (exceptionMessage == null || exceptionMessage.equals(""))
-		{
-			return new SpiraException(ex.getMessage());		
-		}
-		if (exceptionType.equals("DataAccessConcurrencyException"))	//$NON-NLS-1$
-		{
-			return new SpiraDataConcurrencyException(Messages.SpiraTeamCorePlugin_DataConcurrencyError);
-		}
-		if (exceptionType.equals("DataValidationException"))	//$NON-NLS-1$
-		{
-			return new SpiraDataValidationException(exceptionMessage);
-		}
-		return new SpiraException(exceptionMessage);
-	}
-
-	public static SpiraException convertFaultException(Exception ex)
-	{
-		//See if we have the authentication or authorization exceptions
-		//unfortunately SpiraTeam doesn't use special exception types for them
-		//so we have to look for the exception message name
-		if (ex.getMessage().contains("Session Not Authenticated"))	//$NON-NLS-1$
-		{
-			return new SpiraAuthenticationException(ex.getMessage());
-		}
-		if (ex.getMessage().contains("Not Connected to a Project"))	//$NON-NLS-1$
-		{
-			return new SpiraAuthorizationException(ex.getMessage());
-		}
-		
-		//See if we have data validation exceptions or data concurrency exceptions
-		//as those need to be handled separately
-		//Need to use reflection because the various fault messages don't have a shared super class
-		ServiceFaultMessage faultInfo = null;
-		try
-		{
-			Class noparams[] = {};
-			Class cls = ex.getClass();
-			Method getFaultInfo = cls.getDeclaredMethod("getFaultInfo", noparams);
-			faultInfo = (ServiceFaultMessage)getFaultInfo.invoke(ex, null);
-		}
-		catch (Exception ex2)
-		{
-			//Not able to access by reflection so just return the message
-			return new SpiraException(ex.getMessage());
-		}
-		if (faultInfo == null)
-		{
-			return new SpiraException(ex.getMessage());				
-		}
-		
-		String exceptionType = faultInfo.getType().getValue();
-		String exceptionMessage = faultInfo.getMessage().getValue();
-		
-		//See if we have a known exception type
-		if (exceptionMessage == null || exceptionMessage.equals(""))
-		{
-			return new SpiraException(ex.getMessage());		
-		}
-		if (exceptionType.equals("DataAccessConcurrencyException"))	//$NON-NLS-1$
-		{
-			return new SpiraDataConcurrencyException(Messages.SpiraTeamCorePlugin_DataConcurrencyError);
-		}
-		if (exceptionType.equals("DataValidationException"))	//$NON-NLS-1$
-		{
-			return new SpiraDataValidationException(exceptionMessage);
-		}
-		return new SpiraException(exceptionMessage);
-	}
-
-	
 	public static Date parseDate(String time)
 		throws NumberFormatException
 	{

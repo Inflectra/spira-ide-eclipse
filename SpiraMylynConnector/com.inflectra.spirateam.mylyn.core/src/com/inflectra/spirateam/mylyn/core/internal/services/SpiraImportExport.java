@@ -15,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -205,12 +206,11 @@ public class SpiraImportExport
 	 * 
 	 * @return true if the username/password authenticates successfully
 	 */
-	public boolean connectionAuthenticate2() throws SpiraConnectionException, InvalidCredentialsException
+	public boolean connectionAuthenticate2() throws SpiraConnectionException, SpiraAuthenticationException
 	{
 		try
 		{
 			boolean success = false;
-
 			
 			//Trust all SSL certificates
 			SSLUtilities.trustAllHttpsCertificates();
@@ -278,7 +278,7 @@ public class SpiraImportExport
 	 * @throws IOException
 	 * @throws InvalidCredentialsException
 	 */
-	public static String httpGet(String input, String login, String apiKey) throws IOException, InvalidCredentialsException {
+	public static String httpGet(String input, String login, String apiKey) throws IOException, SpiraAuthenticationException {
 		URL url = new URL(input);
 
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -309,11 +309,11 @@ public class SpiraImportExport
 		} else {
 			if (responseCode == 403)
 			{
-				throw new InvalidCredentialsException("Invalid Spira login and API Key were provided!");
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
 			}
 			if (responseCode == 400)
 			{
-				throw new InvalidCredentialsException("Invalid Spira login and API Key were provided!");
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
 			}
 			throw new IOException("GET request not worked: " + responseCode);
 		}
@@ -355,47 +355,24 @@ public class SpiraImportExport
 				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, attachmentKey));
 			}
 
-			// Next we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Call the appropriate method
-			RemoteDocument remoteDocument = soap.documentRetrieveById(attachmentId);
+			String url = this.fullUrl + "/projects/{project_id}/documents/{document_id}";
+			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{document_id}", String.valueOf(attachmentId));
+			String json = httpGet(url, this.userName, this.apiKey);
 
-			// Convert the SOAP document into the local version
+			//Parse the returned data
+			Gson gson = new Gson();
+			RemoteDocument remoteDocument = gson.fromJson(json, RemoteDocument.class);
+
+			// Convert the remote document into the local version
 			ArtifactAttachment artifactAttachment = new ArtifactAttachment(remoteDocument);
 
 			return artifactAttachment;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportDocumentRetrieveByIdServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 
@@ -434,44 +411,20 @@ public class SpiraImportExport
 				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, attachmentKey));
 			}
 
-			// Next we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Call the appropriate method
-			byte[] attachmentData = soap.documentOpenFile(attachmentId);
+			String url = this.fullUrl + "/projects/{project_id}/documents/{document_id}/open";
+			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{document_id}", String.valueOf(attachmentId));
+			String json = httpGet(url, this.userName, this.apiKey);
+
+			//Parse the returned data
+			byte[] attachmentData = Base64.getDecoder().decode(json);
 
 			return attachmentData;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportDocumentOpenFileServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 
@@ -493,6 +446,7 @@ public class SpiraImportExport
 	public ArtifactAttachment attachmentUpload(int projectId, String artifactKey, ArtifactAttachment artifactAttachment, byte[] attachmentData, String comment)
 			throws SpiraException
 	{
+		/*TODO: Implement
 		try
 		{
 			// First make sure that the artifact key is in the correct format
@@ -611,7 +565,8 @@ public class SpiraImportExport
 		catch (IImportExportIncidentAddCommentsServiceFaultMessageFaultFaultMessage exception)
 		{
 			throw new SpiraException(exception.getMessage());
-		}
+		}*/
+		return null;
 	}
 
 	/**
@@ -671,15 +626,30 @@ public class SpiraImportExport
 			}
 
 			// Call the appropriate method
-			RemoteRequirement remoteRequirement = soap.requirementRetrieveById(requirementId);
+			String url = this.fullUrl + "projects/{project_id}/requirements/{requirement_id}";
+			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{requirement_id}", String.valueOf(requirementId));
+			String json = httpGet(url, this.userName, this.apiKey);
 
-			// Convert the SOAP requirement into the local version
+			//Parse the returned data
+			Gson gson = new Gson();
+			RemoteRequirement remoteRequirement = gson.fromJson(json, RemoteRequirement.class);
+
+			// Convert the remote requirement into the local version
 			Requirement requirement = new Requirement(remoteRequirement);
 
 			// Now get any associated comments
-			List<RemoteComment> remoteComments = soap.requirementRetrieveComments(requirementId).getRemoteComment();
+			url = this.fullUrl + "projects/{project_id}/requirements/{requirement_id}";
+			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{requirement_id}", String.valueOf(requirementId));
+			json = httpGet(url, this.userName, this.apiKey);
 
-			// Convert the SOAP resolutions into the local version
+			//Parse the returned data
+			ArrayList<RemoteComment> remoteComments;
+			java.lang.reflect.Type remoteCommentArrayList = new TypeToken<ArrayList<RemoteComment>>(){}.getType();
+			remoteComments = gson.fromJson(json, remoteCommentArrayList);
+
+			// Convert the remote comments into the local version
 			for (RemoteComment remoteComment : remoteComments)
 			{
 				RequirementComment requirementComment = new RequirementComment(remoteComment);
@@ -687,13 +657,18 @@ public class SpiraImportExport
 			}
 
 			// Now get any associated attachments
-			RemoteSort remoteSort = new RemoteSort();
-			remoteSort.setPropertyName(CreateJAXBString("PropertyName", "UploadDate"));
-			remoteSort.setSortAscending(false);
-			List<RemoteDocument> remoteDocuments = soap.documentRetrieveForArtifact(ArtifactType.REQUIREMENT.getArtifactTypeId(), requirementId, null,
-					remoteSort).getRemoteDocument();
+			url = this.fullUrl + "projects/{project_id}/artifact-types/{artifact_type_id}/artifacts/{artifact_id}/documents";
+			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{artifact_type_id}", String.valueOf(ArtifactType.REQUIREMENT.getArtifactTypeId()));
+			url = url.replace("{artifact_id}", String.valueOf(requirementId));
+			json = httpGet(url, this.userName, this.apiKey);
 
-			// Convert the SOAP attachments into the local version
+			//Parse the returned data
+			ArrayList<RemoteDocument> remoteDocuments;
+			java.lang.reflect.Type remoteDocumentArrayList = new TypeToken<ArrayList<RemoteDocument>>(){}.getType();
+			remoteDocuments = gson.fromJson(json, remoteDocumentArrayList);
+
+			// Convert the remote attachments into the local version
 			for (RemoteDocument remoteDocument : remoteDocuments)
 			{
 				ArtifactAttachment artifactAttachment = new ArtifactAttachment(remoteDocument);
@@ -702,29 +677,9 @@ public class SpiraImportExport
 
 			return requirement;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportRequirementRetrieveByIdServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportRequirementRetrieveCommentsServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportDocumentRetrieveForArtifactServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 
@@ -771,17 +726,9 @@ public class SpiraImportExport
 			}
 			return requirements;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportRequirementRetrieveForOwnerServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 

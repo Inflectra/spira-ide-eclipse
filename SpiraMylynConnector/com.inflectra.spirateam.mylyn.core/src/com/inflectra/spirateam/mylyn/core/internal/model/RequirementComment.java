@@ -27,12 +27,12 @@ public class RequirementComment
     public RequirementComment(RemoteComment remoteComment)
     {
     	//Set the various member variables
-    	this.commentId = remoteComment.getCommentId().getValue();
-    	this.requirementId = remoteComment.getArtifactId();
-    	this.creatorId = remoteComment.getUserId().getValue();
-    	this.text = remoteComment.getText().getValue();
-        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteComment.getCreationDate().getValue());
-    	this.creatorName = remoteComment.getUserName().getValue();
+    	this.commentId = remoteComment.CommentId;
+    	this.requirementId = remoteComment.ArtifactId;
+    	this.creatorId = remoteComment.UserId;
+    	this.text = remoteComment.Text;
+        this.creationDate = SpiraTeamUtil.convertDatesToLocal(remoteComment.CreationDate);
+    	this.creatorName = remoteComment.UserName;
     }
     
     /**

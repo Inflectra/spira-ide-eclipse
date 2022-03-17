@@ -17,10 +17,10 @@ public class IncidentWorkflowField
 	 */
 	public IncidentWorkflowField(RemoteWorkflowField remoteWorkflowField)
 	{
-		this.fieldCaption = remoteWorkflowField.getFieldCaption().getValue();
-		this.fieldName = remoteWorkflowField.getFieldName().getValue();
-		this.fieldID = remoteWorkflowField.getFieldId();
-		this.fieldStatus = remoteWorkflowField.getFieldStateId();
+		this.fieldCaption = remoteWorkflowField.FieldCaption;
+		this.fieldName = remoteWorkflowField.FieldName;
+		this.fieldID = remoteWorkflowField.FieldId;
+		this.fieldStatus = remoteWorkflowField.FieldStateId;
 	}
 
 	/**
@@ -30,10 +30,10 @@ public class IncidentWorkflowField
 	 */
 	public IncidentWorkflowField(RemoteWorkflowCustomProperty remoteWorkflowCustomProperty)
 	{
-		this.fieldCaption = ""; // Not provided
-		this.fieldName = remoteWorkflowCustomProperty.getFieldName().getValue();
-		this.fieldID = remoteWorkflowCustomProperty.getCustomPropertyId();
-		this.fieldStatus = remoteWorkflowCustomProperty.getFieldStateId();
+		this.fieldCaption = remoteWorkflowCustomProperty.FieldCaption;
+		this.fieldName = remoteWorkflowCustomProperty.FieldName;
+		this.fieldID = remoteWorkflowCustomProperty.CustomPropertyId;
+		this.fieldStatus = remoteWorkflowCustomProperty.FieldStateId;
 	}
 
 	/**

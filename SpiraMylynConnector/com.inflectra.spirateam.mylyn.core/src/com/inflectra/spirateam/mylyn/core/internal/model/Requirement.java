@@ -80,21 +80,23 @@ public class Requirement
     	PopulateGeneralProperties(remoteRequirement);
     	
     	//Set the various member variables
-        this.name = remoteRequirement.getName().getValue();
-        this.description = remoteRequirement.getDescription().getValue();
-        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getCreationDate());
-        this.lastUpdateDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getLastUpdateDate());
-        this.artifactId = remoteRequirement.getRequirementId().getValue();
-        this.statusId = remoteRequirement.getStatusId().getValue();
-        this.authorId = remoteRequirement.getAuthorId().getValue();
-        this.authorName = remoteRequirement.getAuthorName().getValue();
-        this.ownerId = remoteRequirement.getOwnerId().getValue();
-        this.importanceId = remoteRequirement.getImportanceId().getValue();
-        this.importanceName = remoteRequirement.getImportanceName().getValue();
-        this.releaseId = remoteRequirement.getReleaseId().getValue();
-        this.releaseVersionNumber = remoteRequirement.getReleaseVersionNumber().getValue();
-        this.summary = remoteRequirement.isSummary();
-        this.plannedEffort = remoteRequirement.getPlannedEffort().getValue();
+        this.name = remoteRequirement.Name;
+        this.description = remoteRequirement.Description;
+        this.creationDate = SpiraTeamUtil.convertDatesToLocal(remoteRequirement.CreationDate);
+        this.lastUpdateDate = SpiraTeamUtil.convertDatesToLocal(remoteRequirement.LastUpdateDate);
+        this.artifactId = remoteRequirement.RequirementId;
+        this.statusId = remoteRequirement.StatusId;
+        this.authorId = remoteRequirement.AuthorId;
+        this.authorName = remoteRequirement.AuthorName;
+        this.ownerId = remoteRequirement.OwnerId;
+        this.importanceId = remoteRequirement.ImportanceId;
+        this.importanceName = remoteRequirement.ImportanceName;
+        this.releaseId = remoteRequirement.ReleaseId;
+        this.releaseVersionNumber = remoteRequirement.ReleaseVersionNumber;
+        this.summary = remoteRequirement.Summary;
+        
+        //TODO: Switch to estimate in points
+        //this.plannedEffort = remoteRequirement.PlannedEffort;
     }
     
     /**
@@ -110,18 +112,20 @@ public class Requirement
     	ExtractGeneralProperties(remoteRequirement);
 
     	//Next the requirement-specific ones
-    	remoteRequirement.setRequirementId(SpiraImportExport.CreateJAXBInteger("RequirementId", this.artifactId));
-    	remoteRequirement.setOwnerId(SpiraImportExport.CreateJAXBInteger("OwnerId", this.ownerId));
-    	remoteRequirement.setAuthorId(SpiraImportExport.CreateJAXBInteger("AuthorId", this.authorId));
-    	remoteRequirement.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
-    	remoteRequirement.setName(SpiraImportExport.CreateJAXBString("Name", this.name));
-    	remoteRequirement.setDescription(SpiraImportExport.CreateJAXBString("Description", this.description));
-    	remoteRequirement.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(this.creationDate));
-    	remoteRequirement.setLastUpdateDate(SpiraTeamUtil.convertDatesJava2Xml(this.lastUpdateDate));
-    	remoteRequirement.setStatusId(SpiraImportExport.CreateJAXBInteger("StatusId", this.statusId));
-    	remoteRequirement.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
-    	remoteRequirement.setImportanceId(SpiraImportExport.CreateJAXBInteger("ImportanceId", this.importanceId));
-    	remoteRequirement.setPlannedEffort(SpiraImportExport.CreateJAXBInteger("PlannedEffort", this.plannedEffort));
+    	remoteRequirement.RequirementId = this.artifactId;
+    	remoteRequirement.OwnerId = this.ownerId;
+    	remoteRequirement.AuthorId = this.authorId;
+    	remoteRequirement.ReleaseId = this.releaseId;
+    	remoteRequirement.Name = this.name;
+    	remoteRequirement.Description = this.description;
+    	remoteRequirement.CreationDate = this.creationDate;
+    	remoteRequirement.LastUpdateDate = SpiraTeamUtil.convertDatesToUtc(this.lastUpdateDate);
+    	remoteRequirement.StatusId = this.statusId;
+    	remoteRequirement.ReleaseId = this.releaseId;
+    	remoteRequirement.ImportanceId = this.importanceId;
+    	
+    	//TODO: Convert to points
+    	//remoteRequirement.PlannedEffort = this.plannedEffort;
             	
         return remoteRequirement;
     }

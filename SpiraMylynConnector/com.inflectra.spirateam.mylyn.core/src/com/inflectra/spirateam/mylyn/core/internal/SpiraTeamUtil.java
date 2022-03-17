@@ -127,6 +127,17 @@ public class SpiraTeamUtil
 		return null;
 	}
 	
+	public static Date convertDatesToUtc(Date localDate)
+	{
+		//TODO: Implement
+		return localDate;
+	}
+	public static Date convertDatesToLocal(Date utcDate)
+	{
+		//TODO: Implement
+		return utcDate;
+	}
+	
 	/*
 	public static Date convertDatesXml2Java(XMLGregorianCalendar xmlCal)
 	{

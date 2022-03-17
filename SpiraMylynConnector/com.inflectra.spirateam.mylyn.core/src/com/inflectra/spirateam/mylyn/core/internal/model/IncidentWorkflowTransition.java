@@ -16,15 +16,15 @@ public class IncidentWorkflowTransition
     
     public IncidentWorkflowTransition(RemoteWorkflowTransition remoteWorkflowIncidentTransition)
     {
-        this.executeByDetector = remoteWorkflowIncidentTransition.isExecuteByDetector();
-        this.executeByOwner = remoteWorkflowIncidentTransition.isExecuteByOwner();
-        this.incidentStatusIDInput = remoteWorkflowIncidentTransition.getIncidentStatusIdInput();
-        this.incidentStatusNameInput = remoteWorkflowIncidentTransition.getIncidentStatusNameInput().getValue();
-        this.incidentStatusIDOutput = remoteWorkflowIncidentTransition.getIncidentStatusIdOutput();
-        this.incidentStatusNameOutput = remoteWorkflowIncidentTransition.getIncidentStatusNameOutput().getValue();
-        this.name = remoteWorkflowIncidentTransition.getName().getValue();
-        this.workflowID = remoteWorkflowIncidentTransition.getWorkflowId();
-        this.transitionID = remoteWorkflowIncidentTransition.getTransitionId();
+        this.executeByDetector = remoteWorkflowIncidentTransition.ExecuteByCreator;
+        this.executeByOwner = remoteWorkflowIncidentTransition.ExecuteByOwner;
+        this.incidentStatusIDInput = remoteWorkflowIncidentTransition.StatusId_Input;
+        this.incidentStatusNameInput = remoteWorkflowIncidentTransition.StatusName_Input;
+        this.incidentStatusIDOutput = remoteWorkflowIncidentTransition.StatusId_Output;
+        this.incidentStatusNameOutput = remoteWorkflowIncidentTransition.StatusName_Output;
+        this.name = remoteWorkflowIncidentTransition.Name;
+        this.workflowID = remoteWorkflowIncidentTransition.WorkflowId;
+        this.transitionID = remoteWorkflowIncidentTransition.TransitionId;
     }
     
     /**

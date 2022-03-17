@@ -12,6 +12,6 @@ Eclipse-AutoStart: true
 Export-Package: com.inflectra.spirateam.mylyn.core.internal;x-internal:=true,
  com.inflectra.spirateam.mylyn.core.internal.model;x-internal:=true,
  com.inflectra.spirateam.mylyn.core.internal.services;x-internal:=true,
- com.inflectra.spirateam.mylyn.core.internal.services.soap;x-internal:=true
+ com.inflectra.spirateam.mylyn.core.internal.rest;x-internal:=true
 Import-Package: org.eclipse.mylyn.commons.core,
  org.eclipse.mylyn.commons.net

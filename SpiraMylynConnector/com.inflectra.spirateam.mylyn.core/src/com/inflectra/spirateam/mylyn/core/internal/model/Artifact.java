@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.ArrayOfRemoteArtifactCustomProperty;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteArtifact;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteArtifactCustomProperty;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteArtifact;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteArtifactCustomProperty;
 
 /**
  * Represents a generic SpiraTeam artifact

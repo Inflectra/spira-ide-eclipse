@@ -9,7 +9,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteTask;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteTask;
 /**
  * Represents a single task in SpiraTeam
  *

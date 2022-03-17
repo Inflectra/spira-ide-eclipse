@@ -1,6 +1,6 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteWorkflowIncidentTransition;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteWorkflowTransition;
 
 public class IncidentWorkflowTransition
 {
@@ -14,7 +14,7 @@ public class IncidentWorkflowTransition
     protected int workflowID;
     protected int transitionID;
     
-    public IncidentWorkflowTransition(RemoteWorkflowIncidentTransition remoteWorkflowIncidentTransition)
+    public IncidentWorkflowTransition(RemoteWorkflowTransition remoteWorkflowIncidentTransition)
     {
         this.executeByDetector = remoteWorkflowIncidentTransition.isExecuteByDetector();
         this.executeByOwner = remoteWorkflowIncidentTransition.isExecuteByOwner();

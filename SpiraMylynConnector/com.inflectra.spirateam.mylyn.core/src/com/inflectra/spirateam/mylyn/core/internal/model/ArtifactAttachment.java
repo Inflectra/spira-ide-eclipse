@@ -4,7 +4,7 @@ import java.util.Date;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteDocument;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteDocument;
 
 /**
  * Represents a single SpiraTeam artifact attachment

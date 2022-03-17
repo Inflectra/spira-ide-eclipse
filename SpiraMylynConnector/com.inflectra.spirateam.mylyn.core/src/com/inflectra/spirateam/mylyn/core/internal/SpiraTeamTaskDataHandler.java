@@ -478,7 +478,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 		
 		// custom fields/properties
-		ArtifactField[] fields = client.getCustomProperties(artifactType, null);
+		ArtifactField[] fields = client.getCustomProperties(artifactType, null, null);
 		if (fields != null)
 		{
 			for (ArtifactField field : fields)

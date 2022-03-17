@@ -1,4 +1,4 @@
-package com.inflectra.spirateam.mylyn.core.internal.services;
+package com.inflectra.spirateam.mylyn.core.internal.rest;
 
 public class RemoteWorkflowTransition {
     /// <summary>

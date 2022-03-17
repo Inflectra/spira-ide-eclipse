@@ -1,7 +1,7 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteWorkflowIncidentCustomProperties;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteWorkflowIncidentFields;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteWorkflowCustomProperty;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteWorkflowField;
 
 public class IncidentWorkflowField
 {
@@ -15,8 +15,7 @@ public class IncidentWorkflowField
 	 * 
 	 * @param remoteWorkflowField
 	 */
-	public IncidentWorkflowField(
-			RemoteWorkflowIncidentFields remoteWorkflowField)
+	public IncidentWorkflowField(RemoteWorkflowField remoteWorkflowField)
 	{
 		this.fieldCaption = remoteWorkflowField.getFieldCaption().getValue();
 		this.fieldName = remoteWorkflowField.getFieldName().getValue();
@@ -29,8 +28,7 @@ public class IncidentWorkflowField
 	 * 
 	 * @param remoteWorkflowCustomProperty
 	 */
-	public IncidentWorkflowField(
-			RemoteWorkflowIncidentCustomProperties remoteWorkflowCustomProperty)
+	public IncidentWorkflowField(RemoteWorkflowCustomProperty remoteWorkflowCustomProperty)
 	{
 		this.fieldCaption = ""; // Not provided
 		this.fieldName = remoteWorkflowCustomProperty.getFieldName().getValue();

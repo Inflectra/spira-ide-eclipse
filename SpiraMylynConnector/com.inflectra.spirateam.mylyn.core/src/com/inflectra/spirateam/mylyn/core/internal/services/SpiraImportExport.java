@@ -1223,20 +1223,36 @@ public class SpiraImportExport
 	 * @return Array of artifact fields
 	 * @param projectId
 	 *            Project id (optional, uses stored ID if set to null)
+	 * @param projectTemplateId
+	 *            Project template id (optional, uses stored ID if set to null)
 	 */
-	public ArtifactField[] getCustomProperties(ArtifactType artifactType, Integer projectTemplateId)
+	public ArtifactField[] getCustomProperties(ArtifactType artifactType, Integer projectTemplateId, Integer projectId)
 	{
 		try
 		{
 			// Get the stored project id if not set
+			if (projectId == null)
+			{
+				projectId = this.getStoredProjectId();
+			}
+			
+			// Get the stored project template id if not set
 			if (projectTemplateId == null)
 			{
 				projectTemplateId = this.getStoredProjectTemplateId();
 			}
 
 			// Get the list of custom property definitions
-			List<RemoteCustomProperty> remoteCustomProperties = soap.customPropertyRetrieveForArtifactType(artifactType.getArtifactTypeId(), false)
-					.getRemoteCustomProperty();
+			String url = this.fullUrl + "/project-templates/{project_template_id}/custom-properties/{artifact_type_name}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{artifact_type_name}", artifactType.getDisplayName());		
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteCustomProperty> remoteCustomProperties;
+			java.lang.reflect.Type remoteCustomPropertiesType = new TypeToken<ArrayList<RemoteCustomProperty>>(){}.getType();
+			remoteCustomProperties = gson.fromJson(json, remoteCustomPropertiesType);
 
 			// Convert the SOAP custom properties into the ArtifactField class
 			ArrayList<ArtifactField> artifactFields = new ArrayList<ArtifactField>();
@@ -1345,27 +1361,15 @@ public class SpiraImportExport
 					// Now we need to get the list of project users
 					try
 					{
-						// Get the list of users from the SOAP API
-						// First we need to re-authenticate
-						success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-						if (!success)
-						{
-							// throw new SpiraException (this.userName + "/" +
-							// this.password);
-							throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-						}
-
-						// Next we need to connect to the appropriate project
-						success = soap.connectionConnectToProject(projectId);
-						if (!success)
-						{
-							// throw new SpiraException (this.userName + "/" +
-							// this.password);
-							throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-						}
-
-						// Get the list of users
-						List<RemoteProjectUser> remoteProjectUsers = soap.projectRetrieveUserMembership().getRemoteProjectUser();
+						// Get the list of users from the REST API
+						url = this.fullUrl + "/projects/{project_id}/users";
+						url = url.replace("{product_id}", String.valueOf(projectId));
+						json = httpGet(url, this.userName, this.apiKey);
+						
+						//Parse the returned data
+						ArrayList<RemoteProjectUser> remoteProjectUsers;
+						java.lang.reflect.Type remoteProjectUsersType = new TypeToken<ArrayList<RemoteProjectUser>>(){}.getType();
+						remoteProjectUsers = gson.fromJson(json, remoteProjectUsersType);
 
 						// Now populate the list of custom property option
 						// values
@@ -1375,9 +1379,9 @@ public class SpiraImportExport
 							int i = 0;
 							for (RemoteProjectUser remoteProjectUser : remoteProjectUsers)
 							{
-								int userId = remoteProjectUser.getUserId().getValue();
-								values[i] = new ArtifactFieldValue(userId, remoteProjectUser.getFirstName().getValue() + " "
-										+ remoteProjectUser.getLastName().getValue() + " [" + remoteProjectUser.getEmailAddress().getValue() + "]");
+								int userId = remoteProjectUser.UserId;
+								values[i] = new ArtifactFieldValue(userId, remoteProjectUser.FirstName + " "
+										+ remoteProjectUser.LastName + " [" + remoteProjectUser.EmailAddress + "]");
 								i++;
 							}
 							artifactField.setValues(values);

@@ -395,8 +395,8 @@ public class Artifact
 	 protected void PopulateGeneralProperties(RemoteArtifact remoteArtifact)
 	 {
 		 //First the standard properties
-         this.projectId = remoteArtifact.getProjectId().getValue();
-		 this.concurrencyDate = SpiraTeamUtil.convertDatesXml2Java(remoteArtifact.getConcurrencyDate());
+         this.projectId = remoteArtifact.ProjectId;
+		 this.concurrencyDate = remoteArtifact.ConcurrencyDate;
 		 
 		 //Make sure we have custom properties
 		 this.customProperties.clear();
@@ -406,25 +406,25 @@ public class Artifact
 			 List<RemoteArtifactCustomProperty> remoteArtifactCustomProperties = remoteArtifact.getCustomProperties().getValue().getRemoteArtifactCustomProperty();
 			 for (RemoteArtifactCustomProperty remoteArtifactCustomProperty : remoteArtifactCustomProperties)
 			 {
-				 if (remoteArtifactCustomProperty.getPropertyNumber() != null)
+				 if (remoteArtifactCustomProperty.PropertyNumber > 0)
 				 {
 					 ArtifactCustomProperty acp = new ArtifactCustomProperty();
-					 acp.setPropertyNumber(remoteArtifactCustomProperty.getPropertyNumber().intValue());
+					 acp.setPropertyNumber(remoteArtifactCustomProperty.PropertyNumber);
  					 this.customProperties.add(acp);
 					 
 					 //Handle each of the different data types
- 					 acp.setStringValue(remoteArtifactCustomProperty.getStringValue().getValue());
- 					 acp.setIntegerValue(remoteArtifactCustomProperty.getIntegerValue().getValue());
- 					 acp.setBooleanValue(remoteArtifactCustomProperty.getBooleanValue().getValue());
+ 					 acp.setStringValue(remoteArtifactCustomProperty.StringValue);
+ 					 acp.setIntegerValue(remoteArtifactCustomProperty.IntegerValue);
+ 					 acp.setBooleanValue(remoteArtifactCustomProperty.BooleanValue);
  					 acp.setDateTimeValue(SpiraTeamUtil.convertDatesXml2Java(remoteArtifactCustomProperty.getDateTimeValue().getValue()));
- 					 acp.setDecimalValue(remoteArtifactCustomProperty.getDecimalValue().getValue());
+ 					 acp.setDecimalValue(remoteArtifactCustomProperty.DecimalValue);
  					 if (remoteArtifactCustomProperty.getIntegerListValue() == null || remoteArtifactCustomProperty.getIntegerListValue().getValue() == null)
  					 {
  						 acp.setIntegerListValue(null);
  					 }
  					 else
  					 {
- 						 acp.setIntegerListValue(remoteArtifactCustomProperty.getIntegerListValue().getValue().getInt());
+ 						 acp.setIntegerListValue(remoteArtifactCustomProperty.IntegerListValue);
  					 }
 				 }
 			 }

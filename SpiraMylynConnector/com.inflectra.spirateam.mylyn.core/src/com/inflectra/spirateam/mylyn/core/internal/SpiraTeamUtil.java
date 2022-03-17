@@ -51,23 +51,23 @@ public class SpiraTeamUtil
 	public static boolean ValidateServerVersion (SpiraImportExport spiraImportExport)
 	{
 		boolean current = false;
-		if (spiraImportExport.getProductVersionPrimary() >= 4)
+		if (spiraImportExport.getProductVersionPrimary() >= 6)
 		{
-			//v4.0 or higher
+			//v6.0 or higher
 			current = true;
 		}
-		if (spiraImportExport.getProductVersionPrimary() == 3 &&
-				spiraImportExport.getProductVersionSecondary() >= 1)
+		if (spiraImportExport.getProductVersionPrimary() == 6 &&
+				spiraImportExport.getProductVersionSecondary() >= 0)
 		{
-			//v3.1 or higher
+			//v6.0 or higher
 			current = true;
 		}
-		if (spiraImportExport.getProductVersionPrimary() == 3 &&
+		if (spiraImportExport.getProductVersionPrimary() == 6 &&
 				spiraImportExport.getProductVersionSecondary() == 0 &&
 				spiraImportExport.getProductVersionTertiary() == 0 &&
-				spiraImportExport.getPatchNumber() >= 9)
+				spiraImportExport.getPatchNumber() >= 0)
 		{
-			//v3.0 Patch 9 or higher
+			//v6.0 Patch 0 or higher
 			current = true;
 		}
 		return current;
@@ -127,6 +127,7 @@ public class SpiraTeamUtil
 		return null;
 	}
 	
+	/*
 	public static Date convertDatesXml2Java(XMLGregorianCalendar xmlCal)
 	{
 		if (xmlCal == null)
@@ -165,7 +166,7 @@ public class SpiraTeamUtil
 		{
 			return null;
 		}
-	}
+	}*/
 		
 	public static Date parseDate(String time)
 		throws NumberFormatException

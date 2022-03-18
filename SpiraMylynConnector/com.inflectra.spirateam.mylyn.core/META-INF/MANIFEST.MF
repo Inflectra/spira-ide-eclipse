@@ -15,3 +15,6 @@ Export-Package: com.inflectra.spirateam.mylyn.core.internal;x-internal:=true,
  com.inflectra.spirateam.mylyn.core.internal.rest;x-internal:=true
 Import-Package: org.eclipse.mylyn.commons.core,
  org.eclipse.mylyn.commons.net
+Bundle-ClassPath: lib/gson-2.8.6.jar,
+ lib/httpclient-4.5.9.jar,
+ .

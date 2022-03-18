@@ -275,7 +275,7 @@ public class SpiraImportExport
 		}
 		catch (IOException ex)
 		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message + ": " + ex.getMessage());
 		}
 	}
 	

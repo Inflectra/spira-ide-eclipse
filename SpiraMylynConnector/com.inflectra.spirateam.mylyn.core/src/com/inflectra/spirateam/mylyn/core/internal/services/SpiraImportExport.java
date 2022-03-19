@@ -329,6 +329,40 @@ public class SpiraImportExport
 			throw new IOException("GET request not worked: " + responseCode);
 		}
 	}
+	
+	/**
+	 * Gets the project template id of a project
+	 * @param projectId - the id of the project
+	 * @return - the id of the project template
+	 * @throws SpiraException
+	 */
+	public int getTemplateIdForProject(int projectId)
+	{
+		try
+		{
+			// Call the appropriate method
+			String url = this.fullUrl + "/projects/{project_id}";
+			url = url.replace("{product_id}", String.valueOf(projectId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			RemoteProject remoteProject = gson.fromJson(json, RemoteProject.class);
+			if (remoteProject != null)
+			{
+				return remoteProject.ProjectTemplateId;
+			}
+			return -1;
+		}
+		catch (IOException ex)
+		{
+			return -1;
+		}
+		catch (SpiraException ex)
+		{
+			return -1;
+		}
+	}
 
 	/**
 	 * Retrieves an attachment by its key (DC prefix plus ID)

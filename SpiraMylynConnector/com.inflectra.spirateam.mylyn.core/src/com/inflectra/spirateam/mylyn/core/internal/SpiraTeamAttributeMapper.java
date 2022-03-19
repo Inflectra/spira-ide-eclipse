@@ -83,6 +83,19 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 					//Do Nothing
 				}
 			}
+			metaDataValue = metaData.getValue(SpiraTeamTaskDataHandler.ATTRIBUTE_PROJECT_TEMPLATE_ID);
+			if (metaDataValue != null)
+			{
+				try
+				{
+					int projectTemplateId = Integer.parseInt(metaDataValue);
+					client.setStoredProjectTemplateId(projectTemplateId);
+				}
+				catch (NumberFormatException ex)
+				{
+					//Do Nothing
+				}
+			}
 		}
 		Map<String, String> options = getRepositoryOptions(client, attribute.getId());
 		if (options == null)

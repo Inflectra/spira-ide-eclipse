@@ -68,6 +68,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	private static final String TASK_DATA_VERSION = "040000"; //$NON-NLS-1$
 	private static final String ATTRIBUTE_ARTIFACT_KEY = "spira.key"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_PROJECT_ID = "spira.projectId"; //$NON-NLS-1$
+	public static final String ATTRIBUTE_PROJECT_TEMPLATE_ID = "spira.projectTemplateId"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_PRECISION = "spira.precision"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_REQUIRED = "spira.required"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_HIDDEN = "spira.hidden"; //$NON-NLS-1$
@@ -1206,7 +1207,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		TaskData taskData = new TaskData(getAttributeMapper(repository), SpiraTeamCorePlugin.CONNECTOR_KIND,
 				repository.getRepositoryUrl(), requirement.getArtifactKey());
 		taskData.setVersion(TASK_DATA_VERSION);
-		client.setStoredProjectId(requirement.getProjectId());
+		int projectId = requirement.getProjectId();
+		client.setStoredProjectId(projectId);
+		int projectTemplateId = client.getTemplateIdForProject(projectId);
+		client.setStoredProjectTemplateId(projectTemplateId);
 		try
 		{
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
@@ -1250,7 +1254,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		TaskData taskData = new TaskData(getAttributeMapper(repository), SpiraTeamCorePlugin.CONNECTOR_KIND,
 				repository.getRepositoryUrl(), incident.getArtifactKey());
 		taskData.setVersion(TASK_DATA_VERSION);
-		client.setStoredProjectId(incident.getProjectId());
+		int projectId = incident.getProjectId();
+		client.setStoredProjectId(projectId);
+		int projectTemplateId = client.getTemplateIdForProject(projectId);
+		client.setStoredProjectTemplateId(projectTemplateId);
 		try
 		{
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))
@@ -1294,7 +1301,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		TaskData taskData = new TaskData(getAttributeMapper(repository), SpiraTeamCorePlugin.CONNECTOR_KIND,
 				repository.getRepositoryUrl(), spiraTask.getArtifactKey());
 		taskData.setVersion(TASK_DATA_VERSION);
-		client.setStoredProjectId(spiraTask.getProjectId());
+		int projectId = spiraTask.getProjectId();
+		client.setStoredProjectId(projectId);
+		int projectTemplateId = client.getTemplateIdForProject(projectId);
+		client.setStoredProjectTemplateId(projectTemplateId);
 		try
 		{
 			if (!SpiraTeamRepositoryConnector.hasRichEditor(repository))

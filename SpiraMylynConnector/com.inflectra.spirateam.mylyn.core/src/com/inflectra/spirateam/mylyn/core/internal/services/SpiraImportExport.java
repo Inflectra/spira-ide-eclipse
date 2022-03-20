@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -281,6 +282,128 @@ public class SpiraImportExport
 	}
 	
 	/**
+	 * Performs an HTTP POST request ot the specified URL
+	 *
+	 * @param input The URL to perform the query on
+	 * @param body  The request body to be sent
+	 * @param apiKey The Spira API Key to use
+	 * @param login The Spira login to use
+	 * @return An InputStream containing the JSON returned from the POST request
+	 * @throws IOException
+	 * @throws SpiraAuthenticationException
+	 */
+	public static String httpPost(String input, String login, String apiKey, String body) throws IOException,  SpiraAuthenticationException {
+		URL url = new URL(input);
+
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		//allow sending a request body
+		connection.setDoOutput(true);
+		connection.setRequestMethod("POST");
+		//have the connection send and retrieve JSON
+		connection.setRequestProperty("accept", "application/json; charset=utf-8");
+		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+		//Set the authentication headers
+		connection.setRequestProperty("username", login);
+		connection.setRequestProperty("api-key", apiKey);
+		connection.connect();
+
+		//used to send data in the REST request
+		DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+		//write the body to the stream
+		outputStream.writeBytes(body);
+		//send the OutputStream to the server
+		outputStream.flush();
+		outputStream.close();
+
+		int responseCode = connection.getResponseCode();
+		if (responseCode == HttpURLConnection.HTTP_OK) { // success
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			// return result
+			return response.toString();
+		} else {
+			if (responseCode == 403)
+			{
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			if (responseCode == 400)
+			{
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			throw new IOException("POST request not worked: " + responseCode);
+		}
+	}
+
+	/**
+	 * Performs an HTTP PUT request ot the specified URL
+	 *
+	 * @param input The URL to perform the query on
+	 * @param body  The request body to be sent
+	 * @param apiKey The Spira API Key to use
+	 * @param login The Spira login to use
+	 * @return An InputStream containing the JSON returned from the POST request
+	 * @throws IOException
+	 * @throws SpiraAuthenticationException
+	 */
+	public static String httpPut(String input, String login, String apiKey, String body) throws IOException,  SpiraAuthenticationException {
+		URL url = new URL(input);
+
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		//allow sending a request body
+		connection.setDoOutput(true);
+		connection.setRequestMethod("PUT");
+		//have the connection send and retrieve JSON
+		connection.setRequestProperty("accept", "application/json; charset=utf-8");
+		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+		//Set the authentication headers
+		connection.setRequestProperty("username", login);
+		connection.setRequestProperty("api-key", apiKey);
+		connection.connect();
+
+		//used to send data in the REST request
+		DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+		//write the body to the stream
+		outputStream.writeBytes(body);
+		//send the OutputStream to the server
+		outputStream.flush();
+		outputStream.close();
+
+		int responseCode = connection.getResponseCode();
+		if (responseCode == HttpURLConnection.HTTP_OK) { // success
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			// return result
+			return response.toString();
+		} else {
+			if (responseCode == 403)
+			{
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			if (responseCode == 400)
+			{
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			throw new IOException("PUT request not worked: " + responseCode);
+		}
+	}
+	
+	/**
 	 * Performs an HTTP GET request ot the specified URL
 	 *
 	 * @param input The URL to perform the query on
@@ -537,8 +660,13 @@ public class SpiraImportExport
 					remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(artifactAttachment.getCreationDate());
 					remoteComment.ArtifactId = artifactId;
 					remoteComment.Text = comment;
-					soap.requirementCreateComment(remoteComment);
-
+					
+					String postCommentUrl = this.fullUrl + "/projects/{project_id}/requirements/{requirement_id}/comments";
+					postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(projectId));
+					postCommentUrl = postCommentUrl.replace("{requirement_id}", String.valueOf(artifactId));
+					Gson gson = new Gson();
+					String json = gson.toJson(remoteComment);
+					json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 				}
 				else if (artifactType.equals(ArtifactType.INCIDENT))
 				{
@@ -559,7 +687,13 @@ public class SpiraImportExport
 					remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(artifactAttachment.getCreationDate());
 					remoteComment.ArtifactId = artifactId;
 					remoteComment.Text = comment;
-					soap.taskCreateComment(remoteComment);
+
+					String postCommentUrl = this.fullUrl + "/projects/{project_id}/tasks/{task_id}/comments";
+					postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(projectId));
+					postCommentUrl = postCommentUrl.replace("{task_id}", String.valueOf(artifactId));
+					Gson gson = new Gson();
+					String json = gson.toJson(remoteComment);
+					json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 				}
 			}
 

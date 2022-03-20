@@ -492,7 +492,6 @@ public class SpiraImportExport
 	public ArtifactAttachment attachmentUpload(int projectId, String artifactKey, ArtifactAttachment artifactAttachment, byte[] attachmentData, String comment)
 			throws SpiraException
 	{
-		/*TODO: Implement
 		try
 		{
 			// First make sure that the artifact key is in the correct format
@@ -518,28 +517,13 @@ public class SpiraImportExport
 			ArtifactType artifactType = ArtifactType.byTaskKey(artifactKey);
 			int artifactTypeId = artifactType.getArtifactTypeId();
 
-			// Next we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Call the appropriate method
 			RemoteDocument remoteDocument = artifactAttachment.toSoapObject();
-			remoteDocument.setArtifactId(SpiraImportExport.CreateJAXBInteger("ArtifactId", artifactId));
-			remoteDocument.setArtifactTypeId(SpiraImportExport.CreateJAXBInteger("ArtifactTypeId", artifactTypeId));
+			RemoteLinkedArtifact linkedArtifact = new RemoteLinkedArtifact();
+			linkedArtifact.ArtifactId = artifactId;
+			linkedArtifact.ArtifactTypeId = artifactTypeId;
+			remoteDocument.AttachedArtifacts = new ArrayList<RemoteLinkedArtifact>();
+			remoteDocument.AttachedArtifacts.add(linkedArtifact);
 			remoteDocument = soap.documentAddFile(remoteDocument, attachmentData);
 
 			// See if we have to add a new comment
@@ -550,10 +534,9 @@ public class SpiraImportExport
 				{
 					// Add the new comment
 					RemoteComment remoteComment = new RemoteComment();
-					remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate",
-							SpiraTeamUtil.convertDatesJava2Xml(artifactAttachment.getCreationDate())));
-					remoteComment.setArtifactId(artifactId);
-					remoteComment.setText(CreateJAXBString("Text", comment));
+					remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(artifactAttachment.getCreationDate());
+					remoteComment.ArtifactId = artifactId;
+					remoteComment.Text = comment;
 					soap.requirementCreateComment(remoteComment);
 
 				}
@@ -561,12 +544,11 @@ public class SpiraImportExport
 				{
 					// Add the new comment
 					RemoteComment remoteComment = new RemoteComment();
-					remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate",
-							SpiraTeamUtil.convertDatesJava2Xml(artifactAttachment.getCreationDate())));
-					remoteComment.setArtifactId(artifactId);
-					remoteComment.setText(CreateJAXBString("Text", comment));
-					ArrayOfRemoteComment remoteComments = new ArrayOfRemoteComment();
-					remoteComments.getRemoteComment().add(remoteComment);
+					remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(artifactAttachment.getCreationDate());
+					remoteComment.ArtifactId = artifactId;
+					remoteComment.Text = comment;
+					ArrayList<RemoteComment> remoteComments = new ArrayList<RemoteComment>();
+					remoteComments.add(remoteComment);
 					soap.incidentAddComments(remoteComments);
 
 				}
@@ -574,45 +556,19 @@ public class SpiraImportExport
 				{
 					// Add the new comment
 					RemoteComment remoteComment = new RemoteComment();
-					remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate",
-							SpiraTeamUtil.convertDatesJava2Xml(artifactAttachment.getCreationDate())));
-					remoteComment.setArtifactId(artifactId);
-					remoteComment.setText(CreateJAXBString("Text", comment));
+					remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(artifactAttachment.getCreationDate());
+					remoteComment.ArtifactId = artifactId;
+					remoteComment.Text = comment;
 					soap.taskCreateComment(remoteComment);
 				}
 			}
 
 			return new ArtifactAttachment(remoteDocument);
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
 		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportDocumentAddFileServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportRequirementCreateCommentServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportTaskCreateCommentServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportIncidentAddCommentsServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}*/
-		return null;
 	}
 
 	/**
@@ -1644,27 +1600,8 @@ public class SpiraImportExport
 	 */
 	public void taskUpdate(Task task, String newComment) throws SpiraException
 	{
-		/*TODO: Implement
 		try
 		{
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(task.getProjectId());
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, task.getProjectId()));
-			}
-
 			// Convert the local task into the SOAP version
 			RemoteTask remoteTask = task.toSoapObject();
 
@@ -1677,42 +1614,20 @@ public class SpiraImportExport
 				// Add the new comment
 				Date date = new Date(); // Defaults to now
 				RemoteComment remoteComment = new RemoteComment();
-				remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(date)));
-				remoteComment.setArtifactId(task.getArtifactId());
-				remoteComment.setText(CreateJAXBString("Text", newComment));
+				remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(date);
+				remoteComment.ArtifactId = task.getArtifactId();
+				remoteComment.Text = newComment;
 				soap.taskCreateComment(remoteComment);
 			}
 		}
-		catch (SOAPFaultException ex)
-		{
-			throw SpiraTeamUtil.convertSoapFaults(ex);
-		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportTaskUpdateServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportTaskCreateCommentServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportTaskUpdateValidationFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			// TODO May need to add more intelligent handling of validation
 			// messages
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}*/
+			//throw SpiraTeamUtil.convertFaultException(ex);
+			//throw SpiraTeamUtil.convertSoapFaults(ex);
+			throw new SpiraException(ex.getMessage());
+		}
 	}
 
 	/**
@@ -1726,27 +1641,8 @@ public class SpiraImportExport
 	 */
 	public void requirementUpdate(Requirement requirement, String newComment) throws SpiraException
 	{
-		/*TODO: Implement
 		try
 		{
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(requirement.getProjectId());
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, requirement.getProjectId()));
-			}
-
 			// Convert the local requirement into the SOAP version
 			RemoteRequirement remoteRequirement = requirement.toSoapObject();
 
@@ -1759,42 +1655,20 @@ public class SpiraImportExport
 				// Add the new resolution
 				Date date = new Date(); // Defaults to now
 				RemoteComment remoteComment = new RemoteComment();
-				remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(date)));
-				remoteComment.setArtifactId(requirement.getArtifactId());
-				remoteComment.setText(CreateJAXBString("Text", newComment));
+				remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(date);
+				remoteComment.ArtifactId = requirement.getArtifactId();
+				remoteComment.Text = newComment;
 				soap.requirementCreateComment(remoteComment);
 			}
 		}
-		catch (SOAPFaultException ex)
-		{
-			throw SpiraTeamUtil.convertSoapFaults(ex);
-		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportRequirementUpdateServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportRequirementCreateCommentServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportRequirementUpdateValidationFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			// TODO May need to add more intelligent handling of validation
 			// messages
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}*/
+			//throw SpiraTeamUtil.convertFaultException(ex);
+			//throw SpiraTeamUtil.convertSoapFaults(ex);
+			throw new SpiraException(ex.getMessage());
+		}
 	}
 
 	/**
@@ -1807,27 +1681,8 @@ public class SpiraImportExport
 	 */
 	public void incidentUpdate(Incident incident, String newComment) throws SpiraException
 	{
-		/*TODO: Implement
 		try
 		{
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(incident.getProjectId());
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, incident.getProjectId()));
-			}
-
 			// Convert the local incident into the SOAP version
 			RemoteIncident remoteIncident = incident.toSoapObject();
 
@@ -1840,43 +1695,22 @@ public class SpiraImportExport
 				// Add the new resolution
 				Date date = new Date(); // Defaults to now
 				RemoteComment remoteComment = new RemoteComment();
-				remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(date)));
-				remoteComment.setArtifactId(incident.getArtifactId());
-				remoteComment.setText(CreateJAXBString("Text", newComment));
-				ArrayOfRemoteComment remoteComments = new ArrayOfRemoteComment();
-				remoteComments.getRemoteComment().add(remoteComment);
+				remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(date);
+				remoteComment.ArtifactId = incident.getArtifactId();
+				remoteComment.Text = newComment;
+				ArrayList<RemoteComment> remoteComments = new ArrayList<RemoteComment>();
+				remoteComments.add(remoteComment);
 				soap.incidentAddComments(remoteComments);
 			}
 		}
-		catch (SOAPFaultException ex)
+		catch (IOException ex)
 		{
-			throw SpiraTeamUtil.convertSoapFaults(ex);
-		}
-		catch (WebServiceException ex)
-		{
+			// TODO May need to add more intelligent handling of validation
+			// messages
+			//throw SpiraTeamUtil.convertFaultException(ex);
+			//throw SpiraTeamUtil.convertSoapFaults(ex);
 			throw new SpiraException(ex.getMessage());
 		}
-		catch (IImportExportIncidentUpdateServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportIncidentUpdateValidationFaultMessageFaultFaultMessage exception)
-		{
-			// TODO Add better validation message handling
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportIncidentAddCommentsServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}*/
 	}
 
 	/**

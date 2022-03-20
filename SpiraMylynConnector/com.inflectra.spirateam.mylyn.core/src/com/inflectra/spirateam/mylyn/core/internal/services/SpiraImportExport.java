@@ -238,6 +238,7 @@ public class SpiraImportExport
 			if (remoteUser != null)
 			{
 				this.authenticatedUserId = remoteUser.UserId;
+				success = true;
 			}
 
 			// Now get the version and product information

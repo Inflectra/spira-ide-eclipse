@@ -65,7 +65,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 {
 	//The TASK_DATA_VERSION should be the version number (e.g. v2.3.1) in XXYYZZ format
 	//So that we can migrate old tasks if necessary when we add new attributes
-	private static final String TASK_DATA_VERSION = "040000"; //$NON-NLS-1$
+	private static final String TASK_DATA_VERSION = "060000"; //$NON-NLS-1$
 	private static final String ATTRIBUTE_ARTIFACT_KEY = "spira.key"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_PROJECT_ID = "spira.projectId"; //$NON-NLS-1$
 	public static final String ATTRIBUTE_PROJECT_TEMPLATE_ID = "spira.projectTemplateId"; //$NON-NLS-1$
@@ -1665,7 +1665,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	private static void updateAttributesForWorkflow(SpiraImportExport client, TaskData data, int projectId, int currentIncidentTypeId, int currentIncidentStatusId, Set<TaskAttribute> changedAttributes)
 		throws SpiraException
 	{
-		List<IncidentWorkflowField> workflowFields = client.incidentRetrieveWorkflowFields(projectId, currentIncidentTypeId, currentIncidentStatusId);
+		int projectTemplateId = client.getTemplateIdForProject(projectId);
+		List<IncidentWorkflowField> workflowFields = client.incidentRetrieveWorkflowFields(projectTemplateId, currentIncidentTypeId, currentIncidentStatusId);
 		for (String attributeKey : data.getRoot().getAttributes().keySet())
 		{
 			//See if this is a standard field or custom property
@@ -1748,40 +1749,41 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	
 	private void validateWorkflowRequiredAttributes(SpiraImportExport client, TaskData data, int projectId, int currentIncidentTypeId, int currentIncidentStatusId)
 	throws SpiraException
-{
-	List<IncidentWorkflowField> workflowFields = client.incidentRetrieveWorkflowFields(projectId, currentIncidentTypeId, currentIncidentStatusId);
-	for (String attributeKey : data.getRoot().getAttributes().keySet())
 	{
-		ArtifactAttribute artifactAttribute = ArtifactAttribute.getByArtifactKey(attributeKey);
-		if (artifactAttribute != null)
+		int projectTemplateId = client.getTemplateIdForProject(projectId);
+		List<IncidentWorkflowField> workflowFields = client.incidentRetrieveWorkflowFields(projectTemplateId, currentIncidentTypeId, currentIncidentStatusId);
+		for (String attributeKey : data.getRoot().getAttributes().keySet())
 		{
-			//See if we have a workflow controlled field
-			String workflowFieldName = artifactAttribute.getWorkflowField();
-			if (!workflowFieldName.equals(""))
+			ArtifactAttribute artifactAttribute = ArtifactAttribute.getByArtifactKey(attributeKey);
+			if (artifactAttribute != null)
 			{
-				//See if we have this in the field list
-				boolean required = false;
-				for(IncidentWorkflowField workflowField : workflowFields)
+				//See if we have a workflow controlled field
+				String workflowFieldName = artifactAttribute.getWorkflowField();
+				if (!workflowFieldName.equals(""))
 				{
-					//We only care about the required flag (i.e. state = 2)
-					if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_REQUIRED && workflowFieldName.equals(workflowField.getFieldName()))
+					//See if we have this in the field list
+					boolean required = false;
+					for(IncidentWorkflowField workflowField : workflowFields)
 					{
-						required = true;
+						//We only care about the required flag (i.e. state = 2)
+						if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_REQUIRED && workflowFieldName.equals(workflowField.getFieldName()))
+						{
+							required = true;
+						}
 					}
-				}
-				//If required, check to see if a value and throw an exception if not
-				if (required)
-				{
-					String valueToTest = getTaskAttributeStringValue(data, artifactAttribute);
-					if (valueToTest == null || valueToTest.equals("null") || valueToTest.equals(""))
+					//If required, check to see if a value and throw an exception if not
+					if (required)
 					{
-						throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, artifactAttribute.toString()));
+						String valueToTest = getTaskAttributeStringValue(data, artifactAttribute);
+						if (valueToTest == null || valueToTest.equals("null") || valueToTest.equals(""))
+						{
+							throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsRequired, artifactAttribute.toString()));
+						}
 					}
 				}
 			}
 		}
 	}
-}
 	
 	private static void addOperation(TaskRepository repository, TaskData data, Incident incident, IncidentWorkflowTransition transition)
 	{

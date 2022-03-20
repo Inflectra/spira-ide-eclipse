@@ -343,7 +343,7 @@ public class SpiraImportExport
 		{
 			// Call the appropriate method
 			String url = this.fullUrl + "/projects/{project_id}";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			String json = httpGet(url, this.userName, this.apiKey);
 			
 			//Parse the returned data
@@ -403,7 +403,7 @@ public class SpiraImportExport
 
 			// Call the appropriate method
 			String url = this.fullUrl + "/projects/{project_id}/documents/{document_id}";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{document_id}", String.valueOf(attachmentId));
 			String json = httpGet(url, this.userName, this.apiKey);
 
@@ -459,7 +459,7 @@ public class SpiraImportExport
 
 			// Call the appropriate method
 			String url = this.fullUrl + "/projects/{project_id}/documents/{document_id}/open";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{document_id}", String.valueOf(attachmentId));
 			String json = httpGet(url, this.userName, this.apiKey);
 
@@ -655,7 +655,7 @@ public class SpiraImportExport
 
 			// Call the appropriate method
 			String url = this.fullUrl + "/projects/{project_id}/requirements/{requirement_id}";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{requirement_id}", String.valueOf(requirementId));
 			String json = httpGet(url, this.userName, this.apiKey);
 
@@ -668,7 +668,7 @@ public class SpiraImportExport
 
 			// Now get any associated comments
 			url = this.fullUrl + "/projects/{project_id}/requirements/{requirement_id}/comments";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{requirement_id}", String.valueOf(requirementId));
 			json = httpGet(url, this.userName, this.apiKey);
 
@@ -686,7 +686,7 @@ public class SpiraImportExport
 
 			// Now get any associated attachments
 			url = this.fullUrl + "/projects/{project_id}/artifact-types/{artifact_type_id}/artifacts/{artifact_id}/documents";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{artifact_type_id}", String.valueOf(ArtifactType.REQUIREMENT.getArtifactTypeId()));
 			url = url.replace("{artifact_id}", String.valueOf(requirementId));
 			json = httpGet(url, this.userName, this.apiKey);
@@ -798,7 +798,7 @@ public class SpiraImportExport
 
 			// Call the appropriate method
 			String url = this.fullUrl + "/projects/{project_id}/incidents/{incident_id}";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{incident_id}", String.valueOf(incidentId));
 			String json = httpGet(url, this.userName, this.apiKey);
 
@@ -811,7 +811,7 @@ public class SpiraImportExport
 
 			// Now get the comments
 			url = this.fullUrl + "/projects/{project_id}/incidents/{incident_id}/comments";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{incident_id}", String.valueOf(incidentId));
 			json = httpGet(url, this.userName, this.apiKey);
 
@@ -829,7 +829,7 @@ public class SpiraImportExport
 
 			// Now get any associated attachments
 			url = this.fullUrl + "/projects/{project_id}/artifact-types/{artifact_type_id}/artifacts/{artifact_id}/documents";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{artifact_type_id}", String.valueOf(ArtifactType.INCIDENT.getArtifactTypeId()));
 			url = url.replace("{artifact_id}", String.valueOf(incidentId));
 			json = httpGet(url, this.userName, this.apiKey);
@@ -903,7 +903,7 @@ public class SpiraImportExport
 		{
 			// Get the list of users from the API
 			String url = this.fullUrl + "/projects/{project_id}/users";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			String json = httpGet(url, this.userName, this.apiKey);
 			
 			//Parse the returned data
@@ -940,7 +940,7 @@ public class SpiraImportExport
 		{
 			// Get the list of releases
 			String url = this.fullUrl + "/projects/{project_id}/releases";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			String json = httpGet(url, this.userName, this.apiKey);
 			
 			//Parse the returned data
@@ -1000,7 +1000,7 @@ public class SpiraImportExport
 		{
 			// Get the list of workflow transitions
 			String url = this.fullUrl + "/projects/{project_id}/incidents/types/{incident_type_id}/workflow/transitions?status_id={incident_status_id}&is_detector={is_detector}&isOwner={is_owner}";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{incident_type_id}", String.valueOf(currentTypeId));
 			url = url.replace("{incident_status_id}", String.valueOf(currentStatusId));
 			url = url.replace("{is_detector}", String.valueOf(isDetector));
@@ -1398,7 +1398,7 @@ public class SpiraImportExport
 					{
 						// Get the list of users from the REST API
 						url = this.fullUrl + "/projects/{project_id}/users";
-						url = url.replace("{product_id}", String.valueOf(projectId));
+						url = url.replace("{project_id}", String.valueOf(projectId));
 						json = httpGet(url, this.userName, this.apiKey);
 						
 						//Parse the returned data
@@ -1919,7 +1919,7 @@ public class SpiraImportExport
 
 			// Call the appropriate method
 			String url = this.fullUrl + "/projects/{project_id}/tasks/{task_id}";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{task_id}", String.valueOf(taskId));
 			String json = httpGet(url, this.userName, this.apiKey);
 
@@ -1932,7 +1932,7 @@ public class SpiraImportExport
 
 			// Now get any associated comments
 			url = this.fullUrl + "/projects/{project_id}/tasks/{task_id}/comments";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{task_id}", String.valueOf(taskId));
 			json = httpGet(url, this.userName, this.apiKey);
 
@@ -1950,7 +1950,7 @@ public class SpiraImportExport
 
 			// Now get any associated attachments
 			url = this.fullUrl + "/projects/{project_id}/artifact-types/{artifact_type_id}/artifacts/{artifact_id}/documents";
-			url = url.replace("{product_id}", String.valueOf(projectId));
+			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{artifact_type_id}", String.valueOf(ArtifactType.TASK.getArtifactTypeId()));
 			url = url.replace("{artifact_id}", String.valueOf(taskId));
 			json = httpGet(url, this.userName, this.apiKey);

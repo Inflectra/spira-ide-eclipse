@@ -439,6 +439,7 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 	{
 		TaskMapper mapper = getTaskMapping(taskData);
 		mapper.applyTo(task);
+		task.setTaskKey(taskData.getTaskId());
 		if (!taskData.isPartial())
 		{
 			Date date = task.getModificationDate();

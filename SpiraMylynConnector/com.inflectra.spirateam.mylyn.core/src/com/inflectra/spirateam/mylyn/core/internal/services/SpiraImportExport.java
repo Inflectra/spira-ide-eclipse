@@ -641,13 +641,20 @@ public class SpiraImportExport
 			int artifactTypeId = artifactType.getArtifactTypeId();
 
 			// Call the appropriate method
-			RemoteDocument remoteDocument = artifactAttachment.toSoapObject();
+			RemoteDocumentFile remoteDocumentFile = artifactAttachment.toSoapObject();
 			RemoteLinkedArtifact linkedArtifact = new RemoteLinkedArtifact();
 			linkedArtifact.ArtifactId = artifactId;
 			linkedArtifact.ArtifactTypeId = artifactTypeId;
-			remoteDocument.AttachedArtifacts = new ArrayList<RemoteLinkedArtifact>();
-			remoteDocument.AttachedArtifacts.add(linkedArtifact);
-			remoteDocument = soap.documentAddFile(remoteDocument, attachmentData);
+			remoteDocumentFile.AttachedArtifacts = new ArrayList<RemoteLinkedArtifact>();
+			remoteDocumentFile.AttachedArtifacts.add(linkedArtifact);
+			remoteDocumentFile.BinaryData = attachmentData;
+			
+			String addFileUrl = this.fullUrl + "/projects/{project_id}/documents/file";
+			addFileUrl = addFileUrl.replace("{project_id}", String.valueOf(projectId));
+			Gson gson = new Gson();
+			String json = gson.toJson(remoteDocumentFile);
+			json = httpPost(addFileUrl, this.userName, this.apiKey, json);
+			RemoteDocument remoteDocument = gson.fromJson(json, RemoteDocument.class);
 
 			// See if we have to add a new comment
 			if (comment != null && !comment.isEmpty())
@@ -664,8 +671,7 @@ public class SpiraImportExport
 					String postCommentUrl = this.fullUrl + "/projects/{project_id}/requirements/{requirement_id}/comments";
 					postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(projectId));
 					postCommentUrl = postCommentUrl.replace("{requirement_id}", String.valueOf(artifactId));
-					Gson gson = new Gson();
-					String json = gson.toJson(remoteComment);
+					json = gson.toJson(remoteComment);
 					json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 				}
 				else if (artifactType.equals(ArtifactType.INCIDENT))
@@ -677,8 +683,12 @@ public class SpiraImportExport
 					remoteComment.Text = comment;
 					ArrayList<RemoteComment> remoteComments = new ArrayList<RemoteComment>();
 					remoteComments.add(remoteComment);
-					soap.incidentAddComments(remoteComments);
-
+					
+					String postCommentUrl = this.fullUrl + "/projects/{project_id}/incidents/{incident_id}/comments";
+					postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(projectId));
+					postCommentUrl = postCommentUrl.replace("{incident_id}", String.valueOf(artifactId));
+					json = gson.toJson(remoteComments);
+					json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 				}
 				else if (artifactType.equals(ArtifactType.TASK))
 				{
@@ -691,8 +701,7 @@ public class SpiraImportExport
 					String postCommentUrl = this.fullUrl + "/projects/{project_id}/tasks/{task_id}/comments";
 					postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(projectId));
 					postCommentUrl = postCommentUrl.replace("{task_id}", String.valueOf(artifactId));
-					Gson gson = new Gson();
-					String json = gson.toJson(remoteComment);
+					json = gson.toJson(remoteComment);
 					json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 				}
 			}
@@ -1740,7 +1749,11 @@ public class SpiraImportExport
 			RemoteTask remoteTask = task.toSoapObject();
 
 			// Call the appropriate method
-			soap.taskUpdate(remoteTask);
+			String url = this.fullUrl + "/projects/{project_id}/tasks";
+			url = url.replace("{project_id}", String.valueOf(task.getProjectId()));
+			Gson gson = new Gson();
+			String json = gson.toJson(remoteTask);
+			json = httpPut(url, this.userName, this.apiKey, json);
 
 			// See if we need to add a new comment as well
 			if (newComment != null && !newComment.isEmpty())
@@ -1751,7 +1764,12 @@ public class SpiraImportExport
 				remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(date);
 				remoteComment.ArtifactId = task.getArtifactId();
 				remoteComment.Text = newComment;
-				soap.taskCreateComment(remoteComment);
+
+				String postCommentUrl = this.fullUrl + "/projects/{project_id}/tasks/{task_id}/comments";
+				postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(task.getProjectId()));
+				postCommentUrl = postCommentUrl.replace("{task_id}", String.valueOf(task.getArtifactId()));
+				json = gson.toJson(remoteComment);
+				json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 			}
 		}
 		catch (IOException ex)
@@ -1781,7 +1799,11 @@ public class SpiraImportExport
 			RemoteRequirement remoteRequirement = requirement.toSoapObject();
 
 			// Call the appropriate method to update the incident
-			soap.requirementUpdate(remoteRequirement);
+			String url = this.fullUrl + "/projects/{project_id}/requirements";
+			url = url.replace("{project_id}", String.valueOf(requirement.getProjectId()));
+			Gson gson = new Gson();
+			String json = gson.toJson(remoteRequirement);
+			json = httpPut(url, this.userName, this.apiKey, json);
 
 			// See if we need to add a new comment/resolution as well
 			if (newComment != null && !newComment.isEmpty())
@@ -1792,7 +1814,12 @@ public class SpiraImportExport
 				remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(date);
 				remoteComment.ArtifactId = requirement.getArtifactId();
 				remoteComment.Text = newComment;
-				soap.requirementCreateComment(remoteComment);
+
+				String postCommentUrl = this.fullUrl + "/projects/{project_id}/requirements/{requirement_id}/comments";
+				postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(requirement.getProjectId()));
+				postCommentUrl = postCommentUrl.replace("{requirement_id}", String.valueOf(requirement.getArtifactId()));
+				json = gson.toJson(remoteComment);
+				json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 			}
 		}
 		catch (IOException ex)
@@ -1821,8 +1848,13 @@ public class SpiraImportExport
 			RemoteIncident remoteIncident = incident.toSoapObject();
 
 			// Call the appropriate method to update the incident
-			soap.incidentUpdate(remoteIncident);
-
+			String url = this.fullUrl + "/projects/{project_id}/incidents/{incident_id}";
+			url = url.replace("{project_id}", String.valueOf(incident.getProjectId()));
+			url = url.replace("{incident_id}", String.valueOf(incident.getArtifactId()));
+			Gson gson = new Gson();
+			String json = gson.toJson(remoteIncident);
+			json = httpPut(url, this.userName, this.apiKey, json);
+			
 			// See if we need to add a new comment/resolution as well
 			if (newComment != null && !newComment.isEmpty())
 			{
@@ -1834,7 +1866,12 @@ public class SpiraImportExport
 				remoteComment.Text = newComment;
 				ArrayList<RemoteComment> remoteComments = new ArrayList<RemoteComment>();
 				remoteComments.add(remoteComment);
-				soap.incidentAddComments(remoteComments);
+
+				String postCommentUrl = this.fullUrl + "/projects/{project_id}/incidents/{incident_id}/comments";
+				postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(incident.getProjectId()));
+				postCommentUrl = postCommentUrl.replace("{incident_id}", String.valueOf(incident.getArtifactId()));
+				json = gson.toJson(remoteComments);
+				json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 			}
 		}
 		catch (IOException ex)

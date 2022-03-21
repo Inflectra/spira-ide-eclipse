@@ -5,6 +5,7 @@ import java.util.Date;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteDocument;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteDocumentFile;
 
 /**
  * Represents a single SpiraTeam artifact attachment
@@ -57,9 +58,9 @@ public class ArtifactAttachment
      * Converts this object into its API equivalent
      * @return
      */
-    public RemoteDocument toSoapObject()
+    public RemoteDocumentFile toSoapObject()
     {
-    	RemoteDocument remoteDocument = new RemoteDocument();
+    	RemoteDocumentFile remoteDocument = new RemoteDocumentFile();
     	remoteDocument.FilenameOrUrl = this.filename;
     	remoteDocument.Description = this.description;
     	remoteDocument.UploadDate = SpiraTeamUtil.convertDatesToUtc(this.creationDate);

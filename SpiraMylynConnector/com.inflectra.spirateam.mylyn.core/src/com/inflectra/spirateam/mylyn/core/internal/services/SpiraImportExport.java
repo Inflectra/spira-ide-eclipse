@@ -75,11 +75,6 @@ public class SpiraImportExport
 	private int productVersionSecondary = 0;
 	private int productVersionTertiary = 0;
 
-	private ArtifactField requirementField_Status = null;
-	private ArtifactField requirementField_Importance = null;
-	private ArtifactField taskField_TaskStatus = null;
-	private ArtifactField taskField_TaskPriority = null;
-
 	// Specific constant ID values
 	public static int TASK_STATUS_COMPLETED = 3;
 
@@ -1201,7 +1196,7 @@ public class SpiraImportExport
 
 	public ArtifactField incidentGetStatus()
 	{
-		// Don't return releases if we have no project set
+		// Don't return statuses if we have no project set
 		if (this.storedProjectTemplateId == null)
 		{
 			return null;
@@ -1611,78 +1606,328 @@ public class SpiraImportExport
 			return null;
 		}
 	}
+	
+	public ArtifactField componentGet()
+	{
+		// Don't return components if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.componentGet(projectId);
+	}
+
+	public ArtifactField componentGet(int projectId)
+	{
+		try
+		{
+			// Get the list of components
+			String url = this.fullUrl + "/projects/{project_id}/components";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteComponent> remoteComponents;
+			java.lang.reflect.Type remoteComponentsType = new TypeToken<ArrayList<RemoteComponent>>(){}.getType();
+			remoteComponents = gson.fromJson(json, remoteComponentsType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("Component");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteComponent remoteComponent : remoteComponents)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteComponent.ComponentId, remoteComponent.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
+	}
 
 	public ArtifactField taskGetStatus()
 	{
-		if (this.taskField_TaskStatus == null)
+		// Don't return statuses if we have no project set
+		if (this.storedProjectTemplateId == null)
 		{
-			this.taskField_TaskStatus = new ArtifactField("TaskStatus");
-			this.taskField_TaskStatus.setOptional(false);
-
-			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[5];
-			lookupValues[0] = new ArtifactFieldValue(1, Messages.TaskStatus_NotStarted);
-			lookupValues[1] = new ArtifactFieldValue(2, Messages.TaskStatus_InProgress);
-			lookupValues[2] = new ArtifactFieldValue(TASK_STATUS_COMPLETED, Messages.TaskStatus_Completed);
-			lookupValues[3] = new ArtifactFieldValue(4, Messages.TaskStatus_Blocked);
-			lookupValues[4] = new ArtifactFieldValue(5, Messages.TaskStatus_Deferred);
-			this.taskField_TaskStatus.setValues(lookupValues);
+			return null;
 		}
-		return this.taskField_TaskStatus;
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.taskGetStatus(projectTemplateId);
+	}
+
+	public ArtifactField taskGetStatus(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of statuses
+			String url = this.fullUrl + "/project-templates/{project_template_id}/tasks/statuses";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteTaskStatus> remoteStatuses;
+			java.lang.reflect.Type remoteStatusesType = new TypeToken<ArrayList<RemoteRequirementStatus>>(){}.getType();
+			remoteStatuses = gson.fromJson(json, remoteStatusesType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("TaskStatus");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteTaskStatus remoteStatus : remoteStatuses)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteStatus.TaskStatusId, remoteStatus.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
 	}
 
 	public ArtifactField taskGetPriority()
 	{
-		if (this.taskField_TaskPriority == null)
+		// Don't return releases if we have no project set
+		if (this.storedProjectTemplateId == null)
 		{
-			this.taskField_TaskPriority = new ArtifactField("TaskPriority");
-			this.taskField_TaskPriority.setOptional(true);
-
-			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[4];
-			lookupValues[0] = new ArtifactFieldValue(1, Messages.TaskPriority_Critical);
-			lookupValues[1] = new ArtifactFieldValue(2, Messages.TaskPriority_High);
-			lookupValues[2] = new ArtifactFieldValue(3, Messages.TaskPriority_Medium);
-			lookupValues[3] = new ArtifactFieldValue(4, Messages.TaskPriority_Low);
-			this.taskField_TaskPriority.setValues(lookupValues);
+			return null;
 		}
-		return this.taskField_TaskPriority;
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.taskGetPriority(projectTemplateId);
+	}
+
+	public ArtifactField taskGetPriority(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of priorities
+			String url = this.fullUrl + "/project-templates/{project_template_id}/tasks/priorities";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteTaskPriority> remotePriorities;
+			java.lang.reflect.Type remoteTypesType = new TypeToken<ArrayList<RemoteTaskPriority>>(){}.getType();
+			remotePriorities = gson.fromJson(json, remoteTypesType);
+
+			// Convert the SOAP release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("TaskPriority");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteTaskPriority remotePriority : remotePriorities)
+			{
+				lookupValues.add(new ArtifactFieldValue(remotePriority.PriorityId, remotePriority.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
+	}
+
+	public ArtifactField taskGetType()
+	{
+		// Don't return types if we have no project set
+		if (this.storedProjectTemplateId == null)
+		{
+			return null;
+		}
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.taskGetType(projectTemplateId);
+
+	}
+
+	public ArtifactField taskGetType(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of statuses
+			String url = this.fullUrl + "/project-templates/{project_template_id}/tasks/types";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteTaskType> remoteTypees;
+			java.lang.reflect.Type remoteTypeesType = new TypeToken<ArrayList<RemoteRequirementType>>(){}.getType();
+			remoteTypees = gson.fromJson(json, remoteTypeesType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("TaskType");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteTaskType remoteType : remoteTypees)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteType.TaskTypeId, remoteType.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
 	}
 
 	public ArtifactField requirementGetStatus()
 	{
-		if (this.requirementField_Status == null)
+		// Don't return statuses if we have no project set
+		if (this.storedProjectTemplateId == null)
 		{
-			this.requirementField_Status = new ArtifactField("RequirementStatus");
-			this.requirementField_Status.setOptional(false);
-
-			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[7];
-			lookupValues[0] = new ArtifactFieldValue(1, Messages.RequirementStatus_Requested);
-			lookupValues[1] = new ArtifactFieldValue(2, Messages.RequirementStatus_Planned);
-			lookupValues[2] = new ArtifactFieldValue(3, Messages.RequirementStatus_InProgress);
-			lookupValues[3] = new ArtifactFieldValue(4, Messages.RequirementStatus_Completed);
-			lookupValues[4] = new ArtifactFieldValue(5, Messages.RequirementStatus_Accepted);
-			lookupValues[5] = new ArtifactFieldValue(6, Messages.RequirementStatus_Rejected);
-			lookupValues[6] = new ArtifactFieldValue(7, Messages.RequirementStatus_Evaluated);
-
-			this.requirementField_Status.setValues(lookupValues);
+			return null;
 		}
-		return this.requirementField_Status;
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.requirementGetStatus(projectTemplateId);
+	}
+
+	public ArtifactField requirementGetStatus(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of statuses
+			String url = this.fullUrl + "/project-templates/{project_template_id}/requirements/statuses";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteRequirementStatus> remoteStatuses;
+			java.lang.reflect.Type remoteStatusesType = new TypeToken<ArrayList<RemoteRequirementStatus>>(){}.getType();
+			remoteStatuses = gson.fromJson(json, remoteStatusesType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("RequirementStatus");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteRequirementStatus remoteStatus : remoteStatuses)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteStatus.RequirementStatusId, remoteStatus.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
 	}
 
 	public ArtifactField requirementGetImportance()
 	{
-		if (this.requirementField_Importance == null)
+		// Don't return statuses if we have no project set
+		if (this.storedProjectTemplateId == null)
 		{
-			this.requirementField_Importance = new ArtifactField("RequirementImportance");
-			this.requirementField_Importance.setOptional(true);
-
-			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[4];
-			lookupValues[0] = new ArtifactFieldValue(1, Messages.RequirementImportance_Critical);
-			lookupValues[1] = new ArtifactFieldValue(2, Messages.RequirementImportance_High);
-			lookupValues[2] = new ArtifactFieldValue(3, Messages.RequirementImportance_Medium);
-			lookupValues[3] = new ArtifactFieldValue(4, Messages.RequirementImportance_Low);
-			this.requirementField_Importance.setValues(lookupValues);
+			return null;
 		}
-		return this.requirementField_Importance;
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.requirementGetImportance(projectTemplateId);
+	}
+
+	public ArtifactField requirementGetImportance(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of statuses
+			String url = this.fullUrl + "/project-templates/{project_template_id}/requirements/importances";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteRequirementImportance> remoteImportancees;
+			java.lang.reflect.Type remoteImportanceesType = new TypeToken<ArrayList<RemoteRequirementImportance>>(){}.getType();
+			remoteImportancees = gson.fromJson(json, remoteImportanceesType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("RequirementImportance");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteRequirementImportance remoteImportance : remoteImportancees)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteImportance.ImportanceId, remoteImportance.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
+	}
+
+	public ArtifactField requirementGetType()
+	{
+		// Don't return statuses if we have no project set
+		if (this.storedProjectTemplateId == null)
+		{
+			return null;
+		}
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.requirementGetType(projectTemplateId);
+	}
+
+	public ArtifactField requirementGetType(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of statuses
+			String url = this.fullUrl + "/project-templates/{project_template_id}/requirements/types";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteRequirementType> remoteTypees;
+			java.lang.reflect.Type remoteTypeesType = new TypeToken<ArrayList<RemoteRequirementType>>(){}.getType();
+			remoteTypees = gson.fromJson(json, remoteTypeesType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("RequirementType");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteRequirementType remoteType : remoteTypees)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteType.RequirementTypeId, remoteType.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
 	}
 
 	/**

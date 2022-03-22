@@ -2,26 +2,26 @@ package com.inflectra.spirateam.mylyn.core.internal.model;
 
 import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteWorkflowTransition;
 
-public class IncidentWorkflowTransition
+public class WorkflowTransition
 {
-    protected boolean executeByDetector;
+    protected boolean executeByCreator;
     protected boolean executeByOwner;
-    protected int incidentStatusIDInput;
-    protected String incidentStatusNameInput;
-    protected int incidentStatusIDOutput;
-    protected String incidentStatusNameOutput;
+    protected int statusIDInput;
+    protected String statusNameInput;
+    protected int statusIDOutput;
+    protected String statusNameOutput;
     protected String name;
     protected int workflowID;
     protected int transitionID;
     
-    public IncidentWorkflowTransition(RemoteWorkflowTransition remoteWorkflowIncidentTransition)
+    public WorkflowTransition(RemoteWorkflowTransition remoteWorkflowIncidentTransition)
     {
-        this.executeByDetector = remoteWorkflowIncidentTransition.ExecuteByCreator;
+        this.executeByCreator = remoteWorkflowIncidentTransition.ExecuteByCreator;
         this.executeByOwner = remoteWorkflowIncidentTransition.ExecuteByOwner;
-        this.incidentStatusIDInput = remoteWorkflowIncidentTransition.StatusId_Input;
-        this.incidentStatusNameInput = remoteWorkflowIncidentTransition.StatusName_Input;
-        this.incidentStatusIDOutput = remoteWorkflowIncidentTransition.StatusId_Output;
-        this.incidentStatusNameOutput = remoteWorkflowIncidentTransition.StatusName_Output;
+        this.statusIDInput = remoteWorkflowIncidentTransition.StatusId_Input;
+        this.statusNameInput = remoteWorkflowIncidentTransition.StatusName_Input;
+        this.statusIDOutput = remoteWorkflowIncidentTransition.StatusId_Output;
+        this.statusNameOutput = remoteWorkflowIncidentTransition.StatusName_Output;
         this.name = remoteWorkflowIncidentTransition.Name;
         this.workflowID = remoteWorkflowIncidentTransition.WorkflowId;
         this.transitionID = remoteWorkflowIncidentTransition.TransitionId;
@@ -31,16 +31,16 @@ public class IncidentWorkflowTransition
      * Gets the value of the executeByDetector property.
      * 
      */
-    public boolean isExecuteByDetector() {
-        return executeByDetector;
+    public boolean isExecuteByCreator() {
+        return executeByCreator;
     }
 
     /**
      * Sets the value of the executeByDetector property.
      * 
      */
-    public void setExecuteByDetector(boolean value) {
-        this.executeByDetector = value;
+    public void setExecuteByCreator(boolean value) {
+        this.executeByCreator = value;
     }
 
     /**
@@ -63,16 +63,16 @@ public class IncidentWorkflowTransition
      * Gets the value of the incidentStatusIDInput property.
      * 
      */
-    public int getIncidentStatusIDInput() {
-        return incidentStatusIDInput;
+    public int getStatusIDInput() {
+        return statusIDInput;
     }
 
     /**
      * Sets the value of the incidentStatusIDInput property.
      * 
      */
-    public void setIncidentStatusIDInput(int value) {
-        this.incidentStatusIDInput = value;
+    public void setStatusIDInput(int value) {
+        this.statusIDInput = value;
     }
 
     /**
@@ -84,7 +84,7 @@ public class IncidentWorkflowTransition
      *     
      */
     public String getIncidentStatusNameInput() {
-        return incidentStatusNameInput;
+        return statusNameInput;
     }
 
     /**
@@ -95,24 +95,24 @@ public class IncidentWorkflowTransition
      *     {@link String }
      *     
      */
-    public void setIncidentStatusNameInput(String value) {
-        this.incidentStatusNameInput = value;
+    public void setStatusNameInput(String value) {
+        this.statusNameInput = value;
     }
 
     /**
      * Gets the value of the incidentStatusIDOutput property.
      * 
      */
-    public int getIncidentStatusIDOutput() {
-        return incidentStatusIDOutput;
+    public int getStatusIDOutput() {
+        return statusIDOutput;
     }
 
     /**
      * Sets the value of the incidentStatusIDOutput property.
      * 
      */
-    public void setIncidentStatusIDOutput(int value) {
-        this.incidentStatusIDOutput = value;
+    public void setStatusIDOutput(int value) {
+        this.statusIDOutput = value;
     }
 
     /**
@@ -123,8 +123,8 @@ public class IncidentWorkflowTransition
      *     {@link String }
      *     
      */
-    public String getIncidentStatusNameOutput() {
-        return incidentStatusNameOutput;
+    public String getStatusNameOutput() {
+        return statusNameOutput;
     }
 
     /**
@@ -135,8 +135,8 @@ public class IncidentWorkflowTransition
      *     {@link String }
      *     
      */
-    public void setIncidentStatusNameOutput(String value) {
-        this.incidentStatusNameOutput = value;
+    public void setStatusNameOutput(String value) {
+        this.statusNameOutput = value;
     }
 
     /**

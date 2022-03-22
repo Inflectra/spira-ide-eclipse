@@ -44,8 +44,8 @@ import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
-import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowField;
-import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransition;
+import com.inflectra.spirateam.mylyn.core.internal.model.WorkflowField;
+import com.inflectra.spirateam.mylyn.core.internal.model.WorkflowTransition;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.RequirementComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
@@ -509,11 +509,11 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			}
 			int currentTypeId = incident.getIncidentTypeId();
 			int currentStatusId = incident.getIncidentStatusId();
-			List<IncidentWorkflowTransition> transitions = client.incidentRetrieveWorkflowTransitions(currentTypeId, currentStatusId, isDetector, isOwner);
+			List<WorkflowTransition> transitions = client.incidentRetrieveWorkflowTransitions(currentTypeId, currentStatusId, isDetector, isOwner);
 			if (transitions != null)
 			{
 				// add transitions and set first as default
-				for (IncidentWorkflowTransition transition : transitions)
+				for (WorkflowTransition transition : transitions)
 				{
 					addOperation(repository, data, incident, transition);
 				}
@@ -633,13 +633,13 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 							int currentTypeId = getTaskAttributeIntValue(taskData, ArtifactAttribute.INCIDENT_TYPE_ID);
 							//Get all the transitions, even if owner and detector
 							//Doesn't matter that we have more, since we already know the ID we want
-							List<IncidentWorkflowTransition> transitions = client.incidentRetrieveWorkflowTransitions(currentTypeId, currentStatusId, true, true);
+							List<WorkflowTransition> transitions = client.incidentRetrieveWorkflowTransitions(currentTypeId, currentStatusId, true, true);
 							int destinationIncidentStatusId = -1;
-							for (IncidentWorkflowTransition transition : transitions)
+							for (WorkflowTransition transition : transitions)
 							{
 								if (transition.getTransitionID() == workflowTransitionId)
 								{
-									destinationIncidentStatusId = transition.getIncidentStatusIDOutput();
+									destinationIncidentStatusId = transition.getStatusIDOutput();
 								}
 							}
 							
@@ -1666,7 +1666,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		throws SpiraException
 	{
 		int projectTemplateId = client.getTemplateIdForProject(projectId);
-		List<IncidentWorkflowField> workflowFields = client.incidentRetrieveWorkflowFields(projectTemplateId, currentIncidentTypeId, currentIncidentStatusId);
+		List<WorkflowField> workflowFields = client.incidentRetrieveWorkflowFields(projectTemplateId, currentIncidentTypeId, currentIncidentStatusId);
 		for (String attributeKey : data.getRoot().getAttributes().keySet())
 		{
 			//See if this is a standard field or custom property
@@ -1680,7 +1680,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				boolean isInactive = false;
 				boolean isRequired = false;
 				boolean isHidden = false;
-				for(IncidentWorkflowField workflowField : workflowFields)
+				for(WorkflowField workflowField : workflowFields)
 				{
 					if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_INACTIVE && customPropertyName.equals(workflowField.getFieldName()))
 					{
@@ -1716,7 +1716,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 					boolean isInactive = false;
 					boolean isRequired = false;
 					boolean isHidden = false;
-					for(IncidentWorkflowField workflowField : workflowFields)
+					for(WorkflowField workflowField : workflowFields)
 					{
 						//We only care about the active flag (i.e. state = 1)
 						if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_INACTIVE && workflowFieldName.equals(workflowField.getFieldName()))
@@ -1751,7 +1751,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 	throws SpiraException
 	{
 		int projectTemplateId = client.getTemplateIdForProject(projectId);
-		List<IncidentWorkflowField> workflowFields = client.incidentRetrieveWorkflowFields(projectTemplateId, currentIncidentTypeId, currentIncidentStatusId);
+		List<WorkflowField> workflowFields = client.incidentRetrieveWorkflowFields(projectTemplateId, currentIncidentTypeId, currentIncidentStatusId);
 		for (String attributeKey : data.getRoot().getAttributes().keySet())
 		{
 			ArtifactAttribute artifactAttribute = ArtifactAttribute.getByArtifactKey(attributeKey);
@@ -1763,7 +1763,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 				{
 					//See if we have this in the field list
 					boolean required = false;
-					for(IncidentWorkflowField workflowField : workflowFields)
+					for(WorkflowField workflowField : workflowFields)
 					{
 						//We only care about the required flag (i.e. state = 2)
 						if (workflowField.getFieldStatus() == SpiraTeamUtil.WORKFLOW_FIELD_STATE_REQUIRED && workflowFieldName.equals(workflowField.getFieldName()))
@@ -1785,7 +1785,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		}
 	}
 	
-	private static void addOperation(TaskRepository repository, TaskData data, Incident incident, IncidentWorkflowTransition transition)
+	private static void addOperation(TaskRepository repository, TaskData data, Incident incident, WorkflowTransition transition)
 	{
 		String label = transition.getName();
 		if (label != null)

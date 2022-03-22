@@ -3,7 +3,7 @@ package com.inflectra.spirateam.mylyn.core.internal.model;
 import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteWorkflowCustomProperty;
 import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteWorkflowField;
 
-public class IncidentWorkflowField
+public class WorkflowField
 {
 	protected String fieldCaption;
 	protected String fieldName;
@@ -15,7 +15,7 @@ public class IncidentWorkflowField
 	 * 
 	 * @param remoteWorkflowField
 	 */
-	public IncidentWorkflowField(RemoteWorkflowField remoteWorkflowField)
+	public WorkflowField(RemoteWorkflowField remoteWorkflowField)
 	{
 		this.fieldCaption = remoteWorkflowField.FieldCaption;
 		this.fieldName = remoteWorkflowField.FieldName;
@@ -28,7 +28,7 @@ public class IncidentWorkflowField
 	 * 
 	 * @param remoteWorkflowCustomProperty
 	 */
-	public IncidentWorkflowField(RemoteWorkflowCustomProperty remoteWorkflowCustomProperty)
+	public WorkflowField(RemoteWorkflowCustomProperty remoteWorkflowCustomProperty)
 	{
 		this.fieldCaption = remoteWorkflowCustomProperty.FieldCaption;
 		this.fieldName = remoteWorkflowCustomProperty.FieldName;

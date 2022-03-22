@@ -37,8 +37,8 @@ import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
-import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowField;
-import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransition;
+import com.inflectra.spirateam.mylyn.core.internal.model.WorkflowField;
+import com.inflectra.spirateam.mylyn.core.internal.model.WorkflowTransition;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.RequirementComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
@@ -1075,7 +1075,7 @@ public class SpiraImportExport
 		}
 	}
 
-	public List<IncidentWorkflowTransition> incidentRetrieveWorkflowTransitions(int currentTypeId, int currentStatusId, boolean isDetector, boolean isOwner)
+	public List<WorkflowTransition> incidentRetrieveWorkflowTransitions(int currentTypeId, int currentStatusId, boolean isDetector, boolean isOwner)
 			throws SpiraException
 	{
 		// Don't return releases if we have no project set
@@ -1087,7 +1087,7 @@ public class SpiraImportExport
 		return this.incidentRetrieveWorkflowTransitions(projectId, currentTypeId, currentStatusId, isDetector, isOwner);
 	}
 
-	public List<IncidentWorkflowTransition> incidentRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isDetector,
+	public List<WorkflowTransition> incidentRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isDetector,
 			boolean isOwner) throws SpiraException
 	{
 		try
@@ -1108,10 +1108,10 @@ public class SpiraImportExport
 			remoteTransitions = gson.fromJson(json, remoteTransitionsType);
 			
 			// Convert the remote transitions into local versions
-			ArrayList<IncidentWorkflowTransition> transitions = new ArrayList<IncidentWorkflowTransition>();
+			ArrayList<WorkflowTransition> transitions = new ArrayList<WorkflowTransition>();
 			for (RemoteWorkflowTransition remoteTransition : remoteTransitions)
 			{
-				transitions.add(new IncidentWorkflowTransition(remoteTransition));
+				transitions.add(new WorkflowTransition(remoteTransition));
 			}
 			return transitions;
 		}
@@ -1121,7 +1121,7 @@ public class SpiraImportExport
 		}
 	}
 
-	public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int currentIncidentTypeId, int currentIncidentStatusId) throws SpiraException
+	public List<WorkflowField> incidentRetrieveWorkflowFields(int currentIncidentTypeId, int currentIncidentStatusId) throws SpiraException
 	{
 		// Don't return fields if we have no project set
 		if (this.storedProjectTemplateId == null)
@@ -1142,7 +1142,7 @@ public class SpiraImportExport
 	 * @return
 	 * @throws SpiraException
 	 */
-	public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectTemplateId, int currentIncidentTypeId, int currentIncidentStatusId)
+	public List<WorkflowField> incidentRetrieveWorkflowFields(int projectTemplateId, int currentIncidentTypeId, int currentIncidentStatusId)
 			throws SpiraException
 	{
 		try
@@ -1162,10 +1162,10 @@ public class SpiraImportExport
 			remoteWorkflowFields = gson.fromJson(json, remoteWorkflowFieldsType);
 
 			// Convert the SOAP workflow fields into local versions
-			ArrayList<IncidentWorkflowField> fields = new ArrayList<IncidentWorkflowField>();
+			ArrayList<WorkflowField> fields = new ArrayList<WorkflowField>();
 			for (RemoteWorkflowField remoteField : remoteWorkflowFields)
 			{
-				fields.add(new IncidentWorkflowField(remoteField));
+				fields.add(new WorkflowField(remoteField));
 			}
 
 			// Get the list of workflow-controlled custom-properties
@@ -1183,7 +1183,7 @@ public class SpiraImportExport
 
 			for (RemoteWorkflowCustomProperty remoteWorkflowCustomProperty : remoteWorkflowCustomProperties)
 			{
-				fields.add(new IncidentWorkflowField(remoteWorkflowCustomProperty));
+				fields.add(new WorkflowField(remoteWorkflowCustomProperty));
 			}
 
 			return fields;
@@ -1789,6 +1789,244 @@ public class SpiraImportExport
 		catch (IOException ex)
 		{
 			return null;
+		}
+	}
+	
+	public List<WorkflowTransition> taskRetrieveWorkflowTransitions(int currentTypeId, int currentStatusId, boolean isDetector, boolean isOwner)
+			throws SpiraException
+	{
+		// Don't return releases if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.taskRetrieveWorkflowTransitions(projectId, currentTypeId, currentStatusId, isDetector, isOwner);
+	}
+
+	public List<WorkflowTransition> taskRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isDetector,
+			boolean isOwner) throws SpiraException
+	{
+		try
+		{
+			// Get the list of workflow transitions
+			String url = this.fullUrl + "/projects/{project_id}/tasks/types/{task_type_id}/workflow/transitions?status_id={task_status_id}&is_detector={is_detector}&isOwner={is_owner}";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{task_type_id}", String.valueOf(currentTypeId));
+			url = url.replace("{task_status_id}", String.valueOf(currentStatusId));
+			url = url.replace("{is_detector}", String.valueOf(isDetector));
+			url = url.replace("{is_owner}", String.valueOf(isOwner));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteWorkflowTransition> remoteTransitions;
+			java.lang.reflect.Type remoteTransitionsType = new TypeToken<ArrayList<RemoteWorkflowTransition>>(){}.getType();
+			remoteTransitions = gson.fromJson(json, remoteTransitionsType);
+			
+			// Convert the remote transitions into local versions
+			ArrayList<WorkflowTransition> transitions = new ArrayList<WorkflowTransition>();
+			for (RemoteWorkflowTransition remoteTransition : remoteTransitions)
+			{
+				transitions.add(new WorkflowTransition(remoteTransition));
+			}
+			return transitions;
+		}
+		catch (IOException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+
+	public List<WorkflowField> taskRetrieveWorkflowFields(int currentTaskTypeId, int currentTaskStatusId) throws SpiraException
+	{
+		// Don't return fields if we have no project set
+		if (this.storedProjectTemplateId == null)
+		{
+			return null;
+		}
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.taskRetrieveWorkflowFields(projectTemplateId, currentTaskTypeId, currentTaskStatusId);
+	}
+
+	/**
+	 * Gets the list of task workflow fields and custom properties for the
+	 * current task
+	 * 
+	 * @param projectId
+	 * @param currentTaskTypeId
+	 * @param currentTaskStatusId
+	 * @return
+	 * @throws SpiraException
+	 */
+	public List<WorkflowField> taskRetrieveWorkflowFields(int projectTemplateId, int currentTaskTypeId, int currentTaskStatusId)
+			throws SpiraException
+	{
+		try
+		{
+			// Get the list of workflow field states
+			// (inactive/required/hidden)
+			String url = this.fullUrl + "/project-templates/{project_template_id}/tasks/types/{task_type_id}/workflow/fields?status_id={task_status_id}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{task_type_id}", String.valueOf(currentTaskTypeId));
+			url = url.replace("{task_status_id}", String.valueOf(currentTaskStatusId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteWorkflowField> remoteWorkflowFields;
+			java.lang.reflect.Type remoteWorkflowFieldsType = new TypeToken<ArrayList<RemoteWorkflowField>>(){}.getType();
+			remoteWorkflowFields = gson.fromJson(json, remoteWorkflowFieldsType);
+
+			// Convert the SOAP workflow fields into local versions
+			ArrayList<WorkflowField> fields = new ArrayList<WorkflowField>();
+			for (RemoteWorkflowField remoteField : remoteWorkflowFields)
+			{
+				fields.add(new WorkflowField(remoteField));
+			}
+
+			// Get the list of workflow-controlled custom-properties
+			// (inactive/required/hidden)
+			url = this.fullUrl + "/project-templates/{project_template_id}/tasks/types/{task_type_id}/workflow/custom-properties?status_id={task_status_id}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{task_type_id}", String.valueOf(currentTaskTypeId));
+			url = url.replace("{task_status_id}", String.valueOf(currentTaskStatusId));
+			json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			ArrayList<RemoteWorkflowCustomProperty> remoteWorkflowCustomProperties;
+			java.lang.reflect.Type remoteWorkflowCustomPropertiesType = new TypeToken<ArrayList<RemoteWorkflowCustomProperty>>(){}.getType();
+			remoteWorkflowCustomProperties = gson.fromJson(json, remoteWorkflowCustomPropertiesType);
+
+			for (RemoteWorkflowCustomProperty remoteWorkflowCustomProperty : remoteWorkflowCustomProperties)
+			{
+				fields.add(new WorkflowField(remoteWorkflowCustomProperty));
+			}
+
+			return fields;
+		}
+		catch (IOException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+	
+	public List<WorkflowTransition> requirementRetrieveWorkflowTransitions(int currentTypeId, int currentStatusId, boolean isDetector, boolean isOwner)
+			throws SpiraException
+	{
+		// Don't return releases if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.requirementRetrieveWorkflowTransitions(projectId, currentTypeId, currentStatusId, isDetector, isOwner);
+	}
+
+	public List<WorkflowTransition> requirementRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isDetector,
+			boolean isOwner) throws SpiraException
+	{
+		try
+		{
+			// Get the list of workflow transitions
+			String url = this.fullUrl + "/projects/{project_id}/requirements/types/{requirement_type_id}/workflow/transitions?status_id={requirement_status_id}&is_detector={is_detector}&isOwner={is_owner}";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{requirement_type_id}", String.valueOf(currentTypeId));
+			url = url.replace("{requirement_status_id}", String.valueOf(currentStatusId));
+			url = url.replace("{is_detector}", String.valueOf(isDetector));
+			url = url.replace("{is_owner}", String.valueOf(isOwner));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteWorkflowTransition> remoteTransitions;
+			java.lang.reflect.Type remoteTransitionsType = new TypeToken<ArrayList<RemoteWorkflowTransition>>(){}.getType();
+			remoteTransitions = gson.fromJson(json, remoteTransitionsType);
+			
+			// Convert the remote transitions into local versions
+			ArrayList<WorkflowTransition> transitions = new ArrayList<WorkflowTransition>();
+			for (RemoteWorkflowTransition remoteTransition : remoteTransitions)
+			{
+				transitions.add(new WorkflowTransition(remoteTransition));
+			}
+			return transitions;
+		}
+		catch (IOException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+
+	public List<WorkflowField> requirementRetrieveWorkflowFields(int currentRequirementTypeId, int currentRequirementStatusId) throws SpiraException
+	{
+		// Don't return fields if we have no project set
+		if (this.storedProjectTemplateId == null)
+		{
+			return null;
+		}
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.requirementRetrieveWorkflowFields(projectTemplateId, currentRequirementTypeId, currentRequirementStatusId);
+	}
+
+	/**
+	 * Gets the list of requirement workflow fields and custom properties for the
+	 * current requirement
+	 * 
+	 * @param projectId
+	 * @param currentRequirementTypeId
+	 * @param currentRequirementStatusId
+	 * @return
+	 * @throws SpiraException
+	 */
+	public List<WorkflowField> requirementRetrieveWorkflowFields(int projectTemplateId, int currentRequirementTypeId, int currentRequirementStatusId)
+			throws SpiraException
+	{
+		try
+		{
+			// Get the list of workflow field states
+			// (inactive/required/hidden)
+			String url = this.fullUrl + "/project-templates/{project_template_id}/requirements/types/{requirement_type_id}/workflow/fields?status_id={requirement_status_id}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{requirement_type_id}", String.valueOf(currentRequirementTypeId));
+			url = url.replace("{requirement_status_id}", String.valueOf(currentRequirementStatusId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteWorkflowField> remoteWorkflowFields;
+			java.lang.reflect.Type remoteWorkflowFieldsType = new TypeToken<ArrayList<RemoteWorkflowField>>(){}.getType();
+			remoteWorkflowFields = gson.fromJson(json, remoteWorkflowFieldsType);
+
+			// Convert the SOAP workflow fields into local versions
+			ArrayList<WorkflowField> fields = new ArrayList<WorkflowField>();
+			for (RemoteWorkflowField remoteField : remoteWorkflowFields)
+			{
+				fields.add(new WorkflowField(remoteField));
+			}
+
+			// Get the list of workflow-controlled custom-properties
+			// (inactive/required/hidden)
+			url = this.fullUrl + "/project-templates/{project_template_id}/requirements/types/{requirement_type_id}/workflow/custom-properties?status_id={requirement_status_id}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{requirement_type_id}", String.valueOf(currentRequirementTypeId));
+			url = url.replace("{requirement_status_id}", String.valueOf(currentRequirementStatusId));
+			json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			ArrayList<RemoteWorkflowCustomProperty> remoteWorkflowCustomProperties;
+			java.lang.reflect.Type remoteWorkflowCustomPropertiesType = new TypeToken<ArrayList<RemoteWorkflowCustomProperty>>(){}.getType();
+			remoteWorkflowCustomProperties = gson.fromJson(json, remoteWorkflowCustomPropertiesType);
+
+			for (RemoteWorkflowCustomProperty remoteWorkflowCustomProperty : remoteWorkflowCustomProperties)
+			{
+				fields.add(new WorkflowField(remoteWorkflowCustomProperty));
+			}
+
+			return fields;
+		}
+		catch (IOException ex)
+		{
+			throw new SpiraException(ex.getMessage());
 		}
 	}
 

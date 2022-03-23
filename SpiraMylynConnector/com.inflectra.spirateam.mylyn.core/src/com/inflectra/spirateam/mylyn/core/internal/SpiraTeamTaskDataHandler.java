@@ -430,7 +430,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_AUTHOR_ID);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_RELEASE_ID);
-			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT);
+			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_ESTIMATE);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_NEW_COMMENT);
 		}
 		
@@ -765,7 +765,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			{
 				return null;
 			}
-			Integer intValue = new Integer(stringValue);
+			Integer intValue = Integer.valueOf(stringValue);
 			return intValue;
 		}
 		catch (NumberFormatException ex)
@@ -774,6 +774,29 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsNotValidInteger, attribute.toString()));
 		}
 	}
+	
+	private Double getTaskAttributeDoubleValue(TaskData taskData, ArtifactAttribute attribute)
+			throws SpiraDataValidationException
+		{
+			try
+			{
+				//First get the string value
+				String stringValue = getTaskAttributeStringValue(taskData, attribute);
+				
+				//Now parse into an BigDecimal object
+				if (stringValue == null || stringValue.equals("null") || stringValue.equals(""))
+				{
+					return null;
+				}
+				Double dblValue = Double.valueOf(stringValue);
+				return dblValue;
+			}
+			catch (NumberFormatException ex)
+			{
+				//Convert into data validation exception
+				throw new SpiraDataValidationException(NLS.bind(Messages.SpiraTeamTaskDataHandler_FieldIsNotValidInteger, attribute.toString()));
+			}
+		}
 	
 	private Integer getTaskAttributeEffortValue(TaskData taskData, ArtifactAttribute attribute)
 		throws SpiraDataValidationException
@@ -891,8 +914,10 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		//requirement.setAuthorId(getTaskAttributeIntValue(taskData, ArtifactAttribute.REQUIREMENT_AUTHOR_ID));
 		requirement.setReleaseId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.REQUIREMENT_RELEASE_ID));
 		requirement.setImportanceId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID));
-		requirement.setPlannedEffort(getTaskAttributeEffortValue(taskData, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT));
+		requirement.setEstimate(getTaskAttributeDoubleValue(taskData, ArtifactAttribute.REQUIREMENT_ESTIMATE));
 		requirement.setStatusId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.REQUIREMENT_STATUS_ID));
+		requirement.setRequirementTypeId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.REQUIREMENT_TYPE));
+		requirement.setRequirementTypeId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.REQUIREMENT_COMPONENT_ID));
 		
 		//Now we need to set the custom property values
 		updateCustomPropertiesFromTaskData(requirement, taskData);
@@ -1500,12 +1525,13 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		{
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.URL, repository.getRepositoryUrl() + ArtifactType.REQUIREMENT.getBaseUrl() + artifact.getArtifactId(), projectId);
 			Requirement requirement = (Requirement)artifact;
-			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_TYPE, ArtifactType.REQUIREMENT.getDisplayName(), projectId);
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_TYPE, requirement.getRequirementTypeId() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_STATUS_ID, requirement.getStatusId() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_AUTHOR_ID, requirement.getAuthorName(), projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID, requirement.getImportanceId() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_RELEASE_ID, requirement.getReleaseId() + "", projectId);
-			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_PLANNED_EFFORT, SpiraTeamUtil.effortValuesToString(requirement.getPlannedEffort()), projectId);
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_ESTIMATE, SpiraTeamUtil.doubleToString(requirement.getEstimate()), projectId);
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.REQUIREMENT_COMPONENT_ID, requirement.getComponentId() + "", projectId);
 			
 			// Handle SpiraTeam comments
 			if (requirement.getComments() != null)
@@ -1579,7 +1605,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		{
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.URL, repository.getRepositoryUrl() + ArtifactType.TASK.getBaseUrl() + artifact.getArtifactId(), projectId);
 			Task task = (Task)artifact;
-			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_TYPE, ArtifactType.TASK.getDisplayName(), projectId);
+			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_TYPE, task.getTaskTypeId() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_STATUS_ID, task.getTaskStatusId() + "", projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_REQUIREMENT_ID, task.getRequirementName(), projectId);
 			updateTaskAttribute(data, changedAttributes, ArtifactAttribute.TASK_RELEASE_ID, task.getReleaseId() + "", projectId);

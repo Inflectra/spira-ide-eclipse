@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
-import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteArtifact;
 import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteArtifactCustomProperty;
 

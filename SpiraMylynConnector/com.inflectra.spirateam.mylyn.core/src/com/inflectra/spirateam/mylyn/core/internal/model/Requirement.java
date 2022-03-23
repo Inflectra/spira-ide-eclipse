@@ -1,11 +1,11 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
-import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteRequirement;
 /**
  * Represents a single requirement in SpiraTeam
@@ -17,13 +17,15 @@ public class Requirement
 {
     protected int statusId;
     protected int authorId;
+    protected int requirementTypeId;
+    protected Integer componentId;
     protected String authorName;
     protected Integer importanceId;
     protected String importanceName;
     protected Integer releaseId;
     protected String releaseVersionNumber;
     protected boolean summary;
-    protected Integer plannedEffort;
+    protected Double estimate;
     
     //Contains the collection of comments
     protected List<RequirementComment> comments = new ArrayList<RequirementComment>();
@@ -36,7 +38,8 @@ public class Requirement
 		AUTHOR_ID("requirement.authorId"),
 		IMPORTANCE_ID("requirement.importanceId"),
 		RELEASE_ID("requirement.releaseId"),
-		PLANNED_EFFORT("requirement.plannedEffort"),
+		ESTIMATE("requirement.estimate"),
+		COMPONENT_ID("requirement.componentId"),
 		COMMENT("requirement.comment");
 		
 		public static Key fromKey(String name)
@@ -85,6 +88,8 @@ public class Requirement
         this.creationDate = SpiraTeamUtil.convertDatesToLocal(remoteRequirement.CreationDate);
         this.lastUpdateDate = SpiraTeamUtil.convertDatesToLocal(remoteRequirement.LastUpdateDate);
         this.artifactId = remoteRequirement.RequirementId;
+        this.requirementTypeId = remoteRequirement.RequirementTypeId;
+        this.componentId = remoteRequirement.ComponentId;
         this.statusId = remoteRequirement.StatusId;
         this.authorId = remoteRequirement.AuthorId;
         this.authorName = remoteRequirement.AuthorName;
@@ -94,9 +99,7 @@ public class Requirement
         this.releaseId = remoteRequirement.ReleaseId;
         this.releaseVersionNumber = remoteRequirement.ReleaseVersionNumber;
         this.summary = remoteRequirement.Summary;
-        
-        //TODO: Switch to estimate in points
-        //this.plannedEffort = remoteRequirement.PlannedEffort;
+        this.estimate = remoteRequirement.EstimatePoints.doubleValue();
     }
     
     /**
@@ -121,11 +124,11 @@ public class Requirement
     	remoteRequirement.CreationDate = this.creationDate;
     	remoteRequirement.LastUpdateDate = SpiraTeamUtil.convertDatesToUtc(this.lastUpdateDate);
     	remoteRequirement.StatusId = this.statusId;
+    	remoteRequirement.RequirementTypeId = this.requirementTypeId;
+    	remoteRequirement.ComponentId = this.componentId;
     	remoteRequirement.ReleaseId = this.releaseId;
     	remoteRequirement.ImportanceId = this.importanceId;
-    	
-    	//TODO: Convert to points
-    	//remoteRequirement.PlannedEffort = this.plannedEffort;
+    	remoteRequirement.EstimatePoints = BigDecimal.valueOf(this.estimate);
             	
         return remoteRequirement;
     }
@@ -285,27 +288,27 @@ public class Requirement
     }
 
     /**
-     * Gets the value of the plannedEffort property.
+     * Gets the value of the estimate property.
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link Double }
      *     
      */
-    public Integer getPlannedEffort() {
-        return plannedEffort;
+    public Double getEstimate() {
+        return estimate;
     }
 
     /**
-     * Sets the value of the plannedEffort property.
+     * Sets the value of the estimate property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link Double }
      *     
      */
-    public void setPlannedEffort(Integer value) {
-        this.plannedEffort = value;
+    public void setEstimate(Double value) {
+        this.estimate = value;
     }
 
 	/**
@@ -314,5 +317,21 @@ public class Requirement
 	public List<RequirementComment> getComments()
 	{
 		return this.comments;
+	}
+
+	public int getRequirementTypeId() {
+		return requirementTypeId;
+	}
+
+	public void setRequirementTypeId(int requirementTypeId) {
+		this.requirementTypeId = requirementTypeId;
+	}
+
+	public Integer getComponentId() {
+		return componentId;
+	}
+
+	public void setComponentId(Integer componentId) {
+		this.componentId = componentId;
 	}
 }

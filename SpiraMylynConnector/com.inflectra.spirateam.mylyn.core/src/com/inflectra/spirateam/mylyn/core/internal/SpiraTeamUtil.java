@@ -219,6 +219,18 @@ public class SpiraTeamUtil
 		}
 	}
 	
+	public static String doubleToString(Double val)
+	{
+		if (val == null)
+		{
+			return ""; //$NON-NLS-1$
+		}
+		else
+		{
+			return val.toString();
+		}
+	}
+	
 	/**
 	 * Converts an effort value in minutes (integer)
 	 * into an hours/mins one that can be displayed in Eclipse

@@ -8,7 +8,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
-import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
 import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteTask;
 /**
  * Represents a single task in SpiraTeam
@@ -18,6 +17,7 @@ import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteTask;
 public class Task extends Artifact
 {
     protected int taskStatusId;
+    protected int taskTypeId;
     protected Integer requirementId;
     protected Integer releaseId;
     protected Integer taskPriorityId;
@@ -109,6 +109,7 @@ public class Task extends Artifact
         this.creationDate = SpiraTeamUtil.convertDatesToLocal(remoteTask.CreationDate);
         this.lastUpdateDate = SpiraTeamUtil.convertDatesToLocal(remoteTask.LastUpdateDate);
         this.taskStatusId = remoteTask.TaskStatusId;
+        this.taskTypeId = remoteTask.TaskTypeId;
         this.requirementId = remoteTask.RequirementId;
         this.releaseId = remoteTask.ReleaseId;
         this.taskPriorityId = remoteTask.TaskPriorityId;
@@ -525,5 +526,13 @@ public class Task extends Artifact
 	public void setCreatorId(int creatorId)
 	{
 		this.creatorId = creatorId;
+	}
+
+	public int getTaskTypeId() {
+		return taskTypeId;
+	}
+
+	public void setTaskTypeId(int taskTypeId) {
+		this.taskTypeId = taskTypeId;
 	}
 }

@@ -22,7 +22,7 @@ public class Incident extends Artifact
     protected int incidentStatusId;
     protected int incidentTypeId;
     protected int openerId;
-    protected Integer testRunStepId;
+    protected ArrayList<Integer> testRunStepIds;
     protected Integer detectedReleaseId;
     protected Integer resolvedReleaseId;
     protected Integer verifiedReleaseId;
@@ -44,6 +44,7 @@ public class Incident extends Artifact
     protected String resolvedReleaseVersionNumber;
     protected String verifiedReleaseVersionNumber;
     protected Boolean incidentStatusOpenStatus;
+    protected ArrayList<Integer> componentIds;
     
     //Contains the collection of resolutions
     protected List<IncidentResolution> resolutions = new ArrayList<IncidentResolution>();
@@ -66,6 +67,7 @@ public class Incident extends Artifact
 		ACTUAL_EFFORT("incident.actualEffort"),
 		REMAINING_EFFORT("incident.remainingEffort"),
 		PROJECTED_EFFORT("incident.projectedEffort"),
+		COMPONENT_IDS("incident.componentIds"),
 		TRANSITION_STATUS("incident.internal.transitionStatus"),
 		RESOLUTION("incident.resolution");
 
@@ -121,15 +123,18 @@ public class Incident extends Artifact
         this.incidentStatusId = remoteIncident.IncidentStatusId;
         this.incidentTypeId = remoteIncident.IncidentTypeId;
         this.openerId = remoteIncident.OpenerId;
-        //TODO: Convert to an array of test run steps
-        //this.testRunStepId = remoteIncident.TestRunStepId;
+        this.testRunStepIds = remoteIncident.TestRunStepIds;
         this.detectedReleaseId = remoteIncident.DetectedReleaseId;
         this.resolvedReleaseId = remoteIncident.ResolvedReleaseId;
         this.verifiedReleaseId = remoteIncident.VerifiedReleaseId;
         this.startDate = SpiraTeamUtil.convertDatesToLocal(remoteIncident.StartDate);
         this.closedDate = SpiraTeamUtil.convertDatesToLocal(remoteIncident.ClosedDate);
-        //TODO: Change to effort or calculate locally
-        //this.completionPercent = remoteIncident.CompletionPercent();
+        this.completionPercent = 0;
+        if (remoteIncident.EstimatedEffort != null && remoteIncident.RemainingEffort != null && remoteIncident.EstimatedEffort > 0)
+        {
+        	int completionPercent = (remoteIncident.EstimatedEffort - remoteIncident.RemainingEffort) / remoteIncident.EstimatedEffort;
+            this.completionPercent = completionPercent;
+        }
         this.estimatedEffort = remoteIncident.EstimatedEffort;
         this.actualEffort = remoteIncident.ActualEffort;
         this.remainingEffort = remoteIncident.RemainingEffort;
@@ -141,6 +146,7 @@ public class Incident extends Artifact
         this.openerName = remoteIncident.OpenerName;
         this.ownerName = remoteIncident.OwnerName;
         this.projectName = remoteIncident.ProjectName;
+        this.componentIds = remoteIncident.ComponentIds;
         this.detectedReleaseVersionNumber = remoteIncident.DetectedReleaseVersionNumber;
         this.resolvedReleaseVersionNumber = remoteIncident.ResolvedReleaseVersionNumber;
         this.verifiedReleaseVersionNumber = remoteIncident.VerifiedReleaseVersionNumber;
@@ -172,7 +178,8 @@ public class Incident extends Artifact
     	remoteIncident.IncidentStatusId = this.incidentStatusId;
     	remoteIncident.IncidentTypeId = this.incidentTypeId;
     	remoteIncident.OpenerId = this.openerId;
-    	//remoteIncident.TestRunStepId(SpiraImportExport.CreateJAXBInteger("TestRunStepId",this.testRunStepId;
+    	remoteIncident.TestRunStepIds = this.testRunStepIds;
+    	remoteIncident.ComponentIds = this.componentIds;
     	remoteIncident.DetectedReleaseId = this.detectedReleaseId;
     	remoteIncident.ResolvedReleaseId = this.resolvedReleaseId;
     	remoteIncident.VerifiedReleaseId = this.verifiedReleaseId;
@@ -324,34 +331,6 @@ public class Incident extends Artifact
         this.openerId = value;
     }
 
-     /**
-     * Gets the value of the testRunStepId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getTestRunStepId() {
-        return testRunStepId;
-    }
-
-    /**
-     * Sets the value of the testRunStepId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setTestRunStepId(Integer value)
-    {
-    	if (hasChanged(this.testRunStepId, value))
-    	{
-    		this.dataChanged = true;
-    	}
-        this.testRunStepId = value;
-    }
 
     /**
      * Gets the value of the detectedReleaseId property.
@@ -737,5 +716,25 @@ public class Incident extends Artifact
 	public Integer getProjectedEffort()
 	{
 		return this.projectedEffort;
+	}
+
+	public ArrayList<Integer> getTestRunStepIds() {
+		return testRunStepIds;
+	}
+
+	public void setTestRunStepIds(ArrayList<Integer> testRunStepIds) {
+		this.testRunStepIds = testRunStepIds;
+	}
+
+	public ArrayList<Integer> getComponentIds() {
+		return componentIds;
+	}
+
+	public void setComponentIds(ArrayList<Integer> componentIds) {
+		this.componentIds = componentIds;
+	}
+
+	public void setCompletionPercent(int completionPercent) {
+		this.completionPercent = completionPercent;
 	}
 }

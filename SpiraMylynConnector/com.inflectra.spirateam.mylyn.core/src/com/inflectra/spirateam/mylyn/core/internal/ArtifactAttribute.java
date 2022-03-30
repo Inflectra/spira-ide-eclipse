@@ -35,7 +35,7 @@ public enum ArtifactAttribute
 	
 	//Requirement attributes
 	REQUIREMENT_TYPE(Requirement.Key.TYPE, Messages.RequirementAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT),
-	REQUIREMENT_STATUS_ID(Requirement.Key.STATUS_ID, Messages.RequirementAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
+	REQUIREMENT_STATUS_ID(Requirement.Key.STATUS_ID, Messages.RequirementAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE, Flag.READ_ONLY),
 	REQUIREMENT_AUTHOR_ID(Requirement.Key.AUTHOR_ID, Messages.RequirementAttribute_AuthorId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_SHORT_TEXT, Flag.PEOPLE, Flag.READ_ONLY),
 	REQUIREMENT_IMPORTANCE_ID(Requirement.Key.IMPORTANCE_ID, Messages.RequirementAttribute_ImportanceId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
 	REQUIREMENT_RELEASE_ID(Requirement.Key.RELEASE_ID, Messages.RequirementAttribute_ReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
@@ -66,7 +66,7 @@ public enum ArtifactAttribute
 	
 	//Task attributes
 	TASK_TYPE(Task.Key.TYPE, Messages.TaskAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT),
-	TASK_STATUS_ID(Task.Key.STATUS_ID, Messages.TaskAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
+	TASK_STATUS_ID(Task.Key.STATUS_ID, Messages.TaskAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE, Flag.READ_ONLY),
 	TASK_REQUIREMENT_ID(Task.Key.REQUIREMENT_NAME, Messages.TaskAttribute_RequirementId, null, TaskAttribute.TYPE_SHORT_RICH_TEXT, Flag.READ_ONLY, Flag.ATTRIBUTE),
 	TASK_RELEASE_ID(Task.Key.RELEASE_ID, Messages.TaskAttribute_ReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
 	TASK_PRIORITY_ID(Task.Key.PRIORITY_ID, Messages.TaskAttribute_PriorityId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),

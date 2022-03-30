@@ -99,7 +99,7 @@ public class Requirement
         this.releaseId = remoteRequirement.ReleaseId;
         this.releaseVersionNumber = remoteRequirement.ReleaseVersionNumber;
         this.summary = remoteRequirement.Summary;
-        this.estimate = remoteRequirement.EstimatePoints.doubleValue();
+        this.estimate = (remoteRequirement.EstimatePoints == null) ? null : remoteRequirement.EstimatePoints.doubleValue();
     }
     
     /**

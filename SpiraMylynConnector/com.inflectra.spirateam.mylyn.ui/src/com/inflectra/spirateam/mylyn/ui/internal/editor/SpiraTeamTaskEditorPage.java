@@ -68,25 +68,22 @@ public class SpiraTeamTaskEditorPage extends AbstractTaskEditorPage
 			{
 				//All artifacts support comments
 			}
-			if (taskEditorPartDescriptor.getId().equals(ID_PART_ACTIONS) && artifactType.equals(ArtifactType.INCIDENT))
+			if (taskEditorPartDescriptor.getId().equals(ID_PART_ACTIONS))
 			{
-				//Incidents use a customized Actions Part with workflow operations
+				//Spira artifacts use a customized Actions Part with workflow operations
 				it.remove();
 			}
 		}
 		
 		//Add the new Actions Part
-		if (artifactType.equals(ArtifactType.INCIDENT))
+		descriptors.add(new TaskEditorPartDescriptor(ID_PART_ACTIONS)
 		{
-			descriptors.add(new TaskEditorPartDescriptor(ID_PART_ACTIONS)
+			@Override
+			public AbstractTaskEditorPart createPart()
 			{
-				@Override
-				public AbstractTaskEditorPart createPart()
-				{
-					return new SpiraTeamActionsPart();
-				}
-			}.setPath(PATH_ACTIONS));
-		}
+				return new SpiraTeamActionsPart();
+			}
+		}.setPath(PATH_ACTIONS));
 		
 		return descriptors;
 	}

@@ -82,57 +82,6 @@ public class SpiraTeamRepositoryConnector extends AbstractRepositoryConnector
 		return SpiraTeamCorePlugin.LABEL;
 	}
 
-	//Returns the equivalent Mylyn priority for a Spira task priority
-	public static PriorityLevel getMylynPriorityForTask(String priority)
-	{
-		if (priority == null)
-		{
-			return null;
-		}
-		if (priority.equals("1"))
-		{
-			return PriorityLevel.P1;
-		}
-		if (priority.equals("2"))
-		{
-			return PriorityLevel.P2;
-		}
-		if (priority.equals("3"))
-		{
-			return PriorityLevel.P3;
-		}
-		if (priority.equals("4"))
-		{
-			return PriorityLevel.P4;
-		}
-		return null;
-	}
-	
-	//Returns the equivalent Mylyn priority for a Spira requirement importance
-	public static PriorityLevel getMylynPriorityForRequirement(String importance)
-	{
-		if (importance == null)
-		{
-			return null;
-		}
-		if (importance.equals("1"))
-		{
-			return PriorityLevel.P1;
-		}
-		if (importance.equals("2"))
-		{
-			return PriorityLevel.P2;
-		}
-		if (importance.equals("3"))
-		{
-			return PriorityLevel.P3;
-		}
-		if (importance.equals("4"))
-		{
-			return PriorityLevel.P4;
-		}
-		return null;
-	}
 	
 	@Override
 	public String getRepositoryUrlFromTaskUrl(String url)

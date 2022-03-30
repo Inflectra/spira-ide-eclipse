@@ -1844,6 +1844,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 					count++;
 				}
 			}
+			
+			//Workflow Transitions
+			addRequirementWorkflowTransitions(client, requirement, repository, data);
 		}
 		
 		if (artifact instanceof Incident)
@@ -1936,6 +1939,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 					count++;
 				}
 			}
+			
+			//Workflow Transitions
+			addTaskWorkflowTransitions(client, task, repository, data);
 		}
 
 		// Handle attachments

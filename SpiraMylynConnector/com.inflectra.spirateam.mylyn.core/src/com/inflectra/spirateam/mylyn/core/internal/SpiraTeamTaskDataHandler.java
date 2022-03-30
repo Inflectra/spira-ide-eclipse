@@ -434,6 +434,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_COMPONENT_ID);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_TRANSITION_STATUS);
 			createAttribute(data, client, ArtifactAttribute.REQUIREMENT_NEW_COMMENT);
+			
+			// Workflow Transitions
+			data.getRoot().createAttribute(TaskAttribute.OPERATION).getMetaData().setType(TaskAttribute.TYPE_OPERATION);
 		}
 		
 		//Incident-specific fields
@@ -480,6 +483,9 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			createAttribute(data, client, ArtifactAttribute.TASK_PROJECTED_EFFORT);
 			createAttribute(data, client, ArtifactAttribute.TASK_TRANSITION_STATUS);
 			createAttribute(data, client, ArtifactAttribute.TASK_NEW_COMMENT);
+			
+			// Workflow Transitions
+			data.getRoot().createAttribute(TaskAttribute.OPERATION).getMetaData().setType(TaskAttribute.TYPE_OPERATION);
 		}
 		
 		// custom fields/properties
@@ -2261,8 +2267,8 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 			try
 			{
 				//Data older than v6.0.0 then we need to add the following attributes:
-				//Requirement - Component, Estimate
-				//Task - (None)
+				//Requirement - Component, Estimate, Workflow
+				//Task - Workflow
 				//Incident - Components
 				
 				//Find out what type of task we have
@@ -2279,9 +2285,17 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 					{
 						createAttribute(taskData, client, ArtifactAttribute.REQUIREMENT_ESTIMATE);
 					}
+					if (taskData.getRoot().getAttribute(ArtifactAttribute.REQUIREMENT_TRANSITION_STATUS.getArtifactKey()) == null)
+					{
+						createAttribute(taskData, client, ArtifactAttribute.REQUIREMENT_TRANSITION_STATUS);
+					}
 				}
 				else if (artifactType.equals(ArtifactType.TASK))
 				{
+					if (taskData.getRoot().getAttribute(ArtifactAttribute.TASK_TRANSITION_STATUS.getArtifactKey()) == null)
+					{
+						createAttribute(taskData, client, ArtifactAttribute.TASK_TRANSITION_STATUS);
+					}
 				}
 				else if (artifactType.equals(ArtifactType.INCIDENT))
 				{

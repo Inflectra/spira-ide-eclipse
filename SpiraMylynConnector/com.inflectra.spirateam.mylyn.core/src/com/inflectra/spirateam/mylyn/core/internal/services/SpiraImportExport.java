@@ -1676,7 +1676,7 @@ public class SpiraImportExport
 			//Parse the returned data
 			Gson gson = new Gson();
 			ArrayList<RemoteTaskStatus> remoteStatuses;
-			java.lang.reflect.Type remoteStatusesType = new TypeToken<ArrayList<RemoteRequirementStatus>>(){}.getType();
+			java.lang.reflect.Type remoteStatusesType = new TypeToken<ArrayList<RemoteTaskStatus>>(){}.getType();
 			remoteStatuses = gson.fromJson(json, remoteStatusesType);
 
 			// Convert the remote release into the ArtifactField class
@@ -1804,17 +1804,17 @@ public class SpiraImportExport
 		return this.taskRetrieveWorkflowTransitions(projectId, currentTypeId, currentStatusId, isDetector, isOwner);
 	}
 
-	public List<WorkflowTransition> taskRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isDetector,
+	public List<WorkflowTransition> taskRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isCreator,
 			boolean isOwner) throws SpiraException
 	{
 		try
 		{
 			// Get the list of workflow transitions
-			String url = this.fullUrl + "/projects/{project_id}/tasks/types/{task_type_id}/workflow/transitions?status_id={task_status_id}&is_detector={is_detector}&isOwner={is_owner}";
+			String url = this.fullUrl + "/projects/{project_id}/tasks/types/{task_type_id}/workflow/transitions?status_id={task_status_id}&is_creator={is_creator}&isOwner={is_owner}";
 			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{task_type_id}", String.valueOf(currentTypeId));
 			url = url.replace("{task_status_id}", String.valueOf(currentStatusId));
-			url = url.replace("{is_detector}", String.valueOf(isDetector));
+			url = url.replace("{is_creator}", String.valueOf(isCreator));
 			url = url.replace("{is_owner}", String.valueOf(isOwner));
 			String json = httpGet(url, this.userName, this.apiKey);
 			
@@ -1923,17 +1923,17 @@ public class SpiraImportExport
 		return this.requirementRetrieveWorkflowTransitions(projectId, currentTypeId, currentStatusId, isDetector, isOwner);
 	}
 
-	public List<WorkflowTransition> requirementRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isDetector,
+	public List<WorkflowTransition> requirementRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isCreator,
 			boolean isOwner) throws SpiraException
 	{
 		try
 		{
 			// Get the list of workflow transitions
-			String url = this.fullUrl + "/projects/{project_id}/requirements/types/{requirement_type_id}/workflow/transitions?status_id={requirement_status_id}&is_detector={is_detector}&isOwner={is_owner}";
+			String url = this.fullUrl + "/projects/{project_id}/requirements/types/{requirement_type_id}/workflow/transitions?status_id={requirement_status_id}&is_creator={is_creator}&isOwner={is_owner}";
 			url = url.replace("{project_id}", String.valueOf(projectId));
 			url = url.replace("{requirement_type_id}", String.valueOf(currentTypeId));
 			url = url.replace("{requirement_status_id}", String.valueOf(currentStatusId));
-			url = url.replace("{is_detector}", String.valueOf(isDetector));
+			url = url.replace("{is_creator}", String.valueOf(isCreator));
 			url = url.replace("{is_owner}", String.valueOf(isOwner));
 			String json = httpGet(url, this.userName, this.apiKey);
 			

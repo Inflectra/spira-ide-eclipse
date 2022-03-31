@@ -34,15 +34,15 @@ public enum ArtifactAttribute
 	CONCURRENCY_DATE(Artifact.Key.CONCURRENCY_DATE, Messages.ArtifactAttribute_ConcurrencyDate, null, TaskAttribute.TYPE_DATE, ""),
 	
 	//Requirement attributes
-	REQUIREMENT_TYPE(Requirement.Key.TYPE, Messages.RequirementAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT),
-	REQUIREMENT_STATUS_ID(Requirement.Key.STATUS_ID, Messages.RequirementAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE, Flag.READ_ONLY),
-	REQUIREMENT_AUTHOR_ID(Requirement.Key.AUTHOR_ID, Messages.RequirementAttribute_AuthorId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_SHORT_TEXT, Flag.PEOPLE, Flag.READ_ONLY),
-	REQUIREMENT_IMPORTANCE_ID(Requirement.Key.IMPORTANCE_ID, Messages.RequirementAttribute_ImportanceId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
-	REQUIREMENT_RELEASE_ID(Requirement.Key.RELEASE_ID, Messages.RequirementAttribute_ReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
-	REQUIREMENT_ESTIMATE(Requirement.Key.ESTIMATE, Messages.RequirementAttribute_Estimate, null, TaskAttribute.TYPE_DOUBLE, Flag.ATTRIBUTE),
+	REQUIREMENT_TYPE(Requirement.Key.TYPE, Messages.RequirementAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT, "RequirementTaskId"),
+	REQUIREMENT_STATUS_ID(Requirement.Key.STATUS_ID, Messages.RequirementAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, "RequirementStatusId", Flag.ATTRIBUTE, Flag.READ_ONLY),
+	REQUIREMENT_AUTHOR_ID(Requirement.Key.AUTHOR_ID, Messages.RequirementAttribute_AuthorId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_SHORT_TEXT, "AuthorId", Flag.PEOPLE, Flag.READ_ONLY),
+	REQUIREMENT_IMPORTANCE_ID(Requirement.Key.IMPORTANCE_ID, Messages.RequirementAttribute_ImportanceId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT, "ImportanceId", Flag.ATTRIBUTE),
+	REQUIREMENT_RELEASE_ID(Requirement.Key.RELEASE_ID, Messages.RequirementAttribute_ReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, "ReleaseId", Flag.ATTRIBUTE),
+	REQUIREMENT_ESTIMATE(Requirement.Key.ESTIMATE, Messages.RequirementAttribute_Estimate, null, TaskAttribute.TYPE_DOUBLE, "Estimate", Flag.ATTRIBUTE),
 	REQUIREMENT_TRANSITION_STATUS(Incident.Key.TRANSITION_STATUS, null, null, TaskAttribute.TYPE_SHORT_TEXT, ""),
-	REQUIREMENT_NEW_COMMENT(Requirement.Key.COMMENT, Messages.RequirementAttribute_NewComment, TaskAttribute.COMMENT_NEW, TaskAttribute.TYPE_LONG_RICH_TEXT),
-	REQUIREMENT_COMPONENT_ID(Requirement.Key.COMPONENT_ID, Messages.RequirementAttribute_ComponentId, TaskAttribute.COMPONENT, TaskAttribute.TYPE_SINGLE_SELECT),
+	REQUIREMENT_NEW_COMMENT(Requirement.Key.COMMENT, Messages.RequirementAttribute_NewComment, TaskAttribute.COMMENT_NEW, TaskAttribute.TYPE_LONG_RICH_TEXT, "Comment"),
+	REQUIREMENT_COMPONENT_ID(Requirement.Key.COMPONENT_ID, Messages.RequirementAttribute_ComponentId, TaskAttribute.COMPONENT, TaskAttribute.TYPE_SINGLE_SELECT, "ComponentId"),
 	
 	//Incident attributes
 	INCIDENT_OPENER_ID(Incident.Key.OPENER_ID, Messages.IncidentAttribute_OpenerId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_SHORT_TEXT, "", Flag.PEOPLE, Flag.READ_ONLY),
@@ -65,21 +65,21 @@ public enum ArtifactAttribute
 	INCIDENT_COMPONENT_IDS(Incident.Key.COMPONENT_IDS, Messages.IncidentAttribute_ComponentIds, TaskAttribute.COMPONENT, TaskAttribute.TYPE_MULTI_SELECT, "ComponentIds"),
 	
 	//Task attributes
-	TASK_TYPE(Task.Key.TYPE, Messages.TaskAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT),
-	TASK_STATUS_ID(Task.Key.STATUS_ID, Messages.TaskAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE, Flag.READ_ONLY),
-	TASK_REQUIREMENT_ID(Task.Key.REQUIREMENT_NAME, Messages.TaskAttribute_RequirementId, null, TaskAttribute.TYPE_SHORT_RICH_TEXT, Flag.READ_ONLY, Flag.ATTRIBUTE),
-	TASK_RELEASE_ID(Task.Key.RELEASE_ID, Messages.TaskAttribute_ReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
-	TASK_PRIORITY_ID(Task.Key.PRIORITY_ID, Messages.TaskAttribute_PriorityId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
-	TASK_CREATOR_ID(Task.Key.CREATOR_ID, Messages.TaskAttribute_CreatorId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_SINGLE_SELECT, Flag.ATTRIBUTE),
-	TASK_START_DATE(Task.Key.START_DATE, Messages.TaskAttribute_StartDate, null, TaskAttribute.TYPE_DATE, Flag.ATTRIBUTE),
-	TASK_END_DATE(Task.Key.END_DATE, Messages.TaskAttribute_EndDate, TaskAttribute.DATE_DUE, TaskAttribute.TYPE_DATE, Flag.ATTRIBUTE),
-	TASK_COMPLETION_PERCENTAGE(Task.Key.COMPLETION_PERCENTAGE, Messages.TaskAttribute_CompletionPercentage, null, TaskAttribute.TYPE_SHORT_TEXT, Flag.READ_ONLY, Flag.ATTRIBUTE),
-	TASK_ESTIMATED_EFFORT(Task.Key.ESTIMATED_EFFORT, Messages.TaskAttribute_EstimatedEffort, null, TaskAttribute.TYPE_DOUBLE, Flag.ATTRIBUTE),
-	TASK_ACTUAL_EFFORT(Task.Key.ACTUAL_EFFORT, Messages.TaskAttribute_ActualEffort, null, TaskAttribute.TYPE_DOUBLE, Flag.ATTRIBUTE),
-	TASK_REMAINING_EFFORT(Task.Key.REMAINING_EFFORT, Messages.TaskAttribute_RemainingEffort, null, TaskAttribute.TYPE_DOUBLE, Flag.ATTRIBUTE),
-	TASK_PROJECTED_EFFORT(Task.Key.PROJECTED_EFFORT, Messages.TaskAttribute_ProjectedEffort, null, TaskAttribute.TYPE_DOUBLE, Flag.READ_ONLY, Flag.ATTRIBUTE),
+	TASK_TYPE(Task.Key.TYPE, Messages.TaskAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT, "TaskTypeId"),
+	TASK_STATUS_ID(Task.Key.STATUS_ID, Messages.TaskAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, "TaskStatusId", Flag.ATTRIBUTE, Flag.READ_ONLY),
+	TASK_REQUIREMENT_ID(Task.Key.REQUIREMENT_NAME, Messages.TaskAttribute_RequirementId, null, TaskAttribute.TYPE_SHORT_RICH_TEXT, "RequirementId", Flag.READ_ONLY, Flag.ATTRIBUTE),
+	TASK_RELEASE_ID(Task.Key.RELEASE_ID, Messages.TaskAttribute_ReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, "ReleaseId", Flag.ATTRIBUTE),
+	TASK_PRIORITY_ID(Task.Key.PRIORITY_ID, Messages.TaskAttribute_PriorityId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT, "TaskPriorityId", Flag.ATTRIBUTE),
+	TASK_CREATOR_ID(Task.Key.CREATOR_ID, Messages.TaskAttribute_CreatorId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_SINGLE_SELECT, "CreatorId", Flag.ATTRIBUTE),
+	TASK_START_DATE(Task.Key.START_DATE, Messages.TaskAttribute_StartDate, null, TaskAttribute.TYPE_DATE, "StartDate", Flag.ATTRIBUTE),
+	TASK_END_DATE(Task.Key.END_DATE, Messages.TaskAttribute_EndDate, TaskAttribute.DATE_DUE, TaskAttribute.TYPE_DATE, "EndDate", Flag.ATTRIBUTE),
+	TASK_COMPLETION_PERCENTAGE(Task.Key.COMPLETION_PERCENTAGE, Messages.TaskAttribute_CompletionPercentage, null, TaskAttribute.TYPE_SHORT_TEXT, "CompletionPercent", Flag.READ_ONLY, Flag.ATTRIBUTE),
+	TASK_ESTIMATED_EFFORT(Task.Key.ESTIMATED_EFFORT, Messages.TaskAttribute_EstimatedEffort, null, TaskAttribute.TYPE_DOUBLE, "EstimatedEffort", Flag.ATTRIBUTE),
+	TASK_ACTUAL_EFFORT(Task.Key.ACTUAL_EFFORT, Messages.TaskAttribute_ActualEffort, null, TaskAttribute.TYPE_DOUBLE, "ActualEffort", Flag.ATTRIBUTE),
+	TASK_REMAINING_EFFORT(Task.Key.REMAINING_EFFORT, Messages.TaskAttribute_RemainingEffort, null, TaskAttribute.TYPE_DOUBLE, "RemainingEffort", Flag.ATTRIBUTE),
+	TASK_PROJECTED_EFFORT(Task.Key.PROJECTED_EFFORT, Messages.TaskAttribute_ProjectedEffort, null, TaskAttribute.TYPE_DOUBLE, "ProjectedEffort", Flag.READ_ONLY, Flag.ATTRIBUTE),
 	TASK_TRANSITION_STATUS(Incident.Key.TRANSITION_STATUS, null, null, TaskAttribute.TYPE_SHORT_TEXT, ""),
-	TASK_NEW_COMMENT(Task.Key.COMMENT, Messages.TaskAttribute_NewComment, TaskAttribute.COMMENT_NEW, TaskAttribute.TYPE_LONG_RICH_TEXT);
+	TASK_NEW_COMMENT(Task.Key.COMMENT, Messages.TaskAttribute_NewComment, TaskAttribute.COMMENT_NEW, TaskAttribute.TYPE_LONG_RICH_TEXT, "Comment");
 	
 	static Map<String, ArtifactAttribute> attributeByArtifactKey = new HashMap<String, ArtifactAttribute>();
 	static Map<String, String> artifactKeyByTaskKey = new HashMap<String, String>();
@@ -139,13 +139,14 @@ public enum ArtifactAttribute
 		}
 	}
 	
-	ArtifactAttribute(Requirement.Key artifactKey, String prettyName, String taskKey, String type, Flag firstFlag, Flag... moreFlags)
+	ArtifactAttribute(Requirement.Key artifactKey, String prettyName, String taskKey, String type, String workflowField, Flag firstFlag, Flag... moreFlags)
 	{
 		this.artifactType = ArtifactType.REQUIREMENT;	//Requirement attribute
 		this.artifactKey = artifactKey.getKey();
 		this.taskKey = taskKey;
 		this.prettyName = prettyName;
 		this.type = type;
+		this.workflowField = workflowField;
 		if (firstFlag == null)
 		{
 			this.flags = SpiraTeamAttributeMapper.NO_FLAGS;
@@ -174,13 +175,14 @@ public enum ArtifactAttribute
 		}
 	}
 	
-	ArtifactAttribute(Task.Key artifactKey, String prettyName, String taskKey, String type, Flag firstFlag, Flag... moreFlags)
+	ArtifactAttribute(Task.Key artifactKey, String prettyName, String taskKey, String type, String workflowField, Flag firstFlag, Flag... moreFlags)
 	{
 		this.artifactType = ArtifactType.TASK;	//Task attribute
 		this.artifactKey = artifactKey.getKey();
 		this.taskKey = taskKey;
 		this.prettyName = prettyName;
 		this.type = type;
+		this.workflowField = workflowField;
 		if (firstFlag == null)
 		{
 			this.flags = SpiraTeamAttributeMapper.NO_FLAGS;
@@ -195,17 +197,17 @@ public enum ArtifactAttribute
 	{
 		this(artifactKey, prettyName, taskKey, type, workflowField, null);
 	}
-	ArtifactAttribute(Requirement.Key artifactKey, String prettyName, String taskKey, String type)
+	ArtifactAttribute(Requirement.Key artifactKey, String prettyName, String taskKey, String type, String workflowField)
 	{
-		this(artifactKey, prettyName, taskKey, type, null);
+		this(artifactKey, prettyName, taskKey, type, workflowField, null);
 	}
 	ArtifactAttribute(Incident.Key artifactKey, String prettyName, String taskKey, String type, String workflowField)
 	{
 		this(artifactKey, prettyName, taskKey, type, workflowField, null);
 	}
-	ArtifactAttribute(Task.Key artifactKey, String prettyName, String taskKey, String type)
+	ArtifactAttribute(Task.Key artifactKey, String prettyName, String taskKey, String type, String workflowField)
 	{
-		this(artifactKey, prettyName, taskKey, type, null);
+		this(artifactKey, prettyName, taskKey, type, workflowField, null);
 	}
 
 	public ArtifactType getArtifactType()

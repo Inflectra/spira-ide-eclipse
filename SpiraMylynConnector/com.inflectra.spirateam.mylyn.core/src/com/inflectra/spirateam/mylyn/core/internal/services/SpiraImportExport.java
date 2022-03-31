@@ -1769,7 +1769,7 @@ public class SpiraImportExport
 			//Parse the returned data
 			Gson gson = new Gson();
 			ArrayList<RemoteTaskType> remoteTypees;
-			java.lang.reflect.Type remoteTypeesType = new TypeToken<ArrayList<RemoteRequirementType>>(){}.getType();
+			java.lang.reflect.Type remoteTypeesType = new TypeToken<ArrayList<RemoteTaskType>>(){}.getType();
 			remoteTypees = gson.fromJson(json, remoteTypeesType);
 
 			// Convert the remote release into the ArtifactField class

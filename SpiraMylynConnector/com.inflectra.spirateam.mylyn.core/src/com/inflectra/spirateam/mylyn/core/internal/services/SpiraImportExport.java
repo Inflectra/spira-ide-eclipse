@@ -287,7 +287,9 @@ public class SpiraImportExport
 	 * @throws IOException
 	 * @throws SpiraAuthenticationException
 	 */
-	public static String httpPost(String input, String login, String apiKey, String body) throws IOException,  SpiraAuthenticationException {
+	public static String httpPost(String input, String login, String apiKey, String body)
+			throws IOException,  SpiraAuthenticationException, SpiraDataConcurrencyException, SpiraDataValidationException
+	{
 		URL url = new URL(input);
 
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -325,6 +327,30 @@ public class SpiraImportExport
 			// return result
 			return response.toString();
 		} else {
+			
+			//Get the error stream
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getErrorStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			
+			if (responseCode == 400)
+			{
+				//Bad Request, need to parse body
+				if (response != null && response.indexOf("ValidationFaultMessage") != -1)
+				{
+					throw new SpiraDataValidationException(SpiraTeamUtil.HtmlRenderAsPlainText(response.toString()));
+				}
+				else
+				{
+					throw new IOException("PUT request not worked: " + response);
+				}				
+			}
 			if (responseCode == 403)
 			{
 				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
@@ -332,6 +358,10 @@ public class SpiraImportExport
 			if (responseCode == 401)
 			{
 				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			if (responseCode == 409)
+			{
+				throw new SpiraDataConcurrencyException(com.inflectra.spirateam.mylyn.core.internal.Messages.SpiraTeamCorePlugin_DataConcurrencyError);
 			}
 			throw new IOException("POST request not worked: " + responseCode);
 		}
@@ -348,7 +378,9 @@ public class SpiraImportExport
 	 * @throws IOException
 	 * @throws SpiraAuthenticationException
 	 */
-	public static String httpPut(String input, String login, String apiKey, String body) throws IOException,  SpiraAuthenticationException {
+	public static String httpPut(String input, String login, String apiKey, String body)
+			throws IOException,  SpiraAuthenticationException, SpiraDataConcurrencyException, SpiraDataValidationException
+	{
 		URL url = new URL(input);
 
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -386,6 +418,30 @@ public class SpiraImportExport
 			// return result
 			return response.toString();
 		} else {
+
+			//Get the error stream
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getErrorStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			
+			if (responseCode == 400)
+			{
+				//Bad Request, need to parse body
+				if (response != null && response.indexOf("ValidationFaultMessage") != -1)
+				{
+					throw new SpiraDataValidationException(SpiraTeamUtil.HtmlRenderAsPlainText(response.toString()));
+				}
+				else
+				{
+					throw new IOException("PUT request not worked: " + response);
+				}				
+			}
 			if (responseCode == 403)
 			{
 				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
@@ -393,6 +449,10 @@ public class SpiraImportExport
 			if (responseCode == 401)
 			{
 				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			if (responseCode == 409)
+			{
+				throw new SpiraDataConcurrencyException(com.inflectra.spirateam.mylyn.core.internal.Messages.SpiraTeamCorePlugin_DataConcurrencyError);
 			}
 			throw new IOException("PUT request not worked: " + responseCode);
 		}
@@ -437,6 +497,18 @@ public class SpiraImportExport
 			// return result
 			return response.toString();
 		} else {
+			
+			//Get the error stream
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getErrorStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			
 			if (responseCode == 403)
 			{
 				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
@@ -2234,7 +2306,8 @@ public class SpiraImportExport
 			// Call the appropriate method
 			String url = this.fullUrl + "/projects/{project_id}/tasks";
 			url = url.replace("{project_id}", String.valueOf(task.getProjectId()));
-			Gson gson = new Gson();
+			//Gson gson = new Gson();
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 			String json = gson.toJson(remoteTask);
 			json = httpPut(url, this.userName, this.apiKey, json);
 
@@ -2284,7 +2357,8 @@ public class SpiraImportExport
 			// Call the appropriate method to update the incident
 			String url = this.fullUrl + "/projects/{project_id}/requirements";
 			url = url.replace("{project_id}", String.valueOf(requirement.getProjectId()));
-			Gson gson = new Gson();
+			//Gson gson = new Gson();
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 			String json = gson.toJson(remoteRequirement);
 			json = httpPut(url, this.userName, this.apiKey, json);
 
@@ -2334,7 +2408,8 @@ public class SpiraImportExport
 			String url = this.fullUrl + "/projects/{project_id}/incidents/{incident_id}";
 			url = url.replace("{project_id}", String.valueOf(incident.getProjectId()));
 			url = url.replace("{incident_id}", String.valueOf(incident.getArtifactId()));
-			Gson gson = new Gson();
+			//Gson gson = new Gson();
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 			String json = gson.toJson(remoteIncident);
 			json = httpPut(url, this.userName, this.apiKey, json);
 			

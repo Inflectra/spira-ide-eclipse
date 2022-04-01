@@ -18,7 +18,7 @@ public class RemoteArtifact {
     /// <summary>
     /// The datetime used to track optimistic concurrency to prevent edit conflicts
     /// </summary>
-    public Date ConcurrencyDate;
+    public String ConcurrencyDate;
 
     /// <summary>
     /// The list of associated custom properties/fields for this artifact

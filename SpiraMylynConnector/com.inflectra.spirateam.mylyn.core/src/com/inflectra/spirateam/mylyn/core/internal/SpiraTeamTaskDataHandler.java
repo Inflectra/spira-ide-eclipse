@@ -1224,7 +1224,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		requirement.setLastUpdateDate(lastUpdateDate);
 		//This will be checked by the server to see if it matches the current record
 		//since the server uses optimistic concurrency
-		requirement.setConcurrencyDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.CONCURRENCY_DATE));
+		requirement.setConcurrencyDate(getTaskAttributeStringValue(taskData, ArtifactAttribute.CONCURRENCY_DATE));
 
 		//Now we need to set the requirement-specific attributes
 		//requirement.setAuthorId(getTaskAttributeIntValue(taskData, ArtifactAttribute.REQUIREMENT_AUTHOR_ID));
@@ -1288,7 +1288,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		task.setLastUpdateDate(lastUpdateDate);
 		//This will be checked by the server to see if it matches the current record
 		//since the server uses optimistic concurrency
-		task.setConcurrencyDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.CONCURRENCY_DATE));
+		task.setConcurrencyDate(getTaskAttributeStringValue(taskData, ArtifactAttribute.CONCURRENCY_DATE));
 
 		//Now we need to set the task-specific attributes
 		task.setTaskStatusId(getTaskAttributeIntValue(taskData, ArtifactAttribute.TASK_STATUS_ID));
@@ -1509,7 +1509,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		incident.setLastUpdateDate(lastUpdateDate);
 		//This will be checked by the server to see if it matches the current record
 		//since the server uses optimistic concurrency
-		incident.setConcurrencyDate(getTaskAttributeDateValue(taskData, ArtifactAttribute.CONCURRENCY_DATE));
+		incident.setConcurrencyDate(getTaskAttributeStringValue(taskData, ArtifactAttribute.CONCURRENCY_DATE));
 
 		//Now we need to set the incident-specific attributes
 		incident.setPriorityId(getTaskAttributeIntegerValue(taskData, ArtifactAttribute.INCIDENT_PRIORITY_ID));
@@ -1830,7 +1830,7 @@ public class SpiraTeamTaskDataHandler extends AbstractTaskDataHandler
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.OWNER_ID, artifact.getOwnerId().toString(), projectId);
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.CREATION_DATE, SpiraTeamUtil.dateToString(artifact.getCreationDate()), projectId);
 		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.LAST_UPDATE_DATE, SpiraTeamUtil.dateToString(artifact.getLastUpdateDate()), projectId);
-		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.CONCURRENCY_DATE, SpiraTeamUtil.dateToString(artifact.getConcurrencyDate()), projectId);
+		updateTaskAttribute(data, changedAttributes, ArtifactAttribute.CONCURRENCY_DATE, artifact.getConcurrencyDate(), projectId);
 		
 		//Next we do the custom properties
 		for (ArtifactCustomProperty artifactCustomProperty : artifact.getCustomProperties())

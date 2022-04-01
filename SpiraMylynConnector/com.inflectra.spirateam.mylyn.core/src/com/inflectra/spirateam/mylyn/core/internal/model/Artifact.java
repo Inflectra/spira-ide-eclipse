@@ -23,7 +23,7 @@ public class Artifact
 	protected String description;
 	protected Date creationDate;
 	protected Date lastUpdateDate;
-	protected Date concurrencyDate;
+	protected String concurrencyDate;
 
 	protected List<ArtifactAttachment> attachments = new ArrayList<ArtifactAttachment>();
 	protected List<ArtifactCustomProperty> customProperties = new ArrayList<ArtifactCustomProperty>();
@@ -369,7 +369,7 @@ public class Artifact
 	 /**
 	  * @return the concurrency date
 	  */
-	 public Date getConcurrencyDate()
+	 public String getConcurrencyDate()
 	 {
 		 return concurrencyDate;
 	 }
@@ -382,7 +382,7 @@ public class Artifact
 	  *     {@link Date }
 	  *     
 	  */
-	 public void setConcurrencyDate(Date concurrencyDate)
+	 public void setConcurrencyDate(String concurrencyDate)
 	 {
 		 this.concurrencyDate = concurrencyDate;
 	 }

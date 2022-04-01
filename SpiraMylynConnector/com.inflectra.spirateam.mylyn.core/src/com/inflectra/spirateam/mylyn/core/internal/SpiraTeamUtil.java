@@ -132,10 +132,6 @@ public class SpiraTeamUtil
 	
 	public static Date convertDatesToUtc(Date localDate)
 	{
-		return localDate;
-		/*
-		 * The following code was not needed. Eclipse can handle UTC already
-		 * 
 		if (localDate == null)
 		{
 			return null;
@@ -143,7 +139,7 @@ public class SpiraTeamUtil
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 	    Date utcDate = new Date(sdf.format(localDate));
-	    return utcDate;*/
+	    return utcDate;
 	}
 	public static Date convertDatesToLocal(Date utcDate)
 	{

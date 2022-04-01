@@ -654,9 +654,14 @@ public class SpiraImportExport
 			String json = httpGet(url, this.userName, this.apiKey);
 
 			//Parse the returned data
-			byte[] attachmentData = Base64.getDecoder().decode(json);
+			String base64data = json.replace("\"", "");
+			byte[] attachmentData = Base64.getDecoder().decode(base64data);
 
 			return attachmentData;
+		}
+		catch (IllegalArgumentException ex)
+		{
+			throw new SpiraException(ex.getMessage());			
 		}
 		catch (IOException ex)
 		{
@@ -718,7 +723,8 @@ public class SpiraImportExport
 			
 			String addFileUrl = this.fullUrl + "/projects/{project_id}/documents/file";
 			addFileUrl = addFileUrl.replace("{project_id}", String.valueOf(projectId));
-			Gson gson = new Gson();
+			//Gson gson = new Gson();
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
 			String json = gson.toJson(remoteDocumentFile);
 			json = httpPost(addFileUrl, this.userName, this.apiKey, json);
 			RemoteDocument remoteDocument = gson.fromJson(json, RemoteDocument.class);

@@ -5,6 +5,9 @@ package com.inflectra.spirateam.mylyn.core.internal;
 
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -129,13 +132,24 @@ public class SpiraTeamUtil
 	
 	public static Date convertDatesToUtc(Date localDate)
 	{
-		//TODO: Implement
-		return localDate;
+		if (localDate == null)
+		{
+			return null;
+		}
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+	    Date utcDate = new Date(sdf.format(localDate));
+	    return utcDate;
 	}
 	public static Date convertDatesToLocal(Date utcDate)
 	{
-		//TODO: Implement
-		return utcDate;
+		if (utcDate == null)
+		{
+			return null;
+		}
+	    String timeZone = Calendar.getInstance().getTimeZone().getID();
+	    Date localDate = new Date(utcDate.getTime() + TimeZone.getTimeZone(timeZone).getOffset(utcDate.getTime()));
+	    return localDate;
 	}
 	
 	/*
@@ -228,6 +242,30 @@ public class SpiraTeamUtil
 		else
 		{
 			return val.toString();
+		}
+	}
+	
+	public static String integerListValuesToString(ArrayList<Integer> intList)
+	{
+		if (intList == null)
+		{
+			return ""; //$NON-NLS-1$
+		}
+		else			
+		{
+			String csv = ""; //$NON-NLS-1$
+			for (Integer i : intList)
+			{
+				if (csv.equals(""))
+				{
+					csv += i;
+				}
+				else
+				{
+					csv += "," + i;
+				}
+			}
+			return csv;
 		}
 	}
 	

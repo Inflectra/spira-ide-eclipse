@@ -1623,7 +1623,7 @@ public class SpiraImportExport
 		try
 		{
 			// Get the list of components
-			String url = this.fullUrl + "/projects/{project_id}/components";
+			String url = this.fullUrl + "/projects/{project_id}/components?active_only=true&include_deleted=false";
 			url = url.replace("{project_id}", String.valueOf(projectId));
 			String json = httpGet(url, this.userName, this.apiKey);
 			

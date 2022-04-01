@@ -34,7 +34,7 @@ public enum ArtifactAttribute
 	CONCURRENCY_DATE(Artifact.Key.CONCURRENCY_DATE, Messages.ArtifactAttribute_ConcurrencyDate, null, TaskAttribute.TYPE_DATE, ""),
 	
 	//Requirement attributes
-	REQUIREMENT_TYPE(Requirement.Key.TYPE, Messages.RequirementAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT, "RequirementTaskId"),
+	REQUIREMENT_TYPE(Requirement.Key.TYPE, Messages.RequirementAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT, "RequirementTaskId", Flag.ATTRIBUTE),
 	REQUIREMENT_STATUS_ID(Requirement.Key.STATUS_ID, Messages.RequirementAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, "RequirementStatusId", Flag.ATTRIBUTE, Flag.READ_ONLY),
 	REQUIREMENT_AUTHOR_ID(Requirement.Key.AUTHOR_ID, Messages.RequirementAttribute_AuthorId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_SHORT_TEXT, "AuthorId", Flag.PEOPLE, Flag.READ_ONLY),
 	REQUIREMENT_IMPORTANCE_ID(Requirement.Key.IMPORTANCE_ID, Messages.RequirementAttribute_ImportanceId, TaskAttribute.PRIORITY, TaskAttribute.TYPE_SINGLE_SELECT, "ImportanceId", Flag.ATTRIBUTE),
@@ -42,7 +42,7 @@ public enum ArtifactAttribute
 	REQUIREMENT_ESTIMATE(Requirement.Key.ESTIMATE, Messages.RequirementAttribute_Estimate, null, TaskAttribute.TYPE_DOUBLE, "Estimate", Flag.ATTRIBUTE),
 	REQUIREMENT_TRANSITION_STATUS(Incident.Key.TRANSITION_STATUS, null, null, TaskAttribute.TYPE_SHORT_TEXT, ""),
 	REQUIREMENT_NEW_COMMENT(Requirement.Key.COMMENT, Messages.RequirementAttribute_NewComment, TaskAttribute.COMMENT_NEW, TaskAttribute.TYPE_LONG_RICH_TEXT, "Comment"),
-	REQUIREMENT_COMPONENT_ID(Requirement.Key.COMPONENT_ID, Messages.RequirementAttribute_ComponentId, TaskAttribute.COMPONENT, TaskAttribute.TYPE_SINGLE_SELECT, "ComponentId"),
+	REQUIREMENT_COMPONENT_ID(Requirement.Key.COMPONENT_ID, Messages.RequirementAttribute_ComponentId, TaskAttribute.COMPONENT, TaskAttribute.TYPE_SINGLE_SELECT, "ComponentId", Flag.ATTRIBUTE),
 	
 	//Incident attributes
 	INCIDENT_OPENER_ID(Incident.Key.OPENER_ID, Messages.IncidentAttribute_OpenerId, TaskAttribute.USER_REPORTER, TaskAttribute.TYPE_SHORT_TEXT, "", Flag.PEOPLE, Flag.READ_ONLY),
@@ -62,10 +62,10 @@ public enum ArtifactAttribute
 	INCIDENT_PROJECTED_EFFORT(Incident.Key.PROJECTED_EFFORT, Messages.IncidentAttribute_ProjectedEffort, null, TaskAttribute.TYPE_DOUBLE, "", Flag.READ_ONLY, Flag.ATTRIBUTE),
 	INCIDENT_TRANSITION_STATUS(Incident.Key.TRANSITION_STATUS, null, null, TaskAttribute.TYPE_SHORT_TEXT, ""),
 	INCIDENT_NEW_RESOLUTION(Incident.Key.RESOLUTION, Messages.IncidentAttribute_NewResolution, TaskAttribute.COMMENT_NEW, TaskAttribute.TYPE_LONG_RICH_TEXT, "Resolution"),
-	INCIDENT_COMPONENT_IDS(Incident.Key.COMPONENT_IDS, Messages.IncidentAttribute_ComponentIds, TaskAttribute.COMPONENT, TaskAttribute.TYPE_MULTI_SELECT, "ComponentIds"),
+	INCIDENT_COMPONENT_IDS(Incident.Key.COMPONENT_IDS, Messages.IncidentAttribute_ComponentIds, TaskAttribute.COMPONENT, TaskAttribute.TYPE_MULTI_SELECT, "ComponentIds", Flag.ATTRIBUTE),
 	
 	//Task attributes
-	TASK_TYPE(Task.Key.TYPE, Messages.TaskAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT, "TaskTypeId"),
+	TASK_TYPE(Task.Key.TYPE, Messages.TaskAttribute_Type, TaskAttribute.TASK_KIND, TaskAttribute.TYPE_SHORT_TEXT, "TaskTypeId", Flag.ATTRIBUTE),
 	TASK_STATUS_ID(Task.Key.STATUS_ID, Messages.TaskAttribute_StatusId, TaskAttribute.STATUS, TaskAttribute.TYPE_SINGLE_SELECT, "TaskStatusId", Flag.ATTRIBUTE, Flag.READ_ONLY),
 	TASK_REQUIREMENT_ID(Task.Key.REQUIREMENT_NAME, Messages.TaskAttribute_RequirementId, null, TaskAttribute.TYPE_SHORT_RICH_TEXT, "RequirementId", Flag.READ_ONLY, Flag.ATTRIBUTE),
 	TASK_RELEASE_ID(Task.Key.RELEASE_ID, Messages.TaskAttribute_ReleaseId, TaskAttribute.VERSION, TaskAttribute.TYPE_SINGLE_SELECT, "ReleaseId", Flag.ATTRIBUTE),

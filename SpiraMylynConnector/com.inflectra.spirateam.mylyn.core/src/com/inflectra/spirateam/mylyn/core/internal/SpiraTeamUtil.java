@@ -132,6 +132,10 @@ public class SpiraTeamUtil
 	
 	public static Date convertDatesToUtc(Date localDate)
 	{
+		return localDate;
+		/*
+		 * The following code was not needed. Eclipse can handle UTC already
+		 * 
 		if (localDate == null)
 		{
 			return null;
@@ -139,59 +143,22 @@ public class SpiraTeamUtil
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 	    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 	    Date utcDate = new Date(sdf.format(localDate));
-	    return utcDate;
+	    return utcDate;*/
 	}
 	public static Date convertDatesToLocal(Date utcDate)
 	{
+		return utcDate;
+		/*
+		 * The following code was not needed. Eclipse can handle UTC already
+		 * 
 		if (utcDate == null)
 		{
 			return null;
 		}
 	    String timeZone = Calendar.getInstance().getTimeZone().getID();
 	    Date localDate = new Date(utcDate.getTime() + TimeZone.getTimeZone(timeZone).getOffset(utcDate.getTime()));
-	    return localDate;
-	}
-	
-	/*
-	public static Date convertDatesXml2Java(XMLGregorianCalendar xmlCal)
-	{
-		if (xmlCal == null)
-		{
-			return null;
-		}
-		GregorianCalendar calendar = xmlCal.toGregorianCalendar();
-		//We need to specify that these dates are really in UTC - Spira 4.0 and later APIs
-		TimeZone utc = TimeZone.getTimeZone("UTC");
-		calendar.setTimeZone(utc);
-		Date date = calendar.getTime();
-		return date;
-	}
-	
-	public static XMLGregorianCalendar convertDatesJava2Xml(Date date)
-	{
-		if (date == null)
-		{
-			return null;
-		}
-		try
-		{
-			GregorianCalendar calendar = new GregorianCalendar();
-			calendar.setTime(date);
-			//We need to specify that these dates are really in UTC - Spira 4.0 and later APIs
-			TimeZone utc = TimeZone.getTimeZone("UTC");
-			calendar.setTimeZone(utc);
-			DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-			XMLGregorianCalendar xmlCal = datatypeFactory.newXMLGregorianCalendar(calendar);
-			//We need to unset the timezone from the XML because SpiraTeam is not expecting it
-			//and it will break concurrency
-			xmlCal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
-			return xmlCal;
-		}
-		catch (DatatypeConfigurationException ex)
-		{
-			return null;
-		}
-	}*/
+	    return localDate;*/
+	}	
 		
 	public static Date parseDate(String time)
 		throws NumberFormatException

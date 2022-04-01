@@ -329,7 +329,7 @@ public class SpiraImportExport
 			{
 				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
 			}
-			if (responseCode == 400)
+			if (responseCode == 401)
 			{
 				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
 			}
@@ -390,7 +390,7 @@ public class SpiraImportExport
 			{
 				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
 			}
-			if (responseCode == 400)
+			if (responseCode == 401)
 			{
 				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
 			}
@@ -441,7 +441,7 @@ public class SpiraImportExport
 			{
 				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
 			}
-			if (responseCode == 400)
+			if (responseCode == 401)
 			{
 				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
 			}

@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/com.inflectra.spirateam.mylyn.feature_4.0.0.201305101649.jar" id="com.inflectra.spirateam.mylyn.feature" version="4.0.0.201305101649">
-      <category name="spirateam"/>
-   </feature>
-   <feature url="features/com.inflectra.spirateam.mylyn.feature_4.0.0.201305101751.jar" id="com.inflectra.spirateam.mylyn.feature" version="4.0.0.201305101751">
+   <feature url="features/com.inflectra.spirateam.mylyn.feature_6.0.0.202204012153.jar" id="com.inflectra.spirateam.mylyn.feature" version="6.0.0.202204012153">
       <category name="spirateam"/>
    </feature>
    <category-def name="spirateam" label="SpiraTeam">

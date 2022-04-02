@@ -128,7 +128,14 @@ public class Requirement
     	remoteRequirement.ComponentId = this.componentId;
     	remoteRequirement.ReleaseId = this.releaseId;
     	remoteRequirement.ImportanceId = this.importanceId;
-    	remoteRequirement.EstimatePoints = BigDecimal.valueOf(this.estimate);
+    	if (this.estimate == null)
+    	{
+    		remoteRequirement.EstimatePoints = null;
+    	}
+    	else
+    	{
+    		remoteRequirement.EstimatePoints = BigDecimal.valueOf(this.estimate);
+    	}
             	
         return remoteRequirement;
     }

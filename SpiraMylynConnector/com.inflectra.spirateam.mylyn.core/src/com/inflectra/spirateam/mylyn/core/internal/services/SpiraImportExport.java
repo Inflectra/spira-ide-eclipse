@@ -3,24 +3,30 @@
  */
 package com.inflectra.spirateam.mylyn.core.internal.services;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
-import javax.xml.ws.*;
-import javax.xml.ws.soap.SOAPFaultException;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.osgi.util.NLS;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import org.apache.http.auth.InvalidCredentialsException;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamClientData;
@@ -31,35 +37,37 @@ import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactFieldValue;
 import com.inflectra.spirateam.mylyn.core.internal.model.Incident;
 import com.inflectra.spirateam.mylyn.core.internal.model.IncidentResolution;
-import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowField;
-import com.inflectra.spirateam.mylyn.core.internal.model.IncidentWorkflowTransition;
+import com.inflectra.spirateam.mylyn.core.internal.model.WorkflowField;
+import com.inflectra.spirateam.mylyn.core.internal.model.WorkflowTransition;
 import com.inflectra.spirateam.mylyn.core.internal.model.Requirement;
 import com.inflectra.spirateam.mylyn.core.internal.model.RequirementComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.Task;
 import com.inflectra.spirateam.mylyn.core.internal.model.TaskComment;
 import com.inflectra.spirateam.mylyn.core.internal.model.ArtifactField.Type;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.*;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraConnectionException;
-
+import com.inflectra.spirateam.mylyn.core.internal.rest.*;
 /**
- * This is a facade over the auto-generated proxy class that simplifies the
- * inner-workings of the SOAP/WSDL classes
+ * This defines the 'SpiraImportExport' class that provides the Java facade
+ * for calling the REST web service exposed by SpiraTest
  * 
- * @author Inflectra Corporation
+ * @author		Inflectra Corporation
+ * @version		6.0.0
+ *
  */
 public class SpiraImportExport
 {
-	private static final String WEB_SERVICE_SUFFIX = "/Services/v4_0/ImportExport.svc"; //$NON-NLS-1$
-	private static final String WEB_SERVICE_NAMESPACE = "{http://www.inflectra.com/SpiraTest/Services/v4.0/}ImportExport"; //$NON-NLS-1$
-	public static final String WEB_SERVICE_NAMESPACE_DATA_OBJECTS = "http://schemas.datacontract.org/2004/07/Inflectra.SpiraTest.Web.Services.v4_0.DataObjects"; //$NON-NLS-1$
+	private static final String WEB_SERVICE_SUFFIX = "/Services/v6_0/RestService.svc"; //$NON-NLS-1$
 	private static final String SPIRA_PLUG_IN_NAME = "Eclipse-IDE"; //$NON-NLS-1$
 
-	private URL serviceUrl = null;
-	private String userName = "";
-	private String password = "";
-	private ImportExport service = null;
-	private IImportExport soap = null;
+	//The JSON date format used by the Spira 6.0 API
+	private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	
+	private String url;
+	private URL fullUrl;
+	private String userName;
+	private String apiKey;
 	private Integer storedProjectId = null;
+	private Integer storedProjectTemplateId = null;
 	private String productName = "";
 	private Integer authenticatedUserId = null;
 	private int patchNumber = 0;
@@ -67,139 +75,10 @@ public class SpiraImportExport
 	private int productVersionSecondary = 0;
 	private int productVersionTertiary = 0;
 
-	private ArtifactField requirementField_Status = null;
-	private ArtifactField requirementField_Importance = null;
-	private ArtifactField taskField_TaskStatus = null;
-	private ArtifactField taskField_TaskPriority = null;
-
 	// Specific constant ID values
 	public static int TASK_STATUS_COMPLETED = 3;
 
 	protected SpiraTeamClientData data;
-
-	/***
-	 * Creates a JAXB web service string element from a Java string
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<String> CreateJAXBString(String fieldName, String value)
-	{
-		JAXBElement<String> jaxString = new JAXBElement<String>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), String.class, value);
-		if (value == null)
-		{
-			jaxString.setNil(true);
-		}
-		return jaxString;
-	}
-
-	/***
-	 * Creates a JAXB web service integer element from a Java integer
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<Integer> CreateJAXBInteger(String fieldName, Integer value)
-	{
-		JAXBElement<Integer> jaxInteger = new JAXBElement<Integer>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), Integer.class, value);
-		if (value == null)
-		{
-			jaxInteger.setNil(true);
-		}
-		return jaxInteger;
-	}
-
-	/***
-	 * Creates a JAXB web service Boolean element from a Java Boolean
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<Boolean> CreateJAXBBoolean(String fieldName, Boolean value)
-	{
-		JAXBElement<Boolean> jaxBoolean = new JAXBElement<Boolean>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), Boolean.class, value);
-		if (value == null)
-		{
-			jaxBoolean.setNil(true);
-		}
-		return jaxBoolean;
-	}
-
-	/***
-	 * Creates a JAXB web service IntegerList element from a Java IntegerList
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<ArrayOfint> CreateJAXBArrayOfInt(String fieldName, ArrayOfint value)
-	{
-		JAXBElement<ArrayOfint> jaxIntegerList = new JAXBElement<ArrayOfint>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), ArrayOfint.class, value);
-		if (value == null)
-		{
-			jaxIntegerList.setNil(true);
-		}
-		return jaxIntegerList;
-	}
-
-	/***
-	 * Creates a JAXB web service IntegerList element from a Java IntegerList
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<ArrayOfint> CreateJAXBArrayOfInt(String fieldName, List<Integer> value)
-	{
-		// Convert List<Integer> to ArrayOfint
-		ArrayOfint arrayOfint = new ArrayOfint();
-		if (value != null)
-		{
-			for (Integer integer : value)
-			{
-				arrayOfint.getInt().add(integer);
-			}
-		}
-		JAXBElement<ArrayOfint> jaxIntegerList = new JAXBElement<ArrayOfint>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), ArrayOfint.class,
-				arrayOfint);
-		if (value == null)
-		{
-			jaxIntegerList.setNil(true);
-		}
-		return jaxIntegerList;
-	}
-
-	/***
-	 * Creates a JAXB web service BigDecimal element from a Java BigDecimal
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<BigDecimal> CreateJAXBBigDecimal(String fieldName, BigDecimal value)
-	{
-		JAXBElement<BigDecimal> jaxBigDecimal = new JAXBElement<BigDecimal>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS, fieldName), BigDecimal.class, value);
-		if (value == null)
-		{
-			jaxBigDecimal.setNil(true);
-		}
-		return jaxBigDecimal;
-	}
-
-	/***
-	 * Creates a JAXB web service XMLGregorianCalendar element from a Java
-	 * XMLGregorianCalendar object
-	 * 
-	 * @param value
-	 * @return
-	 */
-	public static JAXBElement<XMLGregorianCalendar> CreateJAXBXMLGregorianCalendar(String fieldName, XMLGregorianCalendar value)
-	{
-		JAXBElement<XMLGregorianCalendar> jaxXMLGregorianCalendar = new JAXBElement<XMLGregorianCalendar>(new QName(WEB_SERVICE_NAMESPACE_DATA_OBJECTS,
-				fieldName), XMLGregorianCalendar.class, value);
-		if (value == null)
-		{
-			jaxXMLGregorianCalendar.setNil(true);
-		}
-		return jaxXMLGregorianCalendar;
-	}
 
 	public boolean hasAttributes()
 	{
@@ -214,146 +93,26 @@ public class SpiraImportExport
 		}
 	}
 
-	/**
-	 * The constructor
-	 */
-	public SpiraImportExport(String baseUrl) throws MalformedURLException, SpiraConnectionException
+	public SpiraImportExport(String url) throws MalformedURLException
 	{
-		// Trust all SSL certificates
-		SSLUtilities.trustAllHttpsCertificates();
-
-		// Set the web service URL
-		this.serviceUrl = new URL(baseUrl + WEB_SERVICE_SUFFIX);
-
-		// Instantiate the SOAP proxy
-		try
-		{
-			this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
-
-			// Try both the HTTP and HTTPS ports
-			IImportExport soap1 = null;
-			IImportExport soap2 = null;
-			String message = "";
-			try
-			{
-				soap1 = service.getBasicHttpBindingIImportExport();
-			}
-			catch (WebServiceException ex)
-			{
-				message = message.concat("HTTP: ");
-				message = message.concat(ex.getMessage());
-				message = message.concat("\n");
-			}
-			try
-			{
-				soap2 = service.getBasicHttpBindingIImportExport1();
-			}
-			catch (WebServiceException ex)
-			{
-				message = message.concat("HTTPS: ");
-				message = message.concat(ex.getMessage());
-				message = message.concat("\n");
-			}
-
-			// If both are NULL, throw exception
-			if (soap1 == null && soap2 == null)
-			{
-				// Return the error
-				throw new SpiraConnectionException("Unable to connect with either the SpiraTest HTTP or HTTPS APIs. Please check the URL and try again ("
-						+ message + ")\n");
-			}
-
-			// Set the SOAP handle to the non-null binding
-			if (soap1 != null)
-			{
-				this.soap = soap1;
-			}
-			else
-			{
-				this.soap = soap2;
-			}
-
-			// Make sure that session is maintained
-			Map<String, Object> requestContext = ((BindingProvider) this.soap).getRequestContext();
-			requestContext.put(BindingProvider.SESSION_MAINTAIN_PROPERTY, true);
-		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
-		}
+		// Trust all SSL certificates 
+		SSLUtilities.trustAllHttpsCertificates(); 
+ 
+		// Verify the url is OK
+		this.fullUrl = new URL(url + WEB_SERVICE_SUFFIX); 
+		this.url = url;
 	}
 
-	/**
-	 * The constructor
-	 */
-	public SpiraImportExport(String baseUrl, String userName, String password) throws MalformedURLException, SpiraConnectionException
+	public SpiraImportExport(String url, String userName, String apiKey) throws MalformedURLException
 	{
-		// Trust all SSL certificates
-		SSLUtilities.trustAllHttpsCertificates();
-
-		// Set the URL, username and password
-		this.serviceUrl = new URL(baseUrl + WEB_SERVICE_SUFFIX);
+		// Trust all SSL certificates 
+		SSLUtilities.trustAllHttpsCertificates(); 
+ 
+		// Verify the url is OK
+		this.fullUrl = new URL(url + WEB_SERVICE_SUFFIX); 
+		this.url = url;
 		this.userName = userName;
-		this.password = password;
-
-		// Instantiate the SOAP proxy
-		try
-		{
-			this.service = new ImportExport(this.serviceUrl, QName.valueOf(WEB_SERVICE_NAMESPACE));
-
-			// Try both the HTTP and HTTPS ports
-			IImportExport soap1 = null;
-			IImportExport soap2 = null;
-			String message = "";
-			try
-			{
-				soap1 = service.getBasicHttpBindingIImportExport();
-			}
-			catch (WebServiceException ex)
-			{
-				message = message.concat("HTTP: ");
-				message = message.concat(ex.getMessage());
-				message = message.concat("\n");
-			}
-			try
-			{
-
-				soap2 = service.getBasicHttpBindingIImportExport1();
-			}
-			catch (WebServiceException ex)
-			{
-				message = message.concat("HTTPS: ");
-				message = message.concat(ex.getMessage());
-				message = message.concat("\n");
-			}
-
-			// If both are NULL, throw exception
-			if (soap1 == null && soap2 == null)
-			{
-				// Return the error
-				throw new SpiraConnectionException("Unable to connect with either the SpiraTest HTTP or HTTPS APIs. Please check the URL and try again ("
-						+ message + ")\n");
-			}
-
-			// Set the SOAP handle to the non-null binding
-			if (soap1 != null)
-			{
-				this.soap = soap1;
-			}
-			else
-			{
-				this.soap = soap2;
-			}
-
-			// Make sure that session is maintained
-			Map<String, Object> requestContext = ((BindingProvider) this.soap).getRequestContext();
-			requestContext.put(BindingProvider.SESSION_MAINTAIN_PROPERTY, true);
-
-		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message + " (" + ex.getMessage() + ")");
-		}
+		this.apiKey = apiKey;
 	}
 
 	public Integer getStoredProjectId()
@@ -363,7 +122,17 @@ public class SpiraImportExport
 
 	public void setStoredProjectId(int projectId)
 	{
-		this.storedProjectId = new Integer(projectId);
+		this.storedProjectId = Integer.valueOf(projectId);
+	}
+	
+	public Integer getStoredProjectTemplateId()
+	{
+		return this.storedProjectTemplateId;
+	}
+
+	public void setStoredProjectTemplateId(int projectTemplateId)
+	{
+		this.storedProjectTemplateId = Integer.valueOf(projectTemplateId);
 	}
 
 	public String getProductName()
@@ -413,40 +182,21 @@ public class SpiraImportExport
 	}
 
 	/**
-	 * The password
+	 * The API key
 	 */
-	public String getPassword()
+	public String getApiKey()
 	{
-		return this.password;
+		return this.apiKey;
 	}
 
 	/**
-	 * The password
+	 * The API key
 	 */
-	public void setPassword(String password)
+	public void setPassword(String apiKey)
 	{
-		this.password = password;
+		this.apiKey = apiKey;
 	}
 
-	/**
-	 * Returns the web service client handle
-	 * 
-	 * @return Handle to the web service client
-	 */
-	public ImportExport getService()
-	{
-		return this.service;
-	}
-
-	/**
-	 * Returns the soap proxy handle
-	 * 
-	 * @return Handle to the soap proxy
-	 */
-	public IImportExport getSoap()
-	{
-		return this.soap;
-	}
 
 	public void setData(SpiraTeamClientData data)
 	{
@@ -459,26 +209,45 @@ public class SpiraImportExport
 	}
 
 	/**
-	 * Authenticates the user/password and stores the cookie for accessing
-	 * future methods of the API
+	 * Authenticates the user/password and stores the Spira version information
 	 * 
 	 * @return true if the username/password authenticates successfully
 	 */
-	public boolean connectionAuthenticate2() throws SpiraConnectionException
+	public boolean connectionAuthenticate2() throws SpiraConnectionException, SpiraAuthenticationException
 	{
 		try
 		{
 			boolean success = false;
+			
+			//Trust all SSL certificates
+			SSLUtilities.trustAllHttpsCertificates();
+			
+			// Call the /users method
+			String url = this.fullUrl + "/users";
+			String json = httpGet(url, this.userName, this.apiKey);
 
-			// Call the appropriate method
-			success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
+			//Parse the returned data to make sure it is a valid user
+			Gson gson = new Gson();
+			RemoteUser remoteUser = gson.fromJson(json, RemoteUser.class);
+
+			//Store the user id
+			if (remoteUser != null)
+			{
+				this.authenticatedUserId = remoteUser.UserId;
+				success = true;
+			}
 
 			// Now get the version and product information
-			this.productName = soap.systemGetProductName();
+			url = this.fullUrl + "/system/settings/product-name";
+			json = httpGet(url, this.userName, this.apiKey);
+			this.productName = json;
 
 			// Version number
-			RemoteVersion productVersion = soap.systemGetProductVersion();
-			String versionString = productVersion.getVersion().getValue();
+			url = this.fullUrl + "/system/product-version";
+			json = httpGet(url, this.userName, this.apiKey);
+			RemoteVersion productVersion = gson.fromJson(json, RemoteVersion.class);
+			
+			String versionString = productVersion.Version;
 			String[] versionElements = versionString.split("\\.");
 			this.productVersionPrimary = 0;
 			this.productVersionSecondary = 0;
@@ -497,36 +266,292 @@ public class SpiraImportExport
 			}
 
 			// Patch Number
-			this.patchNumber = productVersion.getPatch().getValue();
-
-			// Get the ID of the currently authenticated user
-			RemoteUser remoteUser = soap.userRetrieveByUserName(userName);
-			if (remoteUser != null)
-			{
-				this.authenticatedUserId = remoteUser.getUserId().getValue();
-			}
+			this.patchNumber = productVersion.Patch;
 
 			return success;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message + ": " + ex.getMessage());
 		}
-		catch (IImportExportUserRetrieveByUserNameServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+	}
+	
+	/**
+	 * Performs an HTTP POST request ot the specified URL
+	 *
+	 * @param input The URL to perform the query on
+	 * @param body  The request body to be sent
+	 * @param apiKey The Spira API Key to use
+	 * @param login The Spira login to use
+	 * @return An InputStream containing the JSON returned from the POST request
+	 * @throws IOException
+	 * @throws SpiraAuthenticationException
+	 */
+	public static String httpPost(String input, String login, String apiKey, String body)
+			throws IOException,  SpiraAuthenticationException, SpiraDataConcurrencyException, SpiraDataValidationException
+	{
+		URL url = new URL(input);
+
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		//allow sending a request body
+		connection.setDoOutput(true);
+		connection.setRequestMethod("POST");
+		//have the connection send and retrieve JSON
+		connection.setRequestProperty("accept", "application/json; charset=utf-8");
+		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+		//Set the authentication headers
+		connection.setRequestProperty("username", login);
+		connection.setRequestProperty("api-key", apiKey);
+		connection.connect();
+
+		//used to send data in the REST request
+		DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+		//write the body to the stream
+		outputStream.writeBytes(body);
+		//send the OutputStream to the server
+		outputStream.flush();
+		outputStream.close();
+
+		int responseCode = connection.getResponseCode();
+		if (responseCode == HttpURLConnection.HTTP_OK) { // success
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			// return result
+			return response.toString();
+		} else {
+			
+			//Get the error stream
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getErrorStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			
+			if (responseCode == 400)
+			{
+				//Bad Request, need to parse body
+				if (response != null && response.indexOf("ValidationFaultMessage") != -1)
+				{
+					throw new SpiraDataValidationException(SpiraTeamUtil.HtmlRenderAsPlainText(response.toString()));
+				}
+				else
+				{
+					throw new IOException("PUT request not worked: " + response);
+				}				
+			}
+			if (responseCode == 403)
+			{
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			if (responseCode == 401)
+			{
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			if (responseCode == 409)
+			{
+				throw new SpiraDataConcurrencyException(com.inflectra.spirateam.mylyn.core.internal.Messages.SpiraTeamCorePlugin_DataConcurrencyError);
+			}
+			throw new IOException("POST request not worked: " + responseCode);
 		}
-		catch (IImportExportSystemGetProductNameServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+	}
+
+	/**
+	 * Performs an HTTP PUT request ot the specified URL
+	 *
+	 * @param input The URL to perform the query on
+	 * @param body  The request body to be sent
+	 * @param apiKey The Spira API Key to use
+	 * @param login The Spira login to use
+	 * @return An InputStream containing the JSON returned from the POST request
+	 * @throws IOException
+	 * @throws SpiraAuthenticationException
+	 */
+	public static String httpPut(String input, String login, String apiKey, String body)
+			throws IOException,  SpiraAuthenticationException, SpiraDataConcurrencyException, SpiraDataValidationException
+	{
+		URL url = new URL(input);
+
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		//allow sending a request body
+		connection.setDoOutput(true);
+		connection.setRequestMethod("PUT");
+		//have the connection send and retrieve JSON
+		connection.setRequestProperty("accept", "application/json; charset=utf-8");
+		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+		//Set the authentication headers
+		connection.setRequestProperty("username", login);
+		connection.setRequestProperty("api-key", apiKey);
+		connection.connect();
+
+		//used to send data in the REST request
+		DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+		//write the body to the stream
+		outputStream.writeBytes(body);
+		//send the OutputStream to the server
+		outputStream.flush();
+		outputStream.close();
+
+		int responseCode = connection.getResponseCode();
+		if (responseCode == HttpURLConnection.HTTP_OK) { // success
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			// return result
+			return response.toString();
+		} else {
+
+			//Get the error stream
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getErrorStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			
+			if (responseCode == 400)
+			{
+				//Bad Request, need to parse body
+				if (response != null && response.indexOf("ValidationFaultMessage") != -1)
+				{
+					throw new SpiraDataValidationException(SpiraTeamUtil.HtmlRenderAsPlainText(response.toString()));
+				}
+				else
+				{
+					throw new IOException("PUT request not worked: " + response);
+				}				
+			}
+			if (responseCode == 403)
+			{
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			if (responseCode == 401)
+			{
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			if (responseCode == 409)
+			{
+				throw new SpiraDataConcurrencyException(com.inflectra.spirateam.mylyn.core.internal.Messages.SpiraTeamCorePlugin_DataConcurrencyError);
+			}
+			throw new IOException("PUT request not worked: " + responseCode);
 		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+	}
+	
+	/**
+	 * Performs an HTTP GET request ot the specified URL
+	 *
+	 * @param input The URL to perform the query on
+	 * @param apiKey The Spira API Key to use
+	 * @param login The Spira login to use
+	 * @return An InputStream containing the JSON returned from the POST request
+	 * @throws IOException
+	 * @throws InvalidCredentialsException
+	 */
+	public static String httpGet(String input, String login, String apiKey) throws IOException, SpiraAuthenticationException {
+		URL url = new URL(input);
+
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		//allow sending a request body
+		connection.setDoOutput(true);
+		connection.setRequestMethod("GET");
+		//have the connection send and retrieve JSON
+		connection.setRequestProperty("accept", "application/json; charset=utf-8");
+		connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+		//Set the authentication headers
+		connection.setRequestProperty("username", login);
+		connection.setRequestProperty("api-key", apiKey);
+		connection.connect();
+		int responseCode = connection.getResponseCode();
+		if (responseCode == HttpURLConnection.HTTP_OK) { // success
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+
+			// return result
+			return response.toString();
+		} else {
+			
+			//Get the error stream
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getErrorStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			
+			if (responseCode == 403)
+			{
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			if (responseCode == 401)
+			{
+				throw new SpiraAuthenticationException("Invalid Spira login and API Key were provided!");
+			}
+			throw new IOException("GET request not worked: " + responseCode);
 		}
-		catch (IImportExportSystemGetProductVersionServiceFaultMessageFaultFaultMessage exception)
+	}
+	
+	/**
+	 * Gets the project template id of a project
+	 * @param projectId - the id of the project
+	 * @return - the id of the project template
+	 * @throws SpiraException
+	 */
+	public int getTemplateIdForProject(int projectId)
+	{
+		try
 		{
-			throw new SpiraConnectionException(Messages.SpiraConnectionException_Message);
+			// Call the appropriate method
+			String url = this.fullUrl + "/projects/{project_id}";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			RemoteProject remoteProject = gson.fromJson(json, RemoteProject.class);
+			if (remoteProject != null)
+			{
+				return remoteProject.ProjectTemplateId;
+			}
+			return -1;
+		}
+		catch (IOException ex)
+		{
+			return -1;
+		}
+		catch (SpiraException ex)
+		{
+			return -1;
 		}
 	}
 
@@ -566,47 +591,24 @@ public class SpiraImportExport
 				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, attachmentKey));
 			}
 
-			// Next we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Call the appropriate method
-			RemoteDocument remoteDocument = soap.documentRetrieveById(attachmentId);
+			String url = this.fullUrl + "/projects/{project_id}/documents/{document_id}";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{document_id}", String.valueOf(attachmentId));
+			String json = httpGet(url, this.userName, this.apiKey);
 
-			// Convert the SOAP document into the local version
+			//Parse the returned data
+			Gson gson = new Gson();
+			RemoteDocument remoteDocument = gson.fromJson(json, RemoteDocument.class);
+
+			// Convert the remote document into the local version
 			ArtifactAttachment artifactAttachment = new ArtifactAttachment(remoteDocument);
 
 			return artifactAttachment;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportDocumentRetrieveByIdServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 
@@ -645,44 +647,25 @@ public class SpiraImportExport
 				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, attachmentKey));
 			}
 
-			// Next we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Call the appropriate method
-			byte[] attachmentData = soap.documentOpenFile(attachmentId);
+			String url = this.fullUrl + "/projects/{project_id}/documents/{document_id}/open";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{document_id}", String.valueOf(attachmentId));
+			String json = httpGet(url, this.userName, this.apiKey);
+
+			//Parse the returned data
+			String base64data = json.replace("\"", "");
+			byte[] attachmentData = Base64.getDecoder().decode(base64data);
 
 			return attachmentData;
 		}
-		catch (WebServiceException ex)
+		catch (IllegalArgumentException ex)
+		{
+			throw new SpiraException(ex.getMessage());			
+		}
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportDocumentOpenFileServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 
@@ -729,29 +712,22 @@ public class SpiraImportExport
 			ArtifactType artifactType = ArtifactType.byTaskKey(artifactKey);
 			int artifactTypeId = artifactType.getArtifactTypeId();
 
-			// Next we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Call the appropriate method
-			RemoteDocument remoteDocument = artifactAttachment.toSoapObject();
-			remoteDocument.setArtifactId(SpiraImportExport.CreateJAXBInteger("ArtifactId", artifactId));
-			remoteDocument.setArtifactTypeId(SpiraImportExport.CreateJAXBInteger("ArtifactTypeId", artifactTypeId));
-			remoteDocument = soap.documentAddFile(remoteDocument, attachmentData);
+			RemoteDocumentFile remoteDocumentFile = artifactAttachment.toSoapObject();
+			RemoteLinkedArtifact linkedArtifact = new RemoteLinkedArtifact();
+			linkedArtifact.ArtifactId = artifactId;
+			linkedArtifact.ArtifactTypeId = artifactTypeId;
+			remoteDocumentFile.AttachedArtifacts = new ArrayList<RemoteLinkedArtifact>();
+			remoteDocumentFile.AttachedArtifacts.add(linkedArtifact);
+			remoteDocumentFile.BinaryData = attachmentData;
+			
+			String addFileUrl = this.fullUrl + "/projects/{project_id}/documents/file";
+			addFileUrl = addFileUrl.replace("{project_id}", String.valueOf(projectId));
+			//Gson gson = new Gson();
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
+			String json = gson.toJson(remoteDocumentFile);
+			json = httpPost(addFileUrl, this.userName, this.apiKey, json);
+			RemoteDocument remoteDocument = gson.fromJson(json, RemoteDocument.class);
 
 			// See if we have to add a new comment
 			if (comment != null && !comment.isEmpty())
@@ -761,67 +737,53 @@ public class SpiraImportExport
 				{
 					// Add the new comment
 					RemoteComment remoteComment = new RemoteComment();
-					remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate",
-							SpiraTeamUtil.convertDatesJava2Xml(artifactAttachment.getCreationDate())));
-					remoteComment.setArtifactId(artifactId);
-					remoteComment.setText(CreateJAXBString("Text", comment));
-					soap.requirementCreateComment(remoteComment);
-
+					remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(artifactAttachment.getCreationDate());
+					remoteComment.ArtifactId = artifactId;
+					remoteComment.Text = comment;
+					
+					String postCommentUrl = this.fullUrl + "/projects/{project_id}/requirements/{requirement_id}/comments";
+					postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(projectId));
+					postCommentUrl = postCommentUrl.replace("{requirement_id}", String.valueOf(artifactId));
+					json = gson.toJson(remoteComment);
+					json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 				}
 				else if (artifactType.equals(ArtifactType.INCIDENT))
 				{
 					// Add the new comment
 					RemoteComment remoteComment = new RemoteComment();
-					remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate",
-							SpiraTeamUtil.convertDatesJava2Xml(artifactAttachment.getCreationDate())));
-					remoteComment.setArtifactId(artifactId);
-					remoteComment.setText(CreateJAXBString("Text", comment));
-					ArrayOfRemoteComment remoteComments = new ArrayOfRemoteComment();
-					remoteComments.getRemoteComment().add(remoteComment);
-					soap.incidentAddComments(remoteComments);
-
+					remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(artifactAttachment.getCreationDate());
+					remoteComment.ArtifactId = artifactId;
+					remoteComment.Text = comment;
+					ArrayList<RemoteComment> remoteComments = new ArrayList<RemoteComment>();
+					remoteComments.add(remoteComment);
+					
+					String postCommentUrl = this.fullUrl + "/projects/{project_id}/incidents/{incident_id}/comments";
+					postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(projectId));
+					postCommentUrl = postCommentUrl.replace("{incident_id}", String.valueOf(artifactId));
+					json = gson.toJson(remoteComments);
+					json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 				}
 				else if (artifactType.equals(ArtifactType.TASK))
 				{
 					// Add the new comment
 					RemoteComment remoteComment = new RemoteComment();
-					remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate",
-							SpiraTeamUtil.convertDatesJava2Xml(artifactAttachment.getCreationDate())));
-					remoteComment.setArtifactId(artifactId);
-					remoteComment.setText(CreateJAXBString("Text", comment));
-					soap.taskCreateComment(remoteComment);
+					remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(artifactAttachment.getCreationDate());
+					remoteComment.ArtifactId = artifactId;
+					remoteComment.Text = comment;
+
+					String postCommentUrl = this.fullUrl + "/projects/{project_id}/tasks/{task_id}/comments";
+					postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(projectId));
+					postCommentUrl = postCommentUrl.replace("{task_id}", String.valueOf(artifactId));
+					json = gson.toJson(remoteComment);
+					json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 				}
 			}
 
 			return new ArtifactAttachment(remoteDocument);
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportDocumentAddFileServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportRequirementCreateCommentServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportTaskCreateCommentServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportIncidentAddCommentsServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 
@@ -863,34 +825,31 @@ public class SpiraImportExport
 				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
 			}
 
-			// Next we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Call the appropriate method
-			RemoteRequirement remoteRequirement = soap.requirementRetrieveById(requirementId);
+			String url = this.fullUrl + "/projects/{project_id}/requirements/{requirement_id}";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{requirement_id}", String.valueOf(requirementId));
+			String json = httpGet(url, this.userName, this.apiKey);
 
-			// Convert the SOAP requirement into the local version
+			//Parse the returned data
+			Gson gson = new Gson();
+			RemoteRequirement remoteRequirement = gson.fromJson(json, RemoteRequirement.class);
+
+			// Convert the remote requirement into the local version
 			Requirement requirement = new Requirement(remoteRequirement);
 
 			// Now get any associated comments
-			List<RemoteComment> remoteComments = soap.requirementRetrieveComments(requirementId).getRemoteComment();
+			url = this.fullUrl + "/projects/{project_id}/requirements/{requirement_id}/comments";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{requirement_id}", String.valueOf(requirementId));
+			json = httpGet(url, this.userName, this.apiKey);
 
-			// Convert the SOAP resolutions into the local version
+			//Parse the returned data
+			ArrayList<RemoteComment> remoteComments;
+			java.lang.reflect.Type remoteCommentArrayList = new TypeToken<ArrayList<RemoteComment>>(){}.getType();
+			remoteComments = gson.fromJson(json, remoteCommentArrayList);
+
+			// Convert the remote comments into the local version
 			for (RemoteComment remoteComment : remoteComments)
 			{
 				RequirementComment requirementComment = new RequirementComment(remoteComment);
@@ -898,13 +857,18 @@ public class SpiraImportExport
 			}
 
 			// Now get any associated attachments
-			RemoteSort remoteSort = new RemoteSort();
-			remoteSort.setPropertyName(CreateJAXBString("PropertyName", "UploadDate"));
-			remoteSort.setSortAscending(false);
-			List<RemoteDocument> remoteDocuments = soap.documentRetrieveForArtifact(ArtifactType.REQUIREMENT.getArtifactTypeId(), requirementId, null,
-					remoteSort).getRemoteDocument();
+			url = this.fullUrl + "/projects/{project_id}/artifact-types/{artifact_type_id}/artifacts/{artifact_id}/documents";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{artifact_type_id}", String.valueOf(ArtifactType.REQUIREMENT.getArtifactTypeId()));
+			url = url.replace("{artifact_id}", String.valueOf(requirementId));
+			json = httpGet(url, this.userName, this.apiKey);
 
-			// Convert the SOAP attachments into the local version
+			//Parse the returned data
+			ArrayList<RemoteDocument> remoteDocuments;
+			java.lang.reflect.Type remoteDocumentArrayList = new TypeToken<ArrayList<RemoteDocument>>(){}.getType();
+			remoteDocuments = gson.fromJson(json, remoteDocumentArrayList);
+
+			// Convert the remote attachments into the local version
 			for (RemoteDocument remoteDocument : remoteDocuments)
 			{
 				ArtifactAttachment artifactAttachment = new ArtifactAttachment(remoteDocument);
@@ -913,29 +877,9 @@ public class SpiraImportExport
 
 			return requirement;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportRequirementRetrieveByIdServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportRequirementRetrieveCommentsServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportDocumentRetrieveForArtifactServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 
@@ -949,17 +893,15 @@ public class SpiraImportExport
 	{
 		try
 		{
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
 			// Call the appropriate method
-			List<RemoteRequirement> remoteRequirements = soap.requirementRetrieveForOwner().getRemoteRequirement();
+			String url = this.fullUrl + "/requirements";
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteRequirement> remoteRequirements;
+			java.lang.reflect.Type remoteRequirementsArrayList = new TypeToken<ArrayList<RemoteRequirement>>(){}.getType();
+			remoteRequirements = gson.fromJson(json, remoteRequirementsArrayList);
 
 			// Convert the SOAP requirements into the local versions
 			List<Requirement> requirements = new ArrayList<Requirement>();
@@ -982,17 +924,9 @@ public class SpiraImportExport
 			}
 			return requirements;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportRequirementRetrieveForOwnerServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 
@@ -1034,32 +968,29 @@ public class SpiraImportExport
 				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
 			}
 
-			// Next we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Call the appropriate method
-			RemoteIncident remoteIncident = soap.incidentRetrieveById(incidentId);
+			String url = this.fullUrl + "/projects/{project_id}/incidents/{incident_id}";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{incident_id}", String.valueOf(incidentId));
+			String json = httpGet(url, this.userName, this.apiKey);
 
-			// Convert the SOAP incident into the local version
+			//Parse the returned data
+			Gson gson = new Gson();
+			RemoteIncident remoteIncident = gson.fromJson(json, RemoteIncident.class);
+			
+			// Convert the remote incident into the local version
 			Incident incident = new Incident(remoteIncident);
 
 			// Now get the comments
-			List<RemoteComment> remoteComments = soap.incidentRetrieveComments(incidentId).getRemoteComment();
+			url = this.fullUrl + "/projects/{project_id}/incidents/{incident_id}/comments";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{incident_id}", String.valueOf(incidentId));
+			json = httpGet(url, this.userName, this.apiKey);
+
+			//Parse the returned data
+			ArrayList<RemoteComment> remoteComments;
+			java.lang.reflect.Type remoteCommentArrayList = new TypeToken<ArrayList<RemoteComment>>(){}.getType();
+			remoteComments = gson.fromJson(json, remoteCommentArrayList);
 
 			// Convert the SOAP comments into the local version
 			for (RemoteComment remoteComment : remoteComments)
@@ -1069,13 +1000,18 @@ public class SpiraImportExport
 			}
 
 			// Now get any associated attachments
-			RemoteSort remoteSort = new RemoteSort();
-			remoteSort.setPropertyName(CreateJAXBString("PropertyName", "UploadDate"));
-			remoteSort.setSortAscending(false);
-			List<RemoteDocument> remoteDocuments = soap.documentRetrieveForArtifact(ArtifactType.INCIDENT.getArtifactTypeId(), incidentId, null, remoteSort)
-					.getRemoteDocument();
+			url = this.fullUrl + "/projects/{project_id}/artifact-types/{artifact_type_id}/artifacts/{artifact_id}/documents";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{artifact_type_id}", String.valueOf(ArtifactType.INCIDENT.getArtifactTypeId()));
+			url = url.replace("{artifact_id}", String.valueOf(incidentId));
+			json = httpGet(url, this.userName, this.apiKey);
 
-			// Convert the SOAP attachments into the local version
+			//Parse the returned data
+			ArrayList<RemoteDocument> remoteDocuments;
+			java.lang.reflect.Type remoteDocumentArrayList = new TypeToken<ArrayList<RemoteDocument>>(){}.getType();
+			remoteDocuments = gson.fromJson(json, remoteDocumentArrayList);
+
+			// Convert the remote attachments into the local version
 			for (RemoteDocument remoteDocument : remoteDocuments)
 			{
 				ArtifactAttachment artifactAttachment = new ArtifactAttachment(remoteDocument);
@@ -1084,29 +1020,9 @@ public class SpiraImportExport
 
 			return incident;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportIncidentRetrieveByIdServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportDocumentRetrieveForArtifactServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportIncidentRetrieveCommentsServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 
@@ -1157,36 +1073,25 @@ public class SpiraImportExport
 	{
 		try
 		{
-			// Get the list of users from the SOAP API
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
-			// Get the list of users
-			List<RemoteProjectUser> remoteProjectUsers = soap.projectRetrieveUserMembership().getRemoteProjectUser();
-
-			// Convert the SOAP project user into the ArtifactField class
+			// Get the list of users from the API
+			String url = this.fullUrl + "/projects/{project_id}/users";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteProjectUser> remoteProjectUsers;
+			java.lang.reflect.Type remoteProjectUsersType = new TypeToken<ArrayList<RemoteProjectUser>>(){}.getType();
+			remoteProjectUsers = gson.fromJson(json, remoteProjectUsersType);
+			
+			// Convert the remote project user into the ArtifactField class
 			ArtifactField artifactField = new ArtifactField("User");
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteProjectUser remoteProjectUser : remoteProjectUsers)
 			{
-				int userId = remoteProjectUser.getUserId().getValue();
-				lookupValues.add(new ArtifactFieldValue(userId, remoteProjectUser.getFirstName().getValue() + " " + remoteProjectUser.getLastName().getValue()
-						+ " [" + remoteProjectUser.getEmailAddress().getValue() + "]"));
+				int userId = remoteProjectUser.UserId.intValue();
+				lookupValues.add(new ArtifactFieldValue(userId, remoteProjectUser.FirstName + " " + remoteProjectUser.LastName
+						+ " [" + remoteProjectUser.EmailAddress + "]"));
 			}
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
 			return artifactField;
@@ -1195,19 +1100,7 @@ public class SpiraImportExport
 		{
 			return null;
 		}
-		catch (WebServiceException ex)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportProjectRetrieveUserMembershipServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			return null;
 		}
@@ -1217,45 +1110,34 @@ public class SpiraImportExport
 	{
 		try
 		{
-			// Get the list of releases from the SOAP API
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Get the list of releases
-			List<RemoteRelease> remoteReleases = soap.releaseRetrieve(activeOnly).getRemoteRelease();
-
+			String url = this.fullUrl + "/projects/{project_id}/releases";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteRelease> remoteReleases;
+			java.lang.reflect.Type remoteReleasesType = new TypeToken<ArrayList<RemoteRelease>>(){}.getType();
+			remoteReleases = gson.fromJson(json, remoteReleasesType);
+			
 			// Convert the SOAP release into the ArtifactField class
 			ArtifactField artifactField = new ArtifactField("Release");
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteRelease remoteRelease : remoteReleases)
 			{
 				// Indent with spaces. Also need to make releases look slightly
-				// different
-				String indentDisplay = remoteRelease.getIndentLevel().getValue().replaceAll("[A-Z]", " ");
-				if (remoteRelease.isIteration())
+				// different to sprint/phase
+				String indentDisplay = remoteRelease.IndentLevel.replaceAll("[A-Z]", " ");
+				if (remoteRelease.ReleaseTypeId == 1 || remoteRelease.ReleaseTypeId == 2)
 				{
-					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), indentDisplay
-							+ remoteRelease.getVersionNumber().getValue() + " - " + remoteRelease.getName().getValue() + "*"));
+					lookupValues.add(new ArtifactFieldValue(remoteRelease.ReleaseId, indentDisplay
+							+ remoteRelease.VersionNumber + " - " + remoteRelease.Name + "*"));
 				}
 				else
 				{
-					lookupValues.add(new ArtifactFieldValue(remoteRelease.getReleaseId().getValue(), indentDisplay
-							+ remoteRelease.getVersionNumber().getValue() + " - " + remoteRelease.getName().getValue()));
+					lookupValues.add(new ArtifactFieldValue(remoteRelease.ReleaseId, indentDisplay
+							+ remoteRelease.VersionNumber + " - " + remoteRelease.Name));
 				}
 			}
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
@@ -1265,25 +1147,13 @@ public class SpiraImportExport
 		{
 			return null;
 		}
-		catch (WebServiceException ex)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportReleaseRetrieveServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			return null;
 		}
 	}
 
-	public List<IncidentWorkflowTransition> incidentRetrieveWorkflowTransitions(int currentTypeId, int currentStatusId, boolean isDetector, boolean isOwner)
+	public List<WorkflowTransition> incidentRetrieveWorkflowTransitions(int currentTypeId, int currentStatusId, boolean isDetector, boolean isOwner)
 			throws SpiraException
 	{
 		// Don't return releases if we have no project set
@@ -1295,69 +1165,49 @@ public class SpiraImportExport
 		return this.incidentRetrieveWorkflowTransitions(projectId, currentTypeId, currentStatusId, isDetector, isOwner);
 	}
 
-	public List<IncidentWorkflowTransition> incidentRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isDetector,
+	public List<WorkflowTransition> incidentRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isDetector,
 			boolean isOwner) throws SpiraException
 	{
 		try
 		{
-			// Get the list of incident statuses from the SOAP API
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Get the list of workflow transitions
-			List<RemoteWorkflowIncidentTransition> remoteTransitions = soap.incidentRetrieveWorkflowTransitions(currentTypeId, currentStatusId, isDetector,
-					isOwner).getRemoteWorkflowIncidentTransition();
-
-			// Convert the SOAP transitions into local versions
-			ArrayList<IncidentWorkflowTransition> transitions = new ArrayList<IncidentWorkflowTransition>();
-			for (RemoteWorkflowIncidentTransition remoteTransition : remoteTransitions)
+			String url = this.fullUrl + "/projects/{project_id}/incidents/types/{incident_type_id}/workflow/transitions?status_id={incident_status_id}&is_detector={is_detector}&isOwner={is_owner}";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{incident_type_id}", String.valueOf(currentTypeId));
+			url = url.replace("{incident_status_id}", String.valueOf(currentStatusId));
+			url = url.replace("{is_detector}", String.valueOf(isDetector));
+			url = url.replace("{is_owner}", String.valueOf(isOwner));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteWorkflowTransition> remoteTransitions;
+			java.lang.reflect.Type remoteTransitionsType = new TypeToken<ArrayList<RemoteWorkflowTransition>>(){}.getType();
+			remoteTransitions = gson.fromJson(json, remoteTransitionsType);
+			
+			// Convert the remote transitions into local versions
+			ArrayList<WorkflowTransition> transitions = new ArrayList<WorkflowTransition>();
+			for (RemoteWorkflowTransition remoteTransition : remoteTransitions)
 			{
-				transitions.add(new IncidentWorkflowTransition(remoteTransition));
+				transitions.add(new WorkflowTransition(remoteTransition));
 			}
 			return transitions;
 		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportIncidentRetrieveWorkflowTransitionsServiceFaultMessageFaultFaultMessage ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
 		}
 	}
 
-	public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int currentIncidentTypeId, int currentIncidentStatusId) throws SpiraException
+	public List<WorkflowField> incidentRetrieveWorkflowFields(int currentIncidentTypeId, int currentIncidentStatusId) throws SpiraException
 	{
 		// Don't return fields if we have no project set
-		if (this.storedProjectId == null)
+		if (this.storedProjectTemplateId == null)
 		{
 			return null;
 		}
-		int projectId = this.storedProjectId.intValue();
-		return this.incidentRetrieveWorkflowFields(projectId, currentIncidentTypeId, currentIncidentStatusId);
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.incidentRetrieveWorkflowFields(projectTemplateId, currentIncidentTypeId, currentIncidentStatusId);
 	}
 
 	/**
@@ -1370,117 +1220,90 @@ public class SpiraImportExport
 	 * @return
 	 * @throws SpiraException
 	 */
-	public List<IncidentWorkflowField> incidentRetrieveWorkflowFields(int projectId, int currentIncidentTypeId, int currentIncidentStatusId)
+	public List<WorkflowField> incidentRetrieveWorkflowFields(int projectTemplateId, int currentIncidentTypeId, int currentIncidentStatusId)
 			throws SpiraException
 	{
 		try
 		{
-			// Get the list of incident statuses from the SOAP API
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
-			// Get the list of workflow fields (inactive/required/hidden)
-			List<RemoteWorkflowIncidentFields> remoteFields = soap.incidentRetrieveWorkflowFields(currentIncidentTypeId, currentIncidentStatusId)
-					.getRemoteWorkflowIncidentFields();
+			// Get the list of workflow field states
+			// (inactive/required/hidden)
+			String url = this.fullUrl + "/project-templates/{project_template_id}/incidents/types/{incident_type_id}/workflow/fields?status_id={incident_status_id}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{incident_type_id}", String.valueOf(currentIncidentTypeId));
+			url = url.replace("{incident_status_id}", String.valueOf(currentIncidentStatusId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteWorkflowField> remoteWorkflowFields;
+			java.lang.reflect.Type remoteWorkflowFieldsType = new TypeToken<ArrayList<RemoteWorkflowField>>(){}.getType();
+			remoteWorkflowFields = gson.fromJson(json, remoteWorkflowFieldsType);
 
 			// Convert the SOAP workflow fields into local versions
-			ArrayList<IncidentWorkflowField> fields = new ArrayList<IncidentWorkflowField>();
-			for (RemoteWorkflowIncidentFields remoteField : remoteFields)
+			ArrayList<WorkflowField> fields = new ArrayList<WorkflowField>();
+			for (RemoteWorkflowField remoteField : remoteWorkflowFields)
 			{
-				fields.add(new IncidentWorkflowField(remoteField));
+				fields.add(new WorkflowField(remoteField));
 			}
 
 			// Get the list of workflow-controlled custom-properties
 			// (inactive/required/hidden)
-			List<RemoteWorkflowIncidentCustomProperties> remoteWorkflowCustomProperties = soap.incidentRetrieveWorkflowCustomProperties(currentIncidentTypeId,
-					currentIncidentStatusId).getRemoteWorkflowIncidentCustomProperties();
-			for (RemoteWorkflowIncidentCustomProperties remoteWorkflowCustomProperty : remoteWorkflowCustomProperties)
+			url = this.fullUrl + "/project-templates/{project_template_id}/incidents/types/{incident_type_id}/workflow/custom-properties?status_id={incident_status_id}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{incident_type_id}", String.valueOf(currentIncidentTypeId));
+			url = url.replace("{incident_status_id}", String.valueOf(currentIncidentStatusId));
+			json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			ArrayList<RemoteWorkflowCustomProperty> remoteWorkflowCustomProperties;
+			java.lang.reflect.Type remoteWorkflowCustomPropertiesType = new TypeToken<ArrayList<RemoteWorkflowCustomProperty>>(){}.getType();
+			remoteWorkflowCustomProperties = gson.fromJson(json, remoteWorkflowCustomPropertiesType);
+
+			for (RemoteWorkflowCustomProperty remoteWorkflowCustomProperty : remoteWorkflowCustomProperties)
 			{
-				fields.add(new IncidentWorkflowField(remoteWorkflowCustomProperty));
+				fields.add(new WorkflowField(remoteWorkflowCustomProperty));
 			}
 
 			return fields;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportIncidentRetrieveWorkflowFieldsServiceFaultMessageFaultFaultMessage ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportIncidentRetrieveWorkflowCustomPropertiesServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 
 	public ArtifactField incidentGetStatus()
 	{
-		// Don't return releases if we have no project set
-		if (this.storedProjectId == null)
+		// Don't return statuses if we have no project set
+		if (this.storedProjectTemplateId == null)
 		{
 			return null;
 		}
-		int projectId = this.storedProjectId.intValue();
-		return this.incidentGetStatus(projectId);
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.incidentGetStatus(projectTemplateId);
 	}
 
-	public ArtifactField incidentGetStatus(int projectId)
+	public ArtifactField incidentGetStatus(int projectTemplateId)
 	{
 		try
 		{
-			// Get the list of incident statuses from the SOAP API
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Get the list of statuses
-			List<RemoteIncidentStatus> remoteStatuses = soap.incidentRetrieveStatuses().getRemoteIncidentStatus();
+			String url = this.fullUrl + "/project-templates/{project_template_id}/incidents/statuses";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteIncidentStatus> remoteStatuses;
+			java.lang.reflect.Type remoteStatusesType = new TypeToken<ArrayList<RemoteIncidentStatus>>(){}.getType();
+			remoteStatuses = gson.fromJson(json, remoteStatusesType);
 
-			// Convert the SOAP release into the ArtifactField class
+			// Convert the remote release into the ArtifactField class
 			ArtifactField artifactField = new ArtifactField("IncidentStatus");
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteIncidentStatus remoteStatus : remoteStatuses)
 			{
-				lookupValues.add(new ArtifactFieldValue(remoteStatus.getIncidentStatusId().getValue(), remoteStatus.getName().getValue()));
+				lookupValues.add(new ArtifactFieldValue(remoteStatus.IncidentStatusId, remoteStatus.Name));
 			}
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
 			return artifactField;
@@ -1489,19 +1312,7 @@ public class SpiraImportExport
 		{
 			return null;
 		}
-		catch (WebServiceException ex)
-		{
-			return null;
-		}
-		catch (IImportExportIncidentRetrieveStatusesServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			return null;
 		}
@@ -1510,46 +1321,35 @@ public class SpiraImportExport
 	public ArtifactField incidentGetType()
 	{
 		// Don't return releases if we have no project set
-		if (this.storedProjectId == null)
+		if (this.storedProjectTemplateId == null)
 		{
 			return null;
 		}
-		int projectId = this.storedProjectId.intValue();
-		return this.incidentGetType(projectId);
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.incidentGetType(projectTemplateId);
 	}
 
-	public ArtifactField incidentGetType(int projectId)
+	public ArtifactField incidentGetType(int projectTemplateId)
 	{
 		try
 		{
-			// Get the list of incident types from the SOAP API
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Get the list of types
-			List<RemoteIncidentType> remoteTypes = soap.incidentRetrieveTypes().getRemoteIncidentType();
+			String url = this.fullUrl + "/project-templates/{project_template_id}/incidents/types";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteIncidentType> remoteTypes;
+			java.lang.reflect.Type remoteTypesType = new TypeToken<ArrayList<RemoteIncidentType>>(){}.getType();
+			remoteTypes = gson.fromJson(json, remoteTypesType);
 
 			// Convert the SOAP release into the ArtifactField class
 			ArtifactField artifactField = new ArtifactField("IncidentType");
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteIncidentType remoteType : remoteTypes)
 			{
-				lookupValues.add(new ArtifactFieldValue(remoteType.getIncidentTypeId().getValue(), remoteType.getName().getValue()));
+				lookupValues.add(new ArtifactFieldValue(remoteType.IncidentTypeId, remoteType.Name));
 			}
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
 			return artifactField;
@@ -1558,19 +1358,7 @@ public class SpiraImportExport
 		{
 			return null;
 		}
-		catch (WebServiceException ex)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportIncidentRetrieveTypesServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			return null;
 		}
@@ -1579,46 +1367,35 @@ public class SpiraImportExport
 	public ArtifactField incidentGetPriority()
 	{
 		// Don't return releases if we have no project set
-		if (this.storedProjectId == null)
+		if (this.storedProjectTemplateId == null)
 		{
 			return null;
 		}
-		int projectId = this.storedProjectId.intValue();
-		return this.incidentGetPriority(projectId);
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.incidentGetPriority(projectTemplateId);
 	}
 
-	public ArtifactField incidentGetPriority(int projectId)
+	public ArtifactField incidentGetPriority(int projectTemplateId)
 	{
 		try
 		{
-			// Get the list of incident priorities from the SOAP API
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Get the list of priorities
-			List<RemoteIncidentPriority> remotePriorities = soap.incidentRetrievePriorities().getRemoteIncidentPriority();
+			String url = this.fullUrl + "/project-templates/{project_template_id}/incidents/priorities";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteIncidentPriority> remotePriorities;
+			java.lang.reflect.Type remoteTypesType = new TypeToken<ArrayList<RemoteIncidentPriority>>(){}.getType();
+			remotePriorities = gson.fromJson(json, remoteTypesType);
 
 			// Convert the SOAP release into the ArtifactField class
 			ArtifactField artifactField = new ArtifactField("IncidentPriority");
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteIncidentPriority remotePriority : remotePriorities)
 			{
-				lookupValues.add(new ArtifactFieldValue(remotePriority.getPriorityId().getValue(), remotePriority.getName().getValue()));
+				lookupValues.add(new ArtifactFieldValue(remotePriority.PriorityId, remotePriority.Name));
 			}
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
 			return artifactField;
@@ -1627,19 +1404,7 @@ public class SpiraImportExport
 		{
 			return null;
 		}
-		catch (WebServiceException ex)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportIncidentRetrievePrioritiesServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			return null;
 		}
@@ -1648,12 +1413,12 @@ public class SpiraImportExport
 	public ArtifactField incidentGetSeverity()
 	{
 		// Don't return releases if we have no project set
-		if (this.storedProjectId == null)
+		if (this.storedProjectTemplateId == null)
 		{
 			return null;
 		}
-		int projectId = this.storedProjectId.intValue();
-		return this.incidentGetSeverity(projectId);
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.incidentGetSeverity(projectTemplateId);
 	}
 
 	/**
@@ -1665,8 +1430,10 @@ public class SpiraImportExport
 	 * @return Array of artifact fields
 	 * @param projectId
 	 *            Project id (optional, uses stored ID if set to null)
+	 * @param projectTemplateId
+	 *            Project template id (optional, uses stored ID if set to null)
 	 */
-	public ArtifactField[] getCustomProperties(ArtifactType artifactType, Integer projectId)
+	public ArtifactField[] getCustomProperties(ArtifactType artifactType, Integer projectTemplateId, Integer projectId)
 	{
 		try
 		{
@@ -1675,43 +1442,38 @@ public class SpiraImportExport
 			{
 				projectId = this.getStoredProjectId();
 			}
-
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
+			
+			// Get the stored project template id if not set
+			if (projectTemplateId == null)
 			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
+				projectTemplateId = this.getStoredProjectTemplateId();
 			}
 
 			// Get the list of custom property definitions
-			List<RemoteCustomProperty> remoteCustomProperties = soap.customPropertyRetrieveForArtifactType(artifactType.getArtifactTypeId(), false)
-					.getRemoteCustomProperty();
+			String url = this.fullUrl + "/project-templates/{project_template_id}/custom-properties/{artifact_type_name}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{artifact_type_name}", artifactType.getDisplayName());		
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteCustomProperty> remoteCustomProperties;
+			java.lang.reflect.Type remoteCustomPropertiesType = new TypeToken<ArrayList<RemoteCustomProperty>>(){}.getType();
+			remoteCustomProperties = gson.fromJson(json, remoteCustomPropertiesType);
 
 			// Convert the SOAP custom properties into the ArtifactField class
 			ArrayList<ArtifactField> artifactFields = new ArrayList<ArtifactField>();
 			for (RemoteCustomProperty remoteCustomProperty : remoteCustomProperties)
 			{
-				ArtifactField artifactField = new ArtifactField(remoteCustomProperty.getCustomPropertyFieldName().getValue());
-				artifactField.setLabel(remoteCustomProperty.getName().getValue());
+				ArtifactField artifactField = new ArtifactField(remoteCustomProperty.CustomPropertyFieldName);
+				artifactField.setLabel(remoteCustomProperty.Name);
 				artifactField.setCustom(true);
 
 				// Get the list of options
 				List<RemoteCustomPropertyOption> remoteCustomPropertyOptions = null;
-				if (remoteCustomProperty.getOptions() != null && remoteCustomProperty.getOptions().getValue() != null
-						&& !remoteCustomProperty.getOptions().getValue().getRemoteCustomPropertyOption().isEmpty())
+				if (remoteCustomProperty.Options != null && !remoteCustomProperty.Options.isEmpty())
 				{
-					remoteCustomPropertyOptions = remoteCustomProperty.getOptions().getValue().getRemoteCustomPropertyOption();
+					remoteCustomPropertyOptions = remoteCustomProperty.Options;
 				}
 
 				// Check to see if we have the allow-empty or default value
@@ -1723,24 +1485,24 @@ public class SpiraImportExport
 					for (RemoteCustomPropertyOption remoteCustomPropertyOption : remoteCustomPropertyOptions)
 					{
 						// Check for allow-empty option
-						if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_AllowEmpty
-								&& remoteCustomPropertyOption.getValue() != null)
+						if (remoteCustomPropertyOption.CustomPropertyOptionId == SpiraTeamCorePlugin.CustomPropertyOption_AllowEmpty
+								&& remoteCustomPropertyOption.Value != null)
 						{
-							allowEmpty = (remoteCustomPropertyOption.getValue().getValue().equals("Y"));
+							allowEmpty = (remoteCustomPropertyOption.Value.equals("Y"));
 						}
 
 						// Check for default-value option
-						if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_Default
-								&& remoteCustomPropertyOption.getValue() != null)
+						if (remoteCustomPropertyOption.CustomPropertyOptionId == SpiraTeamCorePlugin.CustomPropertyOption_Default
+								&& remoteCustomPropertyOption.Value != null)
 						{
-							defaultValue = remoteCustomPropertyOption.getValue().getValue();
+							defaultValue = remoteCustomPropertyOption.Value;
 						}
 					}
 				}
 				artifactField.setOptional(allowEmpty);
 				artifactField.setDefaultValue(defaultValue);
 
-				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Text)
+				if (remoteCustomProperty.CustomPropertyTypeId == SpiraTeamCorePlugin.CustomPropertyType_Text)
 				{
 					// See if we have a rich-text or plain text custom property
 					boolean isRichText = false;
@@ -1748,24 +1510,24 @@ public class SpiraImportExport
 					{
 						for (RemoteCustomPropertyOption remoteCustomPropertyOption : remoteCustomPropertyOptions)
 						{
-							if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_RichText
-									&& remoteCustomPropertyOption.getValue() != null)
+							if (remoteCustomPropertyOption.CustomPropertyOptionId == SpiraTeamCorePlugin.CustomPropertyOption_RichText
+									&& remoteCustomPropertyOption.Value != null)
 							{
-								isRichText = (remoteCustomPropertyOption.getValue().getValue().equals("Y"));
+								isRichText = (remoteCustomPropertyOption.Value.equals("Y"));
 							}
 						}
 					}
 					artifactField.setType((isRichText) ? Type.RICH_TEXT : Type.TEXT);
 				}
-				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Integer)
+				if (remoteCustomProperty.CustomPropertyTypeId == SpiraTeamCorePlugin.CustomPropertyType_Integer)
 				{
 					artifactField.setType(Type.INTEGER);
 				}
-				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Boolean)
+				if (remoteCustomProperty.CustomPropertyTypeId == SpiraTeamCorePlugin.CustomPropertyType_Boolean)
 				{
 					artifactField.setType(Type.CHECKBOX);
 				}
-				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Decimal)
+				if (remoteCustomProperty.CustomPropertyTypeId == SpiraTeamCorePlugin.CustomPropertyType_Decimal)
 				{
 					artifactField.setType(Type.DOUBLE);
 
@@ -1775,14 +1537,14 @@ public class SpiraImportExport
 					{
 						for (RemoteCustomPropertyOption remoteCustomPropertyOption : remoteCustomPropertyOptions)
 						{
-							if (remoteCustomPropertyOption.getCustomPropertyOptionId().intValue() == SpiraTeamCorePlugin.CustomPropertyOption_Precision
-									&& remoteCustomPropertyOption.getValue() != null)
+							if (remoteCustomPropertyOption.CustomPropertyOptionId == SpiraTeamCorePlugin.CustomPropertyOption_Precision
+									&& remoteCustomPropertyOption.Value != null)
 							{
-								String rawValue = remoteCustomPropertyOption.getValue().getValue();
+								String rawValue = remoteCustomPropertyOption.Value;
 								try
 								{
 									int intValue = Integer.parseInt(rawValue);
-									precision = new Integer(intValue);
+									precision = Integer.valueOf(intValue);
 								}
 								catch (NumberFormatException ex)
 								{
@@ -1795,38 +1557,26 @@ public class SpiraImportExport
 
 					artifactField.setPrecision(precision);
 				}
-				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_Date)
+				if (remoteCustomProperty.CustomPropertyTypeId == SpiraTeamCorePlugin.CustomPropertyType_Date)
 				{
 					artifactField.setType(Type.DATE);
 				}
-				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_User)
+				if (remoteCustomProperty.CustomPropertyTypeId == SpiraTeamCorePlugin.CustomPropertyType_User)
 				{
 					artifactField.setType(Type.PERSON);
 
 					// Now we need to get the list of project users
 					try
 					{
-						// Get the list of users from the SOAP API
-						// First we need to re-authenticate
-						success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-						if (!success)
-						{
-							// throw new SpiraException (this.userName + "/" +
-							// this.password);
-							throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-						}
-
-						// Next we need to connect to the appropriate project
-						success = soap.connectionConnectToProject(projectId);
-						if (!success)
-						{
-							// throw new SpiraException (this.userName + "/" +
-							// this.password);
-							throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-						}
-
-						// Get the list of users
-						List<RemoteProjectUser> remoteProjectUsers = soap.projectRetrieveUserMembership().getRemoteProjectUser();
+						// Get the list of users from the REST API
+						url = this.fullUrl + "/projects/{project_id}/users";
+						url = url.replace("{project_id}", String.valueOf(projectId));
+						json = httpGet(url, this.userName, this.apiKey);
+						
+						//Parse the returned data
+						ArrayList<RemoteProjectUser> remoteProjectUsers;
+						java.lang.reflect.Type remoteProjectUsersType = new TypeToken<ArrayList<RemoteProjectUser>>(){}.getType();
+						remoteProjectUsers = gson.fromJson(json, remoteProjectUsersType);
 
 						// Now populate the list of custom property option
 						// values
@@ -1836,9 +1586,9 @@ public class SpiraImportExport
 							int i = 0;
 							for (RemoteProjectUser remoteProjectUser : remoteProjectUsers)
 							{
-								int userId = remoteProjectUser.getUserId().getValue();
-								values[i] = new ArtifactFieldValue(userId, remoteProjectUser.getFirstName().getValue() + " "
-										+ remoteProjectUser.getLastName().getValue() + " [" + remoteProjectUser.getEmailAddress().getValue() + "]");
+								int userId = remoteProjectUser.UserId;
+								values[i] = new ArtifactFieldValue(userId, remoteProjectUser.FirstName + " "
+										+ remoteProjectUser.LastName + " [" + remoteProjectUser.EmailAddress + "]");
 								i++;
 							}
 							artifactField.setValues(values);
@@ -1848,27 +1598,15 @@ public class SpiraImportExport
 					{
 						// Leave the list unpopulated
 					}
-					catch (WebServiceException ex)
-					{
-						// Leave the list unpopulated
-					}
-					catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-					{
-						// Leave the list unpopulated
-					}
-					catch (IImportExportProjectRetrieveUserMembershipServiceFaultMessageFaultFaultMessage exception)
-					{
-						// Leave the list unpopulated
-					}
-					catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+					catch (IOException ex)
 					{
 						// Leave the list unpopulated
 					}
 				}
-				if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_List
-						|| remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_MultiList)
+				if (remoteCustomProperty.CustomPropertyTypeId == SpiraTeamCorePlugin.CustomPropertyType_List
+						|| remoteCustomProperty.CustomPropertyTypeId == SpiraTeamCorePlugin.CustomPropertyType_MultiList)
 				{
-					if (remoteCustomProperty.getCustomPropertyTypeId().intValue() == SpiraTeamCorePlugin.CustomPropertyType_List)
+					if (remoteCustomProperty.CustomPropertyTypeId == SpiraTeamCorePlugin.CustomPropertyType_List)
 					{
 						artifactField.setType(Type.SINGLE_SELECT);
 					}
@@ -1878,20 +1616,19 @@ public class SpiraImportExport
 					}
 
 					// Now we need to get the custom list values
-					RemoteCustomList remoteCustomList = remoteCustomProperty.getCustomList().getValue();
+					RemoteCustomList remoteCustomList = remoteCustomProperty.CustomList;
 					if (remoteCustomList != null)
 					{
-						if (remoteCustomList.getValues().getValue() != null)
+						if (remoteCustomList.Values != null)
 						{
-							List<RemoteCustomListValue> remoteCustomListValues = remoteCustomList.getValues().getValue().getRemoteCustomListValue();
+							List<RemoteCustomListValue> remoteCustomListValues = remoteCustomList.Values;
 							if (remoteCustomListValues != null)
 							{
 								ArtifactFieldValue[] values = new ArtifactFieldValue[remoteCustomListValues.size()];
 								int i = 0;
 								for (RemoteCustomListValue remoteCustomListValue : remoteCustomListValues)
 								{
-									values[i] = new ArtifactFieldValue(remoteCustomListValue.getCustomPropertyValueId().getValue(), remoteCustomListValue
-											.getName().getValue());
+									values[i] = new ArtifactFieldValue(remoteCustomListValue.CustomPropertyValueId, remoteCustomListValue.Name);
 									i++;
 								}
 								artifactField.setValues(values);
@@ -1907,56 +1644,33 @@ public class SpiraImportExport
 		{
 			return null;
 		}
-		catch (WebServiceException ex)
-		{
-			return null;
-		}
-		catch (IImportExportCustomPropertyRetrieveForArtifactTypeServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			return null;
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			return null;
 		}
 	}
 
-	public ArtifactField incidentGetSeverity(int projectId)
+	public ArtifactField incidentGetSeverity(int projectTemplateId)
 	{
 		try
 		{
-			// Get the list of incident severities from the SOAP API
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Get the list of severities
-			List<RemoteIncidentSeverity> remoteSeverities = soap.incidentRetrieveSeverities().getRemoteIncidentSeverity();
+			String url = this.fullUrl + "/project-templates/{project_template_id}/incidents/severities";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteIncidentSeverity> remoteSeverities;
+			java.lang.reflect.Type remoteSeveritiesType = new TypeToken<ArrayList<RemoteIncidentSeverity>>(){}.getType();
+			remoteSeverities = gson.fromJson(json, remoteSeveritiesType);
 
 			// Convert the SOAP release into the ArtifactField class
 			ArtifactField artifactField = new ArtifactField("IncidentSeverity");
 			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
 			for (RemoteIncidentSeverity remoteSeverity : remoteSeverities)
 			{
-				lookupValues.add(new ArtifactFieldValue(remoteSeverity.getSeverityId().getValue(), remoteSeverity.getName().getValue()));
+				lookupValues.add(new ArtifactFieldValue(remoteSeverity.SeverityId, remoteSeverity.Name));
 			}
 			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
 			return artifactField;
@@ -1965,19 +1679,53 @@ public class SpiraImportExport
 		{
 			return null;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			return null;
 		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
+	}
+	
+	public ArtifactField componentGet()
+	{
+		// Don't return components if we have no project set
+		if (this.storedProjectId == null)
 		{
 			return null;
 		}
-		catch (IImportExportIncidentRetrieveSeveritiesServiceFaultMessageFaultFaultMessage exception)
+		int projectId = this.storedProjectId.intValue();
+		return this.componentGet(projectId);
+	}
+
+	public ArtifactField componentGet(int projectId)
+	{
+		try
+		{
+			// Get the list of components
+			String url = this.fullUrl + "/projects/{project_id}/components?active_only=true&include_deleted=false";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteComponent> remoteComponents;
+			java.lang.reflect.Type remoteComponentsType = new TypeToken<ArrayList<RemoteComponent>>(){}.getType();
+			remoteComponents = gson.fromJson(json, remoteComponentsType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("Component");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteComponent remoteComponent : remoteComponents)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteComponent.ComponentId, remoteComponent.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
 		{
 			return null;
 		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			return null;
 		}
@@ -1985,75 +1733,517 @@ public class SpiraImportExport
 
 	public ArtifactField taskGetStatus()
 	{
-		if (this.taskField_TaskStatus == null)
+		// Don't return statuses if we have no project set
+		if (this.storedProjectTemplateId == null)
 		{
-			this.taskField_TaskStatus = new ArtifactField("TaskStatus");
-			this.taskField_TaskStatus.setOptional(false);
-
-			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[5];
-			lookupValues[0] = new ArtifactFieldValue(1, Messages.TaskStatus_NotStarted);
-			lookupValues[1] = new ArtifactFieldValue(2, Messages.TaskStatus_InProgress);
-			lookupValues[2] = new ArtifactFieldValue(TASK_STATUS_COMPLETED, Messages.TaskStatus_Completed);
-			lookupValues[3] = new ArtifactFieldValue(4, Messages.TaskStatus_Blocked);
-			lookupValues[4] = new ArtifactFieldValue(5, Messages.TaskStatus_Deferred);
-			this.taskField_TaskStatus.setValues(lookupValues);
+			return null;
 		}
-		return this.taskField_TaskStatus;
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.taskGetStatus(projectTemplateId);
+	}
+
+	public ArtifactField taskGetStatus(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of statuses
+			String url = this.fullUrl + "/project-templates/{project_template_id}/tasks/statuses";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteTaskStatus> remoteStatuses;
+			java.lang.reflect.Type remoteStatusesType = new TypeToken<ArrayList<RemoteTaskStatus>>(){}.getType();
+			remoteStatuses = gson.fromJson(json, remoteStatusesType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("TaskStatus");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteTaskStatus remoteStatus : remoteStatuses)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteStatus.TaskStatusId, remoteStatus.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
 	}
 
 	public ArtifactField taskGetPriority()
 	{
-		if (this.taskField_TaskPriority == null)
+		// Don't return releases if we have no project set
+		if (this.storedProjectTemplateId == null)
 		{
-			this.taskField_TaskPriority = new ArtifactField("TaskPriority");
-			this.taskField_TaskPriority.setOptional(true);
-
-			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[4];
-			lookupValues[0] = new ArtifactFieldValue(1, Messages.TaskPriority_Critical);
-			lookupValues[1] = new ArtifactFieldValue(2, Messages.TaskPriority_High);
-			lookupValues[2] = new ArtifactFieldValue(3, Messages.TaskPriority_Medium);
-			lookupValues[3] = new ArtifactFieldValue(4, Messages.TaskPriority_Low);
-			this.taskField_TaskPriority.setValues(lookupValues);
+			return null;
 		}
-		return this.taskField_TaskPriority;
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.taskGetPriority(projectTemplateId);
+	}
+
+	public ArtifactField taskGetPriority(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of priorities
+			String url = this.fullUrl + "/project-templates/{project_template_id}/tasks/priorities";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteTaskPriority> remotePriorities;
+			java.lang.reflect.Type remoteTypesType = new TypeToken<ArrayList<RemoteTaskPriority>>(){}.getType();
+			remotePriorities = gson.fromJson(json, remoteTypesType);
+
+			// Convert the SOAP release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("TaskPriority");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteTaskPriority remotePriority : remotePriorities)
+			{
+				lookupValues.add(new ArtifactFieldValue(remotePriority.PriorityId, remotePriority.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
+	}
+
+	public ArtifactField taskGetType()
+	{
+		// Don't return types if we have no project set
+		if (this.storedProjectTemplateId == null)
+		{
+			return null;
+		}
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.taskGetType(projectTemplateId);
+
+	}
+
+	public ArtifactField taskGetType(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of statuses
+			String url = this.fullUrl + "/project-templates/{project_template_id}/tasks/types";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteTaskType> remoteTypees;
+			java.lang.reflect.Type remoteTypeesType = new TypeToken<ArrayList<RemoteTaskType>>(){}.getType();
+			remoteTypees = gson.fromJson(json, remoteTypeesType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("TaskType");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteTaskType remoteType : remoteTypees)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteType.TaskTypeId, remoteType.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
+	}
+	
+	public List<WorkflowTransition> taskRetrieveWorkflowTransitions(int currentTypeId, int currentStatusId, boolean isDetector, boolean isOwner)
+			throws SpiraException
+	{
+		// Don't return releases if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.taskRetrieveWorkflowTransitions(projectId, currentTypeId, currentStatusId, isDetector, isOwner);
+	}
+
+	public List<WorkflowTransition> taskRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isCreator,
+			boolean isOwner) throws SpiraException
+	{
+		try
+		{
+			// Get the list of workflow transitions
+			String url = this.fullUrl + "/projects/{project_id}/tasks/types/{task_type_id}/workflow/transitions?status_id={task_status_id}&is_creator={is_creator}&isOwner={is_owner}";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{task_type_id}", String.valueOf(currentTypeId));
+			url = url.replace("{task_status_id}", String.valueOf(currentStatusId));
+			url = url.replace("{is_creator}", String.valueOf(isCreator));
+			url = url.replace("{is_owner}", String.valueOf(isOwner));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteWorkflowTransition> remoteTransitions;
+			java.lang.reflect.Type remoteTransitionsType = new TypeToken<ArrayList<RemoteWorkflowTransition>>(){}.getType();
+			remoteTransitions = gson.fromJson(json, remoteTransitionsType);
+			
+			// Convert the remote transitions into local versions
+			ArrayList<WorkflowTransition> transitions = new ArrayList<WorkflowTransition>();
+			for (RemoteWorkflowTransition remoteTransition : remoteTransitions)
+			{
+				transitions.add(new WorkflowTransition(remoteTransition));
+			}
+			return transitions;
+		}
+		catch (IOException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+
+	public List<WorkflowField> taskRetrieveWorkflowFields(int currentTaskTypeId, int currentTaskStatusId) throws SpiraException
+	{
+		// Don't return fields if we have no project set
+		if (this.storedProjectTemplateId == null)
+		{
+			return null;
+		}
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.taskRetrieveWorkflowFields(projectTemplateId, currentTaskTypeId, currentTaskStatusId);
+	}
+
+	/**
+	 * Gets the list of task workflow fields and custom properties for the
+	 * current task
+	 * 
+	 * @param projectId
+	 * @param currentTaskTypeId
+	 * @param currentTaskStatusId
+	 * @return
+	 * @throws SpiraException
+	 */
+	public List<WorkflowField> taskRetrieveWorkflowFields(int projectTemplateId, int currentTaskTypeId, int currentTaskStatusId)
+			throws SpiraException
+	{
+		try
+		{
+			// Get the list of workflow field states
+			// (inactive/required/hidden)
+			String url = this.fullUrl + "/project-templates/{project_template_id}/tasks/types/{task_type_id}/workflow/fields?status_id={task_status_id}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{task_type_id}", String.valueOf(currentTaskTypeId));
+			url = url.replace("{task_status_id}", String.valueOf(currentTaskStatusId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteWorkflowField> remoteWorkflowFields;
+			java.lang.reflect.Type remoteWorkflowFieldsType = new TypeToken<ArrayList<RemoteWorkflowField>>(){}.getType();
+			remoteWorkflowFields = gson.fromJson(json, remoteWorkflowFieldsType);
+
+			// Convert the SOAP workflow fields into local versions
+			ArrayList<WorkflowField> fields = new ArrayList<WorkflowField>();
+			for (RemoteWorkflowField remoteField : remoteWorkflowFields)
+			{
+				fields.add(new WorkflowField(remoteField));
+			}
+
+			// Get the list of workflow-controlled custom-properties
+			// (inactive/required/hidden)
+			url = this.fullUrl + "/project-templates/{project_template_id}/tasks/types/{task_type_id}/workflow/custom-properties?status_id={task_status_id}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{task_type_id}", String.valueOf(currentTaskTypeId));
+			url = url.replace("{task_status_id}", String.valueOf(currentTaskStatusId));
+			json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			ArrayList<RemoteWorkflowCustomProperty> remoteWorkflowCustomProperties;
+			java.lang.reflect.Type remoteWorkflowCustomPropertiesType = new TypeToken<ArrayList<RemoteWorkflowCustomProperty>>(){}.getType();
+			remoteWorkflowCustomProperties = gson.fromJson(json, remoteWorkflowCustomPropertiesType);
+
+			for (RemoteWorkflowCustomProperty remoteWorkflowCustomProperty : remoteWorkflowCustomProperties)
+			{
+				fields.add(new WorkflowField(remoteWorkflowCustomProperty));
+			}
+
+			return fields;
+		}
+		catch (IOException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+	
+	public List<WorkflowTransition> requirementRetrieveWorkflowTransitions(int currentTypeId, int currentStatusId, boolean isDetector, boolean isOwner)
+			throws SpiraException
+	{
+		// Don't return releases if we have no project set
+		if (this.storedProjectId == null)
+		{
+			return null;
+		}
+		int projectId = this.storedProjectId.intValue();
+		return this.requirementRetrieveWorkflowTransitions(projectId, currentTypeId, currentStatusId, isDetector, isOwner);
+	}
+
+	public List<WorkflowTransition> requirementRetrieveWorkflowTransitions(int projectId, int currentTypeId, int currentStatusId, boolean isCreator,
+			boolean isOwner) throws SpiraException
+	{
+		try
+		{
+			// Get the list of workflow transitions
+			String url = this.fullUrl + "/projects/{project_id}/requirements/types/{requirement_type_id}/workflow/transitions?status_id={requirement_status_id}&is_creator={is_creator}&isOwner={is_owner}";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{requirement_type_id}", String.valueOf(currentTypeId));
+			url = url.replace("{requirement_status_id}", String.valueOf(currentStatusId));
+			url = url.replace("{is_creator}", String.valueOf(isCreator));
+			url = url.replace("{is_owner}", String.valueOf(isOwner));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteWorkflowTransition> remoteTransitions;
+			java.lang.reflect.Type remoteTransitionsType = new TypeToken<ArrayList<RemoteWorkflowTransition>>(){}.getType();
+			remoteTransitions = gson.fromJson(json, remoteTransitionsType);
+			
+			// Convert the remote transitions into local versions
+			ArrayList<WorkflowTransition> transitions = new ArrayList<WorkflowTransition>();
+			for (RemoteWorkflowTransition remoteTransition : remoteTransitions)
+			{
+				transitions.add(new WorkflowTransition(remoteTransition));
+			}
+			return transitions;
+		}
+		catch (IOException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
+	}
+
+	public List<WorkflowField> requirementRetrieveWorkflowFields(int currentRequirementTypeId, int currentRequirementStatusId) throws SpiraException
+	{
+		// Don't return fields if we have no project set
+		if (this.storedProjectTemplateId == null)
+		{
+			return null;
+		}
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.requirementRetrieveWorkflowFields(projectTemplateId, currentRequirementTypeId, currentRequirementStatusId);
+	}
+
+	/**
+	 * Gets the list of requirement workflow fields and custom properties for the
+	 * current requirement
+	 * 
+	 * @param projectId
+	 * @param currentRequirementTypeId
+	 * @param currentRequirementStatusId
+	 * @return
+	 * @throws SpiraException
+	 */
+	public List<WorkflowField> requirementRetrieveWorkflowFields(int projectTemplateId, int currentRequirementTypeId, int currentRequirementStatusId)
+			throws SpiraException
+	{
+		try
+		{
+			// Get the list of workflow field states
+			// (inactive/required/hidden)
+			String url = this.fullUrl + "/project-templates/{project_template_id}/requirements/types/{requirement_type_id}/workflow/fields?status_id={requirement_status_id}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{requirement_type_id}", String.valueOf(currentRequirementTypeId));
+			url = url.replace("{requirement_status_id}", String.valueOf(currentRequirementStatusId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteWorkflowField> remoteWorkflowFields;
+			java.lang.reflect.Type remoteWorkflowFieldsType = new TypeToken<ArrayList<RemoteWorkflowField>>(){}.getType();
+			remoteWorkflowFields = gson.fromJson(json, remoteWorkflowFieldsType);
+
+			// Convert the SOAP workflow fields into local versions
+			ArrayList<WorkflowField> fields = new ArrayList<WorkflowField>();
+			for (RemoteWorkflowField remoteField : remoteWorkflowFields)
+			{
+				fields.add(new WorkflowField(remoteField));
+			}
+
+			// Get the list of workflow-controlled custom-properties
+			// (inactive/required/hidden)
+			url = this.fullUrl + "/project-templates/{project_template_id}/requirements/types/{requirement_type_id}/workflow/custom-properties?status_id={requirement_status_id}";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			url = url.replace("{requirement_type_id}", String.valueOf(currentRequirementTypeId));
+			url = url.replace("{requirement_status_id}", String.valueOf(currentRequirementStatusId));
+			json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			ArrayList<RemoteWorkflowCustomProperty> remoteWorkflowCustomProperties;
+			java.lang.reflect.Type remoteWorkflowCustomPropertiesType = new TypeToken<ArrayList<RemoteWorkflowCustomProperty>>(){}.getType();
+			remoteWorkflowCustomProperties = gson.fromJson(json, remoteWorkflowCustomPropertiesType);
+
+			for (RemoteWorkflowCustomProperty remoteWorkflowCustomProperty : remoteWorkflowCustomProperties)
+			{
+				fields.add(new WorkflowField(remoteWorkflowCustomProperty));
+			}
+
+			return fields;
+		}
+		catch (IOException ex)
+		{
+			throw new SpiraException(ex.getMessage());
+		}
 	}
 
 	public ArtifactField requirementGetStatus()
 	{
-		if (this.requirementField_Status == null)
+		// Don't return statuses if we have no project set
+		if (this.storedProjectTemplateId == null)
 		{
-			this.requirementField_Status = new ArtifactField("RequirementStatus");
-			this.requirementField_Status.setOptional(false);
-
-			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[7];
-			lookupValues[0] = new ArtifactFieldValue(1, Messages.RequirementStatus_Requested);
-			lookupValues[1] = new ArtifactFieldValue(2, Messages.RequirementStatus_Planned);
-			lookupValues[2] = new ArtifactFieldValue(3, Messages.RequirementStatus_InProgress);
-			lookupValues[3] = new ArtifactFieldValue(4, Messages.RequirementStatus_Completed);
-			lookupValues[4] = new ArtifactFieldValue(5, Messages.RequirementStatus_Accepted);
-			lookupValues[5] = new ArtifactFieldValue(6, Messages.RequirementStatus_Rejected);
-			lookupValues[6] = new ArtifactFieldValue(7, Messages.RequirementStatus_Evaluated);
-
-			this.requirementField_Status.setValues(lookupValues);
+			return null;
 		}
-		return this.requirementField_Status;
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.requirementGetStatus(projectTemplateId);
+	}
+
+	public ArtifactField requirementGetStatus(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of statuses
+			String url = this.fullUrl + "/project-templates/{project_template_id}/requirements/statuses";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteRequirementStatus> remoteStatuses;
+			java.lang.reflect.Type remoteStatusesType = new TypeToken<ArrayList<RemoteRequirementStatus>>(){}.getType();
+			remoteStatuses = gson.fromJson(json, remoteStatusesType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("RequirementStatus");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteRequirementStatus remoteStatus : remoteStatuses)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteStatus.RequirementStatusId, remoteStatus.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
 	}
 
 	public ArtifactField requirementGetImportance()
 	{
-		if (this.requirementField_Importance == null)
+		// Don't return statuses if we have no project set
+		if (this.storedProjectTemplateId == null)
 		{
-			this.requirementField_Importance = new ArtifactField("RequirementImportance");
-			this.requirementField_Importance.setOptional(true);
-
-			ArtifactFieldValue[] lookupValues = new ArtifactFieldValue[4];
-			lookupValues[0] = new ArtifactFieldValue(1, Messages.RequirementImportance_Critical);
-			lookupValues[1] = new ArtifactFieldValue(2, Messages.RequirementImportance_High);
-			lookupValues[2] = new ArtifactFieldValue(3, Messages.RequirementImportance_Medium);
-			lookupValues[3] = new ArtifactFieldValue(4, Messages.RequirementImportance_Low);
-			this.requirementField_Importance.setValues(lookupValues);
+			return null;
 		}
-		return this.requirementField_Importance;
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.requirementGetImportance(projectTemplateId);
+	}
+
+	public ArtifactField requirementGetImportance(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of statuses
+			String url = this.fullUrl + "/project-templates/{project_template_id}/requirements/importances";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteRequirementImportance> remoteImportancees;
+			java.lang.reflect.Type remoteImportanceesType = new TypeToken<ArrayList<RemoteRequirementImportance>>(){}.getType();
+			remoteImportancees = gson.fromJson(json, remoteImportanceesType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("RequirementImportance");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteRequirementImportance remoteImportance : remoteImportancees)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteImportance.ImportanceId, remoteImportance.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
+	}
+
+	public ArtifactField requirementGetType()
+	{
+		// Don't return statuses if we have no project set
+		if (this.storedProjectTemplateId == null)
+		{
+			return null;
+		}
+		int projectTemplateId = this.storedProjectTemplateId.intValue();
+		return this.requirementGetType(projectTemplateId);
+	}
+
+	public ArtifactField requirementGetType(int projectTemplateId)
+	{
+		try
+		{
+			// Get the list of statuses
+			String url = this.fullUrl + "/project-templates/{project_template_id}/requirements/types";
+			url = url.replace("{project_template_id}", String.valueOf(projectTemplateId));
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteRequirementType> remoteTypees;
+			java.lang.reflect.Type remoteTypeesType = new TypeToken<ArrayList<RemoteRequirementType>>(){}.getType();
+			remoteTypees = gson.fromJson(json, remoteTypeesType);
+
+			// Convert the remote release into the ArtifactField class
+			ArtifactField artifactField = new ArtifactField("RequirementType");
+			ArrayList<ArtifactFieldValue> lookupValues = new ArrayList<ArtifactFieldValue>();
+			for (RemoteRequirementType remoteType : remoteTypees)
+			{
+				lookupValues.add(new ArtifactFieldValue(remoteType.RequirementTypeId, remoteType.Name));
+			}
+			artifactField.setValues(lookupValues.toArray(new ArtifactFieldValue[0]));
+			return artifactField;
+		}
+		catch (SpiraException ex)
+		{
+			return null;
+		}
+		catch (IOException ex)
+		{
+			return null;
+		}
 	}
 
 	/**
@@ -2066,19 +2256,17 @@ public class SpiraImportExport
 	{
 		try
 		{
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
 			// Call the appropriate method
-			List<RemoteIncident> remoteIncidents = soap.incidentRetrieveForOwner().getRemoteIncident();
+			String url = this.fullUrl + "/incidents";
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteIncident> remoteIncidents;
+			java.lang.reflect.Type remoteIncidentsType = new TypeToken<ArrayList<RemoteIncident>>(){}.getType();
+			remoteIncidents = gson.fromJson(json, remoteIncidentsType);
 
-			// Convert the SOAP incidents into the local versions
+			// Convert the remote incidents into the local versions
 			List<Incident> incidents = new ArrayList<Incident>();
 			for (RemoteIncident remoteIncident : remoteIncidents)
 			{
@@ -2100,15 +2288,7 @@ public class SpiraImportExport
 			}
 			return incidents;
 		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportIncidentRetrieveForOwnerServiceFaultMessageFaultFaultMessage ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
 		}
@@ -2126,29 +2306,16 @@ public class SpiraImportExport
 	{
 		try
 		{
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(task.getProjectId());
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, task.getProjectId()));
-			}
-
 			// Convert the local task into the SOAP version
 			RemoteTask remoteTask = task.toSoapObject();
 
 			// Call the appropriate method
-			soap.taskUpdate(remoteTask);
+			String url = this.fullUrl + "/projects/{project_id}/tasks";
+			url = url.replace("{project_id}", String.valueOf(task.getProjectId()));
+			//Gson gson = new Gson();
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
+			String json = gson.toJson(remoteTask);
+			json = httpPut(url, this.userName, this.apiKey, json);
 
 			// See if we need to add a new comment as well
 			if (newComment != null && !newComment.isEmpty())
@@ -2156,41 +2323,24 @@ public class SpiraImportExport
 				// Add the new comment
 				Date date = new Date(); // Defaults to now
 				RemoteComment remoteComment = new RemoteComment();
-				remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(date)));
-				remoteComment.setArtifactId(task.getArtifactId());
-				remoteComment.setText(CreateJAXBString("Text", newComment));
-				soap.taskCreateComment(remoteComment);
+				remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(date);
+				remoteComment.ArtifactId = task.getArtifactId();
+				remoteComment.Text = newComment;
+
+				String postCommentUrl = this.fullUrl + "/projects/{project_id}/tasks/{task_id}/comments";
+				postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(task.getProjectId()));
+				postCommentUrl = postCommentUrl.replace("{task_id}", String.valueOf(task.getArtifactId()));
+				json = gson.toJson(remoteComment);
+				json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 			}
 		}
-		catch (SOAPFaultException ex)
-		{
-			throw SpiraTeamUtil.convertSoapFaults(ex);
-		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportTaskUpdateServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportTaskCreateCommentServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportTaskUpdateValidationFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			// TODO May need to add more intelligent handling of validation
 			// messages
-			throw SpiraTeamUtil.convertFaultException(exception);
+			//throw SpiraTeamUtil.convertFaultException(ex);
+			//throw SpiraTeamUtil.convertSoapFaults(ex);
+			throw new SpiraException(ex.getMessage());
 		}
 	}
 
@@ -2207,29 +2357,16 @@ public class SpiraImportExport
 	{
 		try
 		{
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(requirement.getProjectId());
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, requirement.getProjectId()));
-			}
-
 			// Convert the local requirement into the SOAP version
 			RemoteRequirement remoteRequirement = requirement.toSoapObject();
 
 			// Call the appropriate method to update the incident
-			soap.requirementUpdate(remoteRequirement);
+			String url = this.fullUrl + "/projects/{project_id}/requirements";
+			url = url.replace("{project_id}", String.valueOf(requirement.getProjectId()));
+			//Gson gson = new Gson();
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
+			String json = gson.toJson(remoteRequirement);
+			json = httpPut(url, this.userName, this.apiKey, json);
 
 			// See if we need to add a new comment/resolution as well
 			if (newComment != null && !newComment.isEmpty())
@@ -2237,41 +2374,24 @@ public class SpiraImportExport
 				// Add the new resolution
 				Date date = new Date(); // Defaults to now
 				RemoteComment remoteComment = new RemoteComment();
-				remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(date)));
-				remoteComment.setArtifactId(requirement.getArtifactId());
-				remoteComment.setText(CreateJAXBString("Text", newComment));
-				soap.requirementCreateComment(remoteComment);
+				remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(date);
+				remoteComment.ArtifactId = requirement.getArtifactId();
+				remoteComment.Text = newComment;
+
+				String postCommentUrl = this.fullUrl + "/projects/{project_id}/requirements/{requirement_id}/comments";
+				postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(requirement.getProjectId()));
+				postCommentUrl = postCommentUrl.replace("{requirement_id}", String.valueOf(requirement.getArtifactId()));
+				json = gson.toJson(remoteComment);
+				json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 			}
 		}
-		catch (SOAPFaultException ex)
-		{
-			throw SpiraTeamUtil.convertSoapFaults(ex);
-		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportRequirementUpdateServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportRequirementCreateCommentServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportRequirementUpdateValidationFaultMessageFaultFaultMessage exception)
+		catch (IOException ex)
 		{
 			// TODO May need to add more intelligent handling of validation
 			// messages
-			throw SpiraTeamUtil.convertFaultException(exception);
+			//throw SpiraTeamUtil.convertFaultException(ex);
+			//throw SpiraTeamUtil.convertSoapFaults(ex);
+			throw new SpiraException(ex.getMessage());
 		}
 	}
 
@@ -2287,72 +2407,44 @@ public class SpiraImportExport
 	{
 		try
 		{
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(incident.getProjectId());
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, incident.getProjectId()));
-			}
-
 			// Convert the local incident into the SOAP version
 			RemoteIncident remoteIncident = incident.toSoapObject();
 
 			// Call the appropriate method to update the incident
-			soap.incidentUpdate(remoteIncident);
-
+			String url = this.fullUrl + "/projects/{project_id}/incidents/{incident_id}";
+			url = url.replace("{project_id}", String.valueOf(incident.getProjectId()));
+			url = url.replace("{incident_id}", String.valueOf(incident.getArtifactId()));
+			//Gson gson = new Gson();
+			Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").create();
+			String json = gson.toJson(remoteIncident);
+			json = httpPut(url, this.userName, this.apiKey, json);
+			
 			// See if we need to add a new comment/resolution as well
 			if (newComment != null && !newComment.isEmpty())
 			{
 				// Add the new resolution
 				Date date = new Date(); // Defaults to now
 				RemoteComment remoteComment = new RemoteComment();
-				remoteComment.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(date)));
-				remoteComment.setArtifactId(incident.getArtifactId());
-				remoteComment.setText(CreateJAXBString("Text", newComment));
-				ArrayOfRemoteComment remoteComments = new ArrayOfRemoteComment();
-				remoteComments.getRemoteComment().add(remoteComment);
-				soap.incidentAddComments(remoteComments);
+				remoteComment.CreationDate = SpiraTeamUtil.convertDatesToUtc(date);
+				remoteComment.ArtifactId = incident.getArtifactId();
+				remoteComment.Text = newComment;
+				ArrayList<RemoteComment> remoteComments = new ArrayList<RemoteComment>();
+				remoteComments.add(remoteComment);
+
+				String postCommentUrl = this.fullUrl + "/projects/{project_id}/incidents/{incident_id}/comments";
+				postCommentUrl = postCommentUrl.replace("{project_id}", String.valueOf(incident.getProjectId()));
+				postCommentUrl = postCommentUrl.replace("{incident_id}", String.valueOf(incident.getArtifactId()));
+				json = gson.toJson(remoteComments);
+				json = httpPost(postCommentUrl, this.userName, this.apiKey, json);
 			}
 		}
-		catch (SOAPFaultException ex)
+		catch (IOException ex)
 		{
-			throw SpiraTeamUtil.convertSoapFaults(ex);
-		}
-		catch (WebServiceException ex)
-		{
+			// TODO May need to add more intelligent handling of validation
+			// messages
+			//throw SpiraTeamUtil.convertFaultException(ex);
+			//throw SpiraTeamUtil.convertSoapFaults(ex);
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportIncidentUpdateServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportIncidentUpdateValidationFaultMessageFaultFaultMessage exception)
-		{
-			// TODO Add better validation message handling
-			throw SpiraTeamUtil.convertFaultException(exception);
-		}
-		catch (IImportExportIncidentAddCommentsServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw SpiraTeamUtil.convertFaultException(exception);
 		}
 	}
 
@@ -2394,32 +2486,29 @@ public class SpiraImportExport
 				throw new SpiraInvalidArtifactKeyException(NLS.bind(Messages.SpiraImportExport_InvalidArtifactKey, artifactKey));
 			}
 
-			// Next we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
-			// Next we need to connect to the appropriate project
-			success = soap.connectionConnectToProject(projectId);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthorizationException(NLS.bind(Messages.SpiraImportExport_UnableToConnectToProject, projectId));
-			}
-
 			// Call the appropriate method
-			RemoteTask remoteTask = soap.taskRetrieveById(taskId);
+			String url = this.fullUrl + "/projects/{project_id}/tasks/{task_id}";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{task_id}", String.valueOf(taskId));
+			String json = httpGet(url, this.userName, this.apiKey);
+
+			//Parse the returned data
+			Gson gson = new Gson();
+			RemoteTask remoteTask = gson.fromJson(json, RemoteTask.class);
 
 			// Convert the SOAP task into the local version
 			Task task = new Task(remoteTask);
 
 			// Now get any associated comments
-			List<RemoteComment> remoteComments = soap.taskRetrieveComments(taskId).getRemoteComment();
+			url = this.fullUrl + "/projects/{project_id}/tasks/{task_id}/comments";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{task_id}", String.valueOf(taskId));
+			json = httpGet(url, this.userName, this.apiKey);
+
+			//Parse the returned data
+			ArrayList<RemoteComment> remoteComments;
+			java.lang.reflect.Type remoteCommentArrayList = new TypeToken<ArrayList<RemoteComment>>(){}.getType();
+			remoteComments = gson.fromJson(json, remoteCommentArrayList);
 
 			// Convert the SOAP resolutions into the local version
 			for (RemoteComment remoteComment : remoteComments)
@@ -2429,11 +2518,16 @@ public class SpiraImportExport
 			}
 
 			// Now get any associated attachments
-			RemoteSort remoteSort = new RemoteSort();
-			remoteSort.setPropertyName(CreateJAXBString("PropertyName", "UploadDate"));
-			remoteSort.setSortAscending(false);
-			List<RemoteDocument> remoteDocuments = soap.documentRetrieveForArtifact(ArtifactType.TASK.getArtifactTypeId(), taskId, null, remoteSort)
-					.getRemoteDocument();
+			url = this.fullUrl + "/projects/{project_id}/artifact-types/{artifact_type_id}/artifacts/{artifact_id}/documents";
+			url = url.replace("{project_id}", String.valueOf(projectId));
+			url = url.replace("{artifact_type_id}", String.valueOf(ArtifactType.TASK.getArtifactTypeId()));
+			url = url.replace("{artifact_id}", String.valueOf(taskId));
+			json = httpGet(url, this.userName, this.apiKey);
+
+			//Parse the returned data
+			ArrayList<RemoteDocument> remoteDocuments;
+			java.lang.reflect.Type remoteDocumentArrayList = new TypeToken<ArrayList<RemoteDocument>>(){}.getType();
+			remoteDocuments = gson.fromJson(json, remoteDocumentArrayList);
 
 			// Convert the SOAP attachments into the local version
 			for (RemoteDocument remoteDocument : remoteDocuments)
@@ -2444,31 +2538,7 @@ public class SpiraImportExport
 
 			return task;
 		}
-		catch (SOAPFaultException ex)
-		{
-			throw SpiraTeamUtil.convertSoapFaults(ex);
-		}
-		catch (WebServiceException ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportConnectionConnectToProjectServiceFaultMessageFaultFaultMessage ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportTaskRetrieveByIdServiceFaultMessageFaultFaultMessage ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportTaskRetrieveCommentsServiceFaultMessageFaultFaultMessage ex)
-		{
-			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportDocumentRetrieveForArtifactServiceFaultMessageFaultFaultMessage ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
 		}
@@ -2484,18 +2554,17 @@ public class SpiraImportExport
 	{
 		try
 		{
-			// First we need to re-authenticate
-			boolean success = soap.connectionAuthenticate2(this.userName, this.password, SPIRA_PLUG_IN_NAME);
-			if (!success)
-			{
-				// throw new SpiraException (this.userName + "/" +
-				// this.password);
-				throw new SpiraAuthenticationException(Messages.SpiraImportExport_UnableToAuthenticate);
-			}
-
 			// Call the appropriate method
-			List<RemoteTask> remoteTasks = soap.taskRetrieveForOwner().getRemoteTask();
+			String url = this.fullUrl + "/tasks";
+			String json = httpGet(url, this.userName, this.apiKey);
+			
+			//Parse the returned data
+			Gson gson = new Gson();
+			ArrayList<RemoteTask> remoteTasks;
+			java.lang.reflect.Type remoteTasksType = new TypeToken<ArrayList<RemoteTask>>(){}.getType();
+			remoteTasks = gson.fromJson(json, remoteTasksType);
 
+			
 			// Convert the SOAP tasks into the local versions
 			List<Task> tasks = new ArrayList<Task>();
 			for (RemoteTask remoteTask : remoteTasks)
@@ -2518,17 +2587,9 @@ public class SpiraImportExport
 			}
 			return tasks;
 		}
-		catch (WebServiceException ex)
+		catch (IOException ex)
 		{
 			throw new SpiraException(ex.getMessage());
-		}
-		catch (IImportExportTaskRetrieveForOwnerServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
-		}
-		catch (IImportExportConnectionAuthenticate2ServiceFaultMessageFaultFaultMessage exception)
-		{
-			throw new SpiraException(exception.getMessage());
 		}
 	}
 }

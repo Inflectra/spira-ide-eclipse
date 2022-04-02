@@ -65,6 +65,8 @@ public class Messages extends NLS
 	public static String RequirementAttribute_ReleaseId;
 	public static String RequirementAttribute_PlannedEffort;
 	public static String RequirementAttribute_NewComment;
+	public static String RequirementAttribute_Estimate;
+	public static String RequirementAttribute_ComponentId;
 	
 	public static String TaskAttribute_Type;
 	public static String TaskAttribute_StatusId;
@@ -97,6 +99,7 @@ public class Messages extends NLS
 	public static String IncidentAttribute_ProjectedEffort;
 	public static String IncidentAttribute_OpenerId;
 	public static String IncidentAttribute_NewResolution;
+	public static String IncidentAttribute_ComponentIds;
 
 	public static String SpiraTeamRepositoryConnector_Getting_changed_tasks;
 }

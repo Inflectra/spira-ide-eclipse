@@ -9,7 +9,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteIncident;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteIncident;
 /**
  * Represents a single incident in SpiraTeam
  *
@@ -22,7 +22,7 @@ public class Incident extends Artifact
     protected int incidentStatusId;
     protected int incidentTypeId;
     protected int openerId;
-    protected Integer testRunStepId;
+    protected ArrayList<Integer> testRunStepIds;
     protected Integer detectedReleaseId;
     protected Integer resolvedReleaseId;
     protected Integer verifiedReleaseId;
@@ -44,6 +44,7 @@ public class Incident extends Artifact
     protected String resolvedReleaseVersionNumber;
     protected String verifiedReleaseVersionNumber;
     protected Boolean incidentStatusOpenStatus;
+    protected ArrayList<Integer> componentIds;
     
     //Contains the collection of resolutions
     protected List<IncidentResolution> resolutions = new ArrayList<IncidentResolution>();
@@ -66,6 +67,7 @@ public class Incident extends Artifact
 		ACTUAL_EFFORT("incident.actualEffort"),
 		REMAINING_EFFORT("incident.remainingEffort"),
 		PROJECTED_EFFORT("incident.projectedEffort"),
+		COMPONENT_IDS("incident.componentIds"),
 		TRANSITION_STATUS("incident.internal.transitionStatus"),
 		RESOLUTION("incident.resolution");
 
@@ -110,39 +112,45 @@ public class Incident extends Artifact
     	PopulateGeneralProperties(remoteIncident);
 
     	//Set the various member variables
-        this.artifactId = remoteIncident.getIncidentId().getValue();
-        this.ownerId = remoteIncident.getOwnerId().getValue();
-        this.name = remoteIncident.getName().getValue();
-        this.description = remoteIncident.getDescription().getValue();
-        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteIncident.getCreationDate().getValue());
-        this.lastUpdateDate = SpiraTeamUtil.convertDatesXml2Java(remoteIncident.getLastUpdateDate());
-        this.priorityId = remoteIncident.getPriorityId().getValue();
-        this.severityId = remoteIncident.getSeverityId().getValue();
-        this.incidentStatusId = remoteIncident.getIncidentStatusId().getValue();
-        this.incidentTypeId = remoteIncident.getIncidentTypeId().getValue();
-        this.openerId = remoteIncident.getOpenerId().getValue();
-        this.testRunStepId = remoteIncident.getTestRunStepId().getValue();
-        this.detectedReleaseId = remoteIncident.getDetectedReleaseId().getValue();
-        this.resolvedReleaseId = remoteIncident.getResolvedReleaseId().getValue();
-        this.verifiedReleaseId = remoteIncident.getVerifiedReleaseId().getValue();
-        this.startDate = SpiraTeamUtil.convertDatesXml2Java(remoteIncident.getStartDate().getValue());
-        this.closedDate = SpiraTeamUtil.convertDatesXml2Java(remoteIncident.getClosedDate().getValue());
-        this.completionPercent = remoteIncident.getCompletionPercent();
-        this.estimatedEffort = remoteIncident.getEstimatedEffort().getValue();
-        this.actualEffort = remoteIncident.getActualEffort().getValue();
-        this.remainingEffort = remoteIncident.getRemainingEffort().getValue();
-        this.projectedEffort = remoteIncident.getProjectedEffort().getValue();
-        this.priorityName = remoteIncident.getPriorityName().getValue();
-        this.severityName = remoteIncident.getSeverityName().getValue();
-        this.incidentStatusName = remoteIncident.getIncidentStatusName().getValue();
-        this.incidentTypeName = remoteIncident.getIncidentTypeName().getValue();
-        this.openerName = remoteIncident.getOpenerName().getValue();
-        this.ownerName = remoteIncident.getOwnerName().getValue();
-        this.projectName = remoteIncident.getProjectName().getValue();
-        this.detectedReleaseVersionNumber = remoteIncident.getDetectedReleaseVersionNumber().getValue();
-        this.resolvedReleaseVersionNumber = remoteIncident.getResolvedReleaseVersionNumber().getValue();
-        this.verifiedReleaseVersionNumber = remoteIncident.getVerifiedReleaseVersionNumber().getValue();
-        this.incidentStatusOpenStatus = remoteIncident.getIncidentStatusOpenStatus().getValue();
+        this.artifactId = remoteIncident.IncidentId;
+        this.ownerId = remoteIncident.OwnerId;
+        this.name = remoteIncident.Name;
+        this.description = remoteIncident.Description;
+        this.creationDate = SpiraTeamUtil.convertDatesToLocal(remoteIncident.CreationDate);
+        this.lastUpdateDate = SpiraTeamUtil.convertDatesToLocal(remoteIncident.LastUpdateDate);
+        this.priorityId = remoteIncident.PriorityId;
+        this.severityId = remoteIncident.SeverityId;
+        this.incidentStatusId = remoteIncident.IncidentStatusId;
+        this.incidentTypeId = remoteIncident.IncidentTypeId;
+        this.openerId = remoteIncident.OpenerId;
+        this.testRunStepIds = remoteIncident.TestRunStepIds;
+        this.detectedReleaseId = remoteIncident.DetectedReleaseId;
+        this.resolvedReleaseId = remoteIncident.ResolvedReleaseId;
+        this.verifiedReleaseId = remoteIncident.VerifiedReleaseId;
+        this.startDate = SpiraTeamUtil.convertDatesToLocal(remoteIncident.StartDate);
+        this.closedDate = SpiraTeamUtil.convertDatesToLocal(remoteIncident.ClosedDate);
+        this.completionPercent = 0;
+        if (remoteIncident.EstimatedEffort != null && remoteIncident.RemainingEffort != null && remoteIncident.EstimatedEffort > 0)
+        {
+        	int completionPercent = (remoteIncident.EstimatedEffort - remoteIncident.RemainingEffort) / remoteIncident.EstimatedEffort;
+            this.completionPercent = completionPercent;
+        }
+        this.estimatedEffort = remoteIncident.EstimatedEffort;
+        this.actualEffort = remoteIncident.ActualEffort;
+        this.remainingEffort = remoteIncident.RemainingEffort;
+        this.projectedEffort = remoteIncident.ProjectedEffort;
+        this.priorityName = remoteIncident.PriorityName;
+        this.severityName = remoteIncident.SeverityName;
+        this.incidentStatusName = remoteIncident.IncidentStatusName;
+        this.incidentTypeName = remoteIncident.IncidentTypeName;
+        this.openerName = remoteIncident.OpenerName;
+        this.ownerName = remoteIncident.OwnerName;
+        this.projectName = remoteIncident.ProjectName;
+        this.componentIds = remoteIncident.ComponentIds;
+        this.detectedReleaseVersionNumber = remoteIncident.DetectedReleaseVersionNumber;
+        this.resolvedReleaseVersionNumber = remoteIncident.ResolvedReleaseVersionNumber;
+        this.verifiedReleaseVersionNumber = remoteIncident.VerifiedReleaseVersionNumber;
+        this.incidentStatusOpenStatus = remoteIncident.IncidentStatusOpenStatus;
     }
     
     /**
@@ -158,27 +166,28 @@ public class Incident extends Artifact
     	ExtractGeneralProperties(remoteIncident);
 
     	//Next the incident-specific ones
-    	remoteIncident.setIncidentId(SpiraImportExport.CreateJAXBInteger("IncidentId",this.artifactId));
-    	remoteIncident.setOwnerId(SpiraImportExport.CreateJAXBInteger("OwnerId",this.ownerId));
-    	remoteIncident.setName(SpiraImportExport.CreateJAXBString("Name", this.name));
-    	remoteIncident.setDescription(SpiraImportExport.CreateJAXBString("Description", this.description));
-    	remoteIncident.setCreationDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("CreationDate", SpiraTeamUtil.convertDatesJava2Xml(this.creationDate)));
-    	remoteIncident.setLastUpdateDate(SpiraTeamUtil.convertDatesJava2Xml(this.lastUpdateDate));
+    	remoteIncident.IncidentId = this.artifactId;
+    	remoteIncident.OwnerId = this.ownerId;
+    	remoteIncident.Name = this.name;
+    	remoteIncident.Description = this.description;
+    	remoteIncident.CreationDate = SpiraTeamUtil.convertDatesToUtc(this.creationDate);
+    	remoteIncident.LastUpdateDate= SpiraTeamUtil.convertDatesToUtc(this.lastUpdateDate);
 
-    	remoteIncident.setPriorityId(SpiraImportExport.CreateJAXBInteger("PriorityId",this.priorityId));
-    	remoteIncident.setSeverityId(SpiraImportExport.CreateJAXBInteger("SeverityId",this.severityId));
-    	remoteIncident.setIncidentStatusId(SpiraImportExport.CreateJAXBInteger("IncidentStatusId",this.incidentStatusId));
-    	remoteIncident.setIncidentTypeId(SpiraImportExport.CreateJAXBInteger("IncidentTypeId",this.incidentTypeId));
-    	remoteIncident.setOpenerId(SpiraImportExport.CreateJAXBInteger("OpenerId",this.openerId));
-    	remoteIncident.setTestRunStepId(SpiraImportExport.CreateJAXBInteger("TestRunStepId",this.testRunStepId));
-    	remoteIncident.setDetectedReleaseId(SpiraImportExport.CreateJAXBInteger("DetectedReleaseId",this.detectedReleaseId));
-    	remoteIncident.setResolvedReleaseId(SpiraImportExport.CreateJAXBInteger("ResolvedReleaseId",this.resolvedReleaseId));
-    	remoteIncident.setVerifiedReleaseId(SpiraImportExport.CreateJAXBInteger("VerifiedReleaseId",this.verifiedReleaseId));
-    	remoteIncident.setStartDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("StartDate", SpiraTeamUtil.convertDatesJava2Xml(this.startDate)));
-    	remoteIncident.setClosedDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("ClosedDate", SpiraTeamUtil.convertDatesJava2Xml(this.closedDate)));
-    	remoteIncident.setEstimatedEffort(SpiraImportExport.CreateJAXBInteger("EstimatedEffort",this.estimatedEffort));
-    	remoteIncident.setActualEffort(SpiraImportExport.CreateJAXBInteger("ActualEffort",this.actualEffort));
-    	remoteIncident.setRemainingEffort(SpiraImportExport.CreateJAXBInteger("RemainingEffort", this.remainingEffort));
+    	remoteIncident.PriorityId = this.priorityId;
+    	remoteIncident.SeverityId = this.severityId;
+    	remoteIncident.IncidentStatusId = this.incidentStatusId;
+    	remoteIncident.IncidentTypeId = this.incidentTypeId;
+    	remoteIncident.OpenerId = this.openerId;
+    	remoteIncident.TestRunStepIds = this.testRunStepIds;
+    	remoteIncident.ComponentIds = this.componentIds;
+    	remoteIncident.DetectedReleaseId = this.detectedReleaseId;
+    	remoteIncident.ResolvedReleaseId = this.resolvedReleaseId;
+    	remoteIncident.VerifiedReleaseId = this.verifiedReleaseId;
+    	remoteIncident.StartDate = SpiraTeamUtil.convertDatesToUtc(this.startDate);
+    	remoteIncident.ClosedDate = SpiraTeamUtil.convertDatesToUtc(this.closedDate);
+    	remoteIncident.EstimatedEffort = this.estimatedEffort;
+    	remoteIncident.ActualEffort = this.actualEffort;
+    	remoteIncident.RemainingEffort = this.remainingEffort;
                
         return remoteIncident;
     }
@@ -322,34 +331,6 @@ public class Incident extends Artifact
         this.openerId = value;
     }
 
-     /**
-     * Gets the value of the testRunStepId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getTestRunStepId() {
-        return testRunStepId;
-    }
-
-    /**
-     * Sets the value of the testRunStepId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setTestRunStepId(Integer value)
-    {
-    	if (hasChanged(this.testRunStepId, value))
-    	{
-    		this.dataChanged = true;
-    	}
-        this.testRunStepId = value;
-    }
 
     /**
      * Gets the value of the detectedReleaseId property.
@@ -735,5 +716,25 @@ public class Incident extends Artifact
 	public Integer getProjectedEffort()
 	{
 		return this.projectedEffort;
+	}
+
+	public ArrayList<Integer> getTestRunStepIds() {
+		return testRunStepIds;
+	}
+
+	public void setTestRunStepIds(ArrayList<Integer> testRunStepIds) {
+		this.testRunStepIds = testRunStepIds;
+	}
+
+	public ArrayList<Integer> getComponentIds() {
+		return componentIds;
+	}
+
+	public void setComponentIds(ArrayList<Integer> componentIds) {
+		this.componentIds = componentIds;
+	}
+
+	public void setCompletionPercent(int completionPercent) {
+		this.completionPercent = completionPercent;
 	}
 }

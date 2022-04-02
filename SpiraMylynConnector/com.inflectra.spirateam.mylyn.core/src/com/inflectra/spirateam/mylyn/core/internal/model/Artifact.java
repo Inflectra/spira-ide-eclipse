@@ -4,15 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
-import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.ArrayOfRemoteArtifactCustomProperty;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteArtifact;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteArtifactCustomProperty;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteArtifact;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteArtifactCustomProperty;
 
 /**
  * Represents a generic SpiraTeam artifact
@@ -28,7 +23,7 @@ public class Artifact
 	protected String description;
 	protected Date creationDate;
 	protected Date lastUpdateDate;
-	protected Date concurrencyDate;
+	protected String concurrencyDate;
 
 	protected List<ArtifactAttachment> attachments = new ArrayList<ArtifactAttachment>();
 	protected List<ArtifactCustomProperty> customProperties = new ArrayList<ArtifactCustomProperty>();
@@ -374,7 +369,7 @@ public class Artifact
 	 /**
 	  * @return the concurrency date
 	  */
-	 public Date getConcurrencyDate()
+	 public String getConcurrencyDate()
 	 {
 		 return concurrencyDate;
 	 }
@@ -387,7 +382,7 @@ public class Artifact
 	  *     {@link Date }
 	  *     
 	  */
-	 public void setConcurrencyDate(Date concurrencyDate)
+	 public void setConcurrencyDate(String concurrencyDate)
 	 {
 		 this.concurrencyDate = concurrencyDate;
 	 }
@@ -399,36 +394,36 @@ public class Artifact
 	 protected void PopulateGeneralProperties(RemoteArtifact remoteArtifact)
 	 {
 		 //First the standard properties
-         this.projectId = remoteArtifact.getProjectId().getValue();
-		 this.concurrencyDate = SpiraTeamUtil.convertDatesXml2Java(remoteArtifact.getConcurrencyDate());
+         this.projectId = remoteArtifact.ProjectId;
+		 this.concurrencyDate = remoteArtifact.ConcurrencyDate;
 		 
 		 //Make sure we have custom properties
 		 this.customProperties.clear();
-		 if (remoteArtifact.getCustomProperties() != null && remoteArtifact.getCustomProperties().getValue() != null && !remoteArtifact.getCustomProperties().getValue().getRemoteArtifactCustomProperty().isEmpty())
+		 if (remoteArtifact.CustomProperties != null && !remoteArtifact.CustomProperties.isEmpty())
 		 {
 			 //Loop through each of the custom properties and populate the local object
-			 List<RemoteArtifactCustomProperty> remoteArtifactCustomProperties = remoteArtifact.getCustomProperties().getValue().getRemoteArtifactCustomProperty();
+			 List<RemoteArtifactCustomProperty> remoteArtifactCustomProperties = remoteArtifact.CustomProperties;
 			 for (RemoteArtifactCustomProperty remoteArtifactCustomProperty : remoteArtifactCustomProperties)
 			 {
-				 if (remoteArtifactCustomProperty.getPropertyNumber() != null)
+				 if (remoteArtifactCustomProperty.PropertyNumber > 0)
 				 {
 					 ArtifactCustomProperty acp = new ArtifactCustomProperty();
-					 acp.setPropertyNumber(remoteArtifactCustomProperty.getPropertyNumber().intValue());
+					 acp.setPropertyNumber(remoteArtifactCustomProperty.PropertyNumber);
  					 this.customProperties.add(acp);
 					 
 					 //Handle each of the different data types
- 					 acp.setStringValue(remoteArtifactCustomProperty.getStringValue().getValue());
- 					 acp.setIntegerValue(remoteArtifactCustomProperty.getIntegerValue().getValue());
- 					 acp.setBooleanValue(remoteArtifactCustomProperty.getBooleanValue().getValue());
- 					 acp.setDateTimeValue(SpiraTeamUtil.convertDatesXml2Java(remoteArtifactCustomProperty.getDateTimeValue().getValue()));
- 					 acp.setDecimalValue(remoteArtifactCustomProperty.getDecimalValue().getValue());
- 					 if (remoteArtifactCustomProperty.getIntegerListValue() == null || remoteArtifactCustomProperty.getIntegerListValue().getValue() == null)
+ 					 acp.setStringValue(remoteArtifactCustomProperty.StringValue);
+ 					 acp.setIntegerValue(remoteArtifactCustomProperty.IntegerValue);
+ 					 acp.setBooleanValue(remoteArtifactCustomProperty.BooleanValue);
+ 					 acp.setDateTimeValue(SpiraTeamUtil.convertDatesToLocal(remoteArtifactCustomProperty.DateTimeValue));
+ 					 acp.setDecimalValue(remoteArtifactCustomProperty.DecimalValue);
+ 					 if (remoteArtifactCustomProperty.IntegerListValue == null)
  					 {
  						 acp.setIntegerListValue(null);
  					 }
  					 else
  					 {
- 						 acp.setIntegerListValue(remoteArtifactCustomProperty.getIntegerListValue().getValue().getInt());
+ 						 acp.setIntegerListValue(remoteArtifactCustomProperty.IntegerListValue);
  					 }
 				 }
 			 }
@@ -436,38 +431,35 @@ public class Artifact
 	 }
 	 
 	 /**
-	  * Populates the SOAP API object from the artifact general fields and custom properties
+	  * Populates the API object from the artifact general fields and custom properties
 	  * @param remoteArtifact
 	  */
 	 protected void ExtractGeneralProperties(RemoteArtifact remoteArtifact)
 	 {
 		 //First the standard fields
-		 remoteArtifact.setProjectId(SpiraImportExport.CreateJAXBInteger("ProjectId", this.projectId));
-		 remoteArtifact.setConcurrencyDate(SpiraTeamUtil.convertDatesJava2Xml(this.concurrencyDate));
+		 remoteArtifact.ProjectId = this.projectId;
+		 remoteArtifact.ConcurrencyDate = this.concurrencyDate;
 
 		 //Make sure we have custom properties
-		 ArrayOfRemoteArtifactCustomProperty arrayOfRemoteArtifactCustomProperty = new ArrayOfRemoteArtifactCustomProperty();
-		 List<RemoteArtifactCustomProperty> remoteArtifactCustomProperties = arrayOfRemoteArtifactCustomProperty.getRemoteArtifactCustomProperty();
-		 JAXBElement<ArrayOfRemoteArtifactCustomProperty> jRemoteArtifactCustomProperties = new JAXBElement<ArrayOfRemoteArtifactCustomProperty>(new QName(SpiraImportExport.WEB_SERVICE_NAMESPACE_DATA_OBJECTS, "CustomProperties"), ArrayOfRemoteArtifactCustomProperty.class, arrayOfRemoteArtifactCustomProperty);
- 		 remoteArtifact.setCustomProperties(jRemoteArtifactCustomProperties);
+		 ArrayList<RemoteArtifactCustomProperty> remoteArtifactCustomProperties = new ArrayList<RemoteArtifactCustomProperty>();
+ 		 remoteArtifact.CustomProperties = remoteArtifactCustomProperties;
 		 if (!this.customProperties.isEmpty())
 		 {
 			 //Loop through each of the custom properties and populate the API object
 			 for (ArtifactCustomProperty acp : this.customProperties)
 			 {
 				 RemoteArtifactCustomProperty remoteArtifactCustomProperty = new RemoteArtifactCustomProperty();
-				 remoteArtifactCustomProperty.setPropertyNumber(acp.getPropertyNumber());
+				 remoteArtifactCustomProperty.PropertyNumber = acp.getPropertyNumber();
 				 remoteArtifactCustomProperties.add(remoteArtifactCustomProperty);
 				 
 				 //Handle each of the different data types
-				 remoteArtifactCustomProperty.setStringValue(SpiraImportExport.CreateJAXBString("StringValue", acp.getStringValue()));
-				 remoteArtifactCustomProperty.setIntegerValue(SpiraImportExport.CreateJAXBInteger("IntegerValue", acp.getIntegerValue()));
-				 remoteArtifactCustomProperty.setBooleanValue(SpiraImportExport.CreateJAXBBoolean("BooleanValue", acp.getBooleanValue()));
-				 remoteArtifactCustomProperty.setDateTimeValue(SpiraImportExport.CreateJAXBXMLGregorianCalendar("DateTimeValue", SpiraTeamUtil.convertDatesJava2Xml(acp.getDateTimeValue())));
-				 remoteArtifactCustomProperty.setDecimalValue(SpiraImportExport.CreateJAXBBigDecimal("DecimalValue", acp.getDecimalValue()));
-				 remoteArtifactCustomProperty.setIntegerListValue(SpiraImportExport.CreateJAXBArrayOfInt("IntegerListValue", acp.getIntegerListValue()));
+				 remoteArtifactCustomProperty.StringValue = acp.getStringValue();
+				 remoteArtifactCustomProperty.IntegerValue = acp.getIntegerValue();
+				 remoteArtifactCustomProperty.BooleanValue = acp.getBooleanValue();
+				 remoteArtifactCustomProperty.DateTimeValue = SpiraTeamUtil.convertDatesToUtc(acp.getDateTimeValue());
+				 remoteArtifactCustomProperty.DecimalValue = acp.getDecimalValue();
+				 remoteArtifactCustomProperty.IntegerListValue = (ArrayList<Integer>) acp.getIntegerListValue();
 			 }
 		 }
-
 	 }
 }

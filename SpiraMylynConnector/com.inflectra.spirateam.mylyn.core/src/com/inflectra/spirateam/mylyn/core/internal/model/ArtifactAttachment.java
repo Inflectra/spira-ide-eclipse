@@ -3,8 +3,8 @@ package com.inflectra.spirateam.mylyn.core.internal.model;
 import java.util.Date;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
-import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteDocument;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteDocument;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteDocumentFile;
 
 /**
  * Represents a single SpiraTeam artifact attachment
@@ -37,33 +37,33 @@ public class ArtifactAttachment
 	}
 	
     /**
-     * Creates an artifact attachment based on its equivalent SOAP object
-     * @param remoteDocument The SOAP artifact attachment
+     * Creates an artifact attachment based on its equivalent API object
+     * @param remoteDocument The API artifact attachment
      */
 	public ArtifactAttachment(RemoteDocument remoteDocument)
 	{
     	//Set the various member variables
-    	this.attachmentId = remoteDocument.getAttachmentId().getValue();
-    	this.authorId = remoteDocument.getAuthorId().getValue();
-    	this.filename = remoteDocument.getFilenameOrUrl().getValue();
-    	this.description = remoteDocument.getDescription().getValue();
-        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteDocument.getUploadDate());
-        this.size = remoteDocument.getSize();
-        this.authorName = remoteDocument.getAuthorName().getValue();
-        this.urlAttachment = (remoteDocument.getAttachmentTypeId().equals(2));
+    	this.attachmentId = remoteDocument.AttachmentId;
+    	this.authorId = remoteDocument.AuthorId;
+    	this.filename = remoteDocument.FilenameOrUrl;
+    	this.description = remoteDocument.Description;
+        this.creationDate = SpiraTeamUtil.convertDatesToLocal(remoteDocument.UploadDate);
+        this.size = remoteDocument.Size;
+        this.authorName = remoteDocument.AuthorName;
+        this.urlAttachment = (remoteDocument.AttachmentTypeId == 2);
 	}
 	
     /**
-     * Converts this object into its soap equivalent
+     * Converts this object into its API equivalent
      * @return
      */
-    public RemoteDocument toSoapObject()
+    public RemoteDocumentFile toSoapObject()
     {
-    	RemoteDocument remoteDocument = new RemoteDocument();
-    	remoteDocument.setFilenameOrUrl(SpiraImportExport.CreateJAXBString("FilenameOrUrl", this.filename));
-    	remoteDocument.setDescription(SpiraImportExport.CreateJAXBString("Description", this.description));
-    	remoteDocument.setUploadDate(SpiraTeamUtil.convertDatesJava2Xml(this.creationDate));
-    	remoteDocument.setSize(new Integer((int)this.size));
+    	RemoteDocumentFile remoteDocument = new RemoteDocumentFile();
+    	remoteDocument.FilenameOrUrl = this.filename;
+    	remoteDocument.Description = this.description;
+    	remoteDocument.UploadDate = SpiraTeamUtil.convertDatesToUtc(this.creationDate);
+    	remoteDocument.Size = (int) this.size;
     	return remoteDocument;
     }
 	

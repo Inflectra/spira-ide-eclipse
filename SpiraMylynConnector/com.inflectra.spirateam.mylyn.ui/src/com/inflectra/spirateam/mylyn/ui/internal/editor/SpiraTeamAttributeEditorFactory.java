@@ -54,12 +54,20 @@ public class SpiraTeamAttributeEditorFactory extends AttributeEditorFactory
 	@Override
 	public AbstractAttributeEditor createEditor(String type, TaskAttribute taskAttribute)
 	{
-		// If we have Incident Type, need to create a special select list that
+		// If we have Incident/Requirement/Task Type, need to create a special select list that
 		// has
 		// an event handler linked to it
 		if (taskAttribute.getId().equals(ArtifactAttribute.INCIDENT_TYPE_ID.getArtifactKey()))
 		{
 			return new IncidentTypeAttributeEditor(getModel(), taskAttribute, editorPage);
+		}
+		else if (taskAttribute.getId().equals(ArtifactAttribute.REQUIREMENT_TYPE.getArtifactKey()))
+		{
+			return new RequirementTypeAttributeEditor(getModel(), taskAttribute, editorPage);
+		}
+		else if (taskAttribute.getId().equals(ArtifactAttribute.TASK_TYPE.getArtifactKey()))
+		{
+			return new TaskTypeAttributeEditor(getModel(), taskAttribute, editorPage);
 		}
 		else
 		{

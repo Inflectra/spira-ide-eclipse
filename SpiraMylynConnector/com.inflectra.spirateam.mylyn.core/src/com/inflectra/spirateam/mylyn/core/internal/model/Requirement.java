@@ -1,12 +1,12 @@
 package com.inflectra.spirateam.mylyn.core.internal.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
-import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteRequirement;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteRequirement;
 /**
  * Represents a single requirement in SpiraTeam
  *
@@ -17,13 +17,15 @@ public class Requirement
 {
     protected int statusId;
     protected int authorId;
+    protected int requirementTypeId;
+    protected Integer componentId;
     protected String authorName;
     protected Integer importanceId;
     protected String importanceName;
     protected Integer releaseId;
     protected String releaseVersionNumber;
     protected boolean summary;
-    protected Integer plannedEffort;
+    protected Double estimate;
     
     //Contains the collection of comments
     protected List<RequirementComment> comments = new ArrayList<RequirementComment>();
@@ -36,7 +38,8 @@ public class Requirement
 		AUTHOR_ID("requirement.authorId"),
 		IMPORTANCE_ID("requirement.importanceId"),
 		RELEASE_ID("requirement.releaseId"),
-		PLANNED_EFFORT("requirement.plannedEffort"),
+		ESTIMATE("requirement.estimate"),
+		COMPONENT_ID("requirement.componentId"),
 		COMMENT("requirement.comment");
 		
 		public static Key fromKey(String name)
@@ -80,21 +83,23 @@ public class Requirement
     	PopulateGeneralProperties(remoteRequirement);
     	
     	//Set the various member variables
-        this.name = remoteRequirement.getName().getValue();
-        this.description = remoteRequirement.getDescription().getValue();
-        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getCreationDate());
-        this.lastUpdateDate = SpiraTeamUtil.convertDatesXml2Java(remoteRequirement.getLastUpdateDate());
-        this.artifactId = remoteRequirement.getRequirementId().getValue();
-        this.statusId = remoteRequirement.getStatusId().getValue();
-        this.authorId = remoteRequirement.getAuthorId().getValue();
-        this.authorName = remoteRequirement.getAuthorName().getValue();
-        this.ownerId = remoteRequirement.getOwnerId().getValue();
-        this.importanceId = remoteRequirement.getImportanceId().getValue();
-        this.importanceName = remoteRequirement.getImportanceName().getValue();
-        this.releaseId = remoteRequirement.getReleaseId().getValue();
-        this.releaseVersionNumber = remoteRequirement.getReleaseVersionNumber().getValue();
-        this.summary = remoteRequirement.isSummary();
-        this.plannedEffort = remoteRequirement.getPlannedEffort().getValue();
+        this.name = remoteRequirement.Name;
+        this.description = remoteRequirement.Description;
+        this.creationDate = SpiraTeamUtil.convertDatesToLocal(remoteRequirement.CreationDate);
+        this.lastUpdateDate = SpiraTeamUtil.convertDatesToLocal(remoteRequirement.LastUpdateDate);
+        this.artifactId = remoteRequirement.RequirementId;
+        this.requirementTypeId = remoteRequirement.RequirementTypeId;
+        this.componentId = remoteRequirement.ComponentId;
+        this.statusId = remoteRequirement.StatusId;
+        this.authorId = remoteRequirement.AuthorId;
+        this.authorName = remoteRequirement.AuthorName;
+        this.ownerId = remoteRequirement.OwnerId;
+        this.importanceId = remoteRequirement.ImportanceId;
+        this.importanceName = remoteRequirement.ImportanceName;
+        this.releaseId = remoteRequirement.ReleaseId;
+        this.releaseVersionNumber = remoteRequirement.ReleaseVersionNumber;
+        this.summary = remoteRequirement.Summary;
+        this.estimate = (remoteRequirement.EstimatePoints == null) ? null : remoteRequirement.EstimatePoints.doubleValue();
     }
     
     /**
@@ -110,18 +115,27 @@ public class Requirement
     	ExtractGeneralProperties(remoteRequirement);
 
     	//Next the requirement-specific ones
-    	remoteRequirement.setRequirementId(SpiraImportExport.CreateJAXBInteger("RequirementId", this.artifactId));
-    	remoteRequirement.setOwnerId(SpiraImportExport.CreateJAXBInteger("OwnerId", this.ownerId));
-    	remoteRequirement.setAuthorId(SpiraImportExport.CreateJAXBInteger("AuthorId", this.authorId));
-    	remoteRequirement.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
-    	remoteRequirement.setName(SpiraImportExport.CreateJAXBString("Name", this.name));
-    	remoteRequirement.setDescription(SpiraImportExport.CreateJAXBString("Description", this.description));
-    	remoteRequirement.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(this.creationDate));
-    	remoteRequirement.setLastUpdateDate(SpiraTeamUtil.convertDatesJava2Xml(this.lastUpdateDate));
-    	remoteRequirement.setStatusId(SpiraImportExport.CreateJAXBInteger("StatusId", this.statusId));
-    	remoteRequirement.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
-    	remoteRequirement.setImportanceId(SpiraImportExport.CreateJAXBInteger("ImportanceId", this.importanceId));
-    	remoteRequirement.setPlannedEffort(SpiraImportExport.CreateJAXBInteger("PlannedEffort", this.plannedEffort));
+    	remoteRequirement.RequirementId = this.artifactId;
+    	remoteRequirement.OwnerId = this.ownerId;
+    	remoteRequirement.AuthorId = this.authorId;
+    	remoteRequirement.ReleaseId = this.releaseId;
+    	remoteRequirement.Name = this.name;
+    	remoteRequirement.Description = this.description;
+    	remoteRequirement.CreationDate = this.creationDate;
+    	remoteRequirement.LastUpdateDate = SpiraTeamUtil.convertDatesToUtc(this.lastUpdateDate);
+    	remoteRequirement.StatusId = this.statusId;
+    	remoteRequirement.RequirementTypeId = this.requirementTypeId;
+    	remoteRequirement.ComponentId = this.componentId;
+    	remoteRequirement.ReleaseId = this.releaseId;
+    	remoteRequirement.ImportanceId = this.importanceId;
+    	if (this.estimate == null)
+    	{
+    		remoteRequirement.EstimatePoints = null;
+    	}
+    	else
+    	{
+    		remoteRequirement.EstimatePoints = BigDecimal.valueOf(this.estimate);
+    	}
             	
         return remoteRequirement;
     }
@@ -281,27 +295,27 @@ public class Requirement
     }
 
     /**
-     * Gets the value of the plannedEffort property.
+     * Gets the value of the estimate property.
      * 
      * @return
      *     possible object is
-     *     {@link Integer }
+     *     {@link Double }
      *     
      */
-    public Integer getPlannedEffort() {
-        return plannedEffort;
+    public Double getEstimate() {
+        return estimate;
     }
 
     /**
-     * Sets the value of the plannedEffort property.
+     * Sets the value of the estimate property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Integer }
+     *     {@link Double }
      *     
      */
-    public void setPlannedEffort(Integer value) {
-        this.plannedEffort = value;
+    public void setEstimate(Double value) {
+        this.estimate = value;
     }
 
 	/**
@@ -310,5 +324,21 @@ public class Requirement
 	public List<RequirementComment> getComments()
 	{
 		return this.comments;
+	}
+
+	public int getRequirementTypeId() {
+		return requirementTypeId;
+	}
+
+	public void setRequirementTypeId(int requirementTypeId) {
+		this.requirementTypeId = requirementTypeId;
+	}
+
+	public Integer getComponentId() {
+		return componentId;
+	}
+
+	public void setComponentId(Integer componentId) {
+		this.componentId = componentId;
 	}
 }

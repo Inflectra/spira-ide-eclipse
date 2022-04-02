@@ -34,22 +34,80 @@ public class SpiraTeamTaskMapper extends TaskMapper
 		if (artifactType.equals(ArtifactType.TASK))
 		{
 			//Get the current priority
+			//Tasks have customizable values, so we can't infer from the ID
+			//However if the first character of its name is numeric, we will use that
 			TaskAttribute priorityAttribute = taskData.getRoot().getAttribute(ArtifactAttribute.TASK_PRIORITY_ID.getArtifactKey());
 			if (priorityAttribute != null)
 			{
 				String priority = priorityAttribute.getValue();
-				return SpiraTeamRepositoryConnector.getMylynPriorityForTask(priority);
+				if (priority != null)
+				{
+					String priorityName = priorityAttribute.getOption(priorityAttribute.getValue());
+					if (priorityName != null)
+					{
+						if (priorityName.startsWith("1"))
+						{
+							return PriorityLevel.P1;
+						}
+						if (priorityName.startsWith("2"))
+						{
+							return PriorityLevel.P2;
+						}
+						if (priorityName.startsWith("3"))
+						{
+							return PriorityLevel.P3;
+						}
+						if (priorityName.startsWith("4"))
+						{
+							return PriorityLevel.P4;
+						}
+						if (priorityName.startsWith("5"))
+						{
+							return PriorityLevel.P5;
+						}
+					}
+				}
 			}
+
 		}
 		if (artifactType.equals(ArtifactType.REQUIREMENT))
 		{
 			//Get the current priority
+			//Requirement have customizable values, so we can't infer from the ID
+			//However if the first character of its name is numeric, we will use that
 			TaskAttribute priorityAttribute = taskData.getRoot().getAttribute(ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID.getArtifactKey());
 			if (priorityAttribute != null)
 			{
 				String priority = priorityAttribute.getValue();
-				return SpiraTeamRepositoryConnector.getMylynPriorityForRequirement(priority);
+				if (priority != null)
+				{
+					String priorityName = priorityAttribute.getOption(priorityAttribute.getValue());
+					if (priorityName != null)
+					{
+						if (priorityName.startsWith("1"))
+						{
+							return PriorityLevel.P1;
+						}
+						if (priorityName.startsWith("2"))
+						{
+							return PriorityLevel.P2;
+						}
+						if (priorityName.startsWith("3"))
+						{
+							return PriorityLevel.P3;
+						}
+						if (priorityName.startsWith("4"))
+						{
+							return PriorityLevel.P4;
+						}
+						if (priorityName.startsWith("5"))
+						{
+							return PriorityLevel.P5;
+						}
+					}
+				}
 			}
+
 		}
 		if (artifactType.equals(ArtifactType.INCIDENT))
 		{

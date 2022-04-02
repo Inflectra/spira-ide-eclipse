@@ -1,1 +1,0 @@
-wsimport -keep -d "D:\Eclipse Workspaces\Adam Sandman\SpiraMylynConnector\com.inflectra.spirateam.mylyn.core\src" -p com.inflectra.spirateam.mylyn.core.internal.services.soap http://localhost/SpiraTeam/Services/v2_2/ImportExport.asmx?WSDL

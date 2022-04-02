@@ -178,6 +178,11 @@ public class SpiraTeamRepositorySettingsPage extends
 				throw new CoreException(new Status(IStatus.ERROR, SpiraTeamUiPlugin.PLUGIN_ID, IStatus.OK,
 						Messages.MalformedURLException_Message, null));
 			}
+			catch (SpiraAuthenticationException ex)
+			{
+				throw new CoreException(new Status(IStatus.ERROR, SpiraTeamUiPlugin.PLUGIN_ID, IStatus.OK,
+						ex.getMessage(), null));
+			}	
 			catch (SpiraConnectionException ex)
 			{
 				throw new CoreException(new Status(IStatus.ERROR, SpiraTeamUiPlugin.PLUGIN_ID, IStatus.OK,

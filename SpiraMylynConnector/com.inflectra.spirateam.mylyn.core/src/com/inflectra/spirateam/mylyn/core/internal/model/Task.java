@@ -8,8 +8,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.inflectra.spirateam.mylyn.core.internal.ArtifactType;
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
-import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteTask;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteTask;
 /**
  * Represents a single task in SpiraTeam
  *
@@ -18,6 +17,7 @@ import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteTask;
 public class Task extends Artifact
 {
     protected int taskStatusId;
+    protected int taskTypeId;
     protected Integer requirementId;
     protected Integer releaseId;
     protected Integer taskPriorityId;
@@ -100,31 +100,32 @@ public class Task extends Artifact
 
     	//Set the various member variables
     	this.dataChanged = false;
-        this.artifactId = remoteTask.getTaskId().getValue();
-        this.ownerId = remoteTask.getOwnerId().getValue();
-        this.releaseId = remoteTask.getReleaseId().getValue();
-        this.creatorId = remoteTask.getCreatorId().getValue();
-        this.name = remoteTask.getName().getValue();
-        this.description = remoteTask.getDescription().getValue();
-        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteTask.getCreationDate());
-        this.lastUpdateDate = SpiraTeamUtil.convertDatesXml2Java(remoteTask.getLastUpdateDate());
-        this.taskStatusId = remoteTask.getTaskStatusId();
-        this.requirementId = remoteTask.getRequirementId().getValue();
-        this.releaseId = remoteTask.getReleaseId().getValue();
-        this.taskPriorityId = remoteTask.getTaskPriorityId().getValue();
-        this.startDate = SpiraTeamUtil.convertDatesXml2Java(remoteTask.getStartDate().getValue());
-        this.endDate = SpiraTeamUtil.convertDatesXml2Java(remoteTask.getEndDate().getValue());
-        this.completionPercent = remoteTask.getCompletionPercent();
-        this.estimatedEffort = remoteTask.getEstimatedEffort().getValue();
-        this.actualEffort = remoteTask.getActualEffort().getValue();
-        this.remainingEffort = remoteTask.getRemainingEffort().getValue();
-        this.projectedEffort = remoteTask.getProjectedEffort().getValue();
-        this.taskStatusName = remoteTask.getTaskStatusName().getValue();
-        this.ownerName = remoteTask.getOwnerName().getValue();
-        this.taskPriorityName = remoteTask.getTaskPriorityName().getValue();
-        this.projectName = remoteTask.getProjectName().getValue();
-        this.releaseVersionNumber = remoteTask.getReleaseVersionNumber().getValue();
-        this.requirementName = remoteTask.getRequirementName().getValue();
+        this.artifactId = remoteTask.TaskId;
+        this.ownerId = remoteTask.OwnerId;
+        this.releaseId = remoteTask.ReleaseId;
+        this.creatorId = remoteTask.CreatorId;
+        this.name = remoteTask.Name;
+        this.description = remoteTask.Description;
+        this.creationDate = SpiraTeamUtil.convertDatesToLocal(remoteTask.CreationDate);
+        this.lastUpdateDate = SpiraTeamUtil.convertDatesToLocal(remoteTask.LastUpdateDate);
+        this.taskStatusId = remoteTask.TaskStatusId;
+        this.taskTypeId = remoteTask.TaskTypeId;
+        this.requirementId = remoteTask.RequirementId;
+        this.releaseId = remoteTask.ReleaseId;
+        this.taskPriorityId = remoteTask.TaskPriorityId;
+        this.startDate = SpiraTeamUtil.convertDatesToLocal(remoteTask.StartDate);
+        this.endDate = SpiraTeamUtil.convertDatesToLocal(remoteTask.EndDate);
+        this.completionPercent = remoteTask.CompletionPercent;
+        this.estimatedEffort = remoteTask.EstimatedEffort;
+        this.actualEffort = remoteTask.ActualEffort;
+        this.remainingEffort = remoteTask.RemainingEffort;
+        this.projectedEffort = remoteTask.ProjectedEffort;
+        this.taskStatusName = remoteTask.TaskStatusName;
+        this.ownerName = remoteTask.OwnerName;
+        this.taskPriorityName = remoteTask.TaskPriorityName;
+        this.projectName = remoteTask.ProjectName;
+        this.releaseVersionNumber = remoteTask.ReleaseVersionNumber;
+        this.requirementName = remoteTask.RequirementName;
     }
     
     /**
@@ -140,23 +141,23 @@ public class Task extends Artifact
     	ExtractGeneralProperties(remoteTask);
 
     	//Next the task-specific ones
-    	remoteTask.setTaskId(SpiraImportExport.CreateJAXBInteger("TaskId", this.artifactId));
-    	remoteTask.setOwnerId(SpiraImportExport.CreateJAXBInteger("OwnerId", this.ownerId));
-    	remoteTask.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
-    	remoteTask.setCreatorId(SpiraImportExport.CreateJAXBInteger("Creator", this.creatorId));
-    	remoteTask.setName(SpiraImportExport.CreateJAXBString("Name", this.name));
-    	remoteTask.setDescription(SpiraImportExport.CreateJAXBString("Description", this.description));
-    	remoteTask.setCreationDate(SpiraTeamUtil.convertDatesJava2Xml(this.creationDate));
-    	remoteTask.setLastUpdateDate(SpiraTeamUtil.convertDatesJava2Xml(this.lastUpdateDate));
-    	remoteTask.setTaskStatusId(this.taskStatusId);
-    	remoteTask.setRequirementId(SpiraImportExport.CreateJAXBInteger("RequirementId", this.requirementId));
-    	remoteTask.setReleaseId(SpiraImportExport.CreateJAXBInteger("ReleaseId", this.releaseId));
-    	remoteTask.setTaskPriorityId(SpiraImportExport.CreateJAXBInteger("TaskPriorityId", this.taskPriorityId));
-    	remoteTask.setStartDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("StartDate", SpiraTeamUtil.convertDatesJava2Xml(this.startDate)));
-    	remoteTask.setEndDate(SpiraImportExport.CreateJAXBXMLGregorianCalendar("EndDate", SpiraTeamUtil.convertDatesJava2Xml(this.endDate)));
-    	remoteTask.setEstimatedEffort(SpiraImportExport.CreateJAXBInteger("EstimatedEffort", this.estimatedEffort));
-    	remoteTask.setActualEffort(SpiraImportExport.CreateJAXBInteger("ActualEffort", this.actualEffort));
-    	remoteTask.setRemainingEffort(SpiraImportExport.CreateJAXBInteger("RemainingEffort", this.remainingEffort));
+    	remoteTask.TaskId = this.artifactId;
+    	remoteTask.OwnerId = this.ownerId;
+    	remoteTask.ReleaseId = this.releaseId;
+    	remoteTask.CreatorId = this.creatorId;
+    	remoteTask.Name = this.name;
+    	remoteTask.Description = this.description;
+    	remoteTask.CreationDate = this.creationDate;
+    	remoteTask.LastUpdateDate = this.lastUpdateDate;
+    	remoteTask.TaskStatusId = this.taskStatusId;
+    	remoteTask.RequirementId = this.requirementId;
+    	remoteTask.ReleaseId = this.releaseId;
+    	remoteTask.TaskPriorityId = this.taskPriorityId;
+    	remoteTask.StartDate = SpiraTeamUtil.convertDatesToUtc(this.startDate);
+    	remoteTask.EndDate = SpiraTeamUtil.convertDatesToUtc(this.endDate);
+    	remoteTask.EstimatedEffort = this.estimatedEffort;
+    	remoteTask.ActualEffort = this.actualEffort;
+    	remoteTask.RemainingEffort = this.remainingEffort;
             	
         return remoteTask;
     }
@@ -525,5 +526,13 @@ public class Task extends Artifact
 	public void setCreatorId(int creatorId)
 	{
 		this.creatorId = creatorId;
+	}
+
+	public int getTaskTypeId() {
+		return taskTypeId;
+	}
+
+	public void setTaskTypeId(int taskTypeId) {
+		this.taskTypeId = taskTypeId;
 	}
 }

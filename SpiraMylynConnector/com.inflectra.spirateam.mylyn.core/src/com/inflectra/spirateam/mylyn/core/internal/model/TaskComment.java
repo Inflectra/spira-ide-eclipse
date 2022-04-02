@@ -5,7 +5,7 @@ import java.util.Date;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import com.inflectra.spirateam.mylyn.core.internal.SpiraTeamUtil;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.RemoteComment;
+import com.inflectra.spirateam.mylyn.core.internal.rest.RemoteComment;
 
 /**
  * @author Inflectra Corporation
@@ -27,12 +27,12 @@ public class TaskComment
     public TaskComment(RemoteComment remoteComment)
     {
     	//Set the various member variables
-    	this.commentId = remoteComment.getCommentId().getValue();
-    	this.taskId = remoteComment.getArtifactId();
-    	this.creatorId = remoteComment.getUserId().getValue();
-    	this.text = remoteComment.getText().getValue();
-        this.creationDate = SpiraTeamUtil.convertDatesXml2Java(remoteComment.getCreationDate().getValue());
-    	this.creatorName = remoteComment.getUserName().getValue();
+    	this.commentId = remoteComment.CommentId;
+    	this.taskId = remoteComment.ArtifactId;
+    	this.creatorId = remoteComment.UserId;
+    	this.text = remoteComment.Text;
+        this.creationDate = SpiraTeamUtil.convertDatesToLocal(remoteComment.CreationDate);
+    	this.creatorName = remoteComment.UserName;
     }
     
     /**

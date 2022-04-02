@@ -5,6 +5,9 @@ package com.inflectra.spirateam.mylyn.core.internal;
 
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -13,9 +16,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.soap.Detail;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
 
 import org.eclipse.mylyn.tasks.core.IRepositoryQuery;
 import org.eclipse.mylyn.tasks.core.TaskRepository;
@@ -29,7 +29,6 @@ import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataConcurrency
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraDataValidationException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraImportExport;
-import com.inflectra.spirateam.mylyn.core.internal.services.soap.ServiceFaultMessage;
 
 /**
  * @author Inflectra Corporation
@@ -48,30 +47,30 @@ public class SpiraTeamUtil
 	public static final String WORKFLOW_TRANSITION_STATUS_EXECUTED = "executed";
 	
 	/***
-	 * Make sure that the server is running v3.0 patch 009 or higher
+	 * Make sure that the server is running v6.0 or higher
 	 * @param spiraImportExport
 	 * @return
 	 */
 	public static boolean ValidateServerVersion (SpiraImportExport spiraImportExport)
 	{
 		boolean current = false;
-		if (spiraImportExport.getProductVersionPrimary() >= 4)
+		if (spiraImportExport.getProductVersionPrimary() >= 6)
 		{
-			//v4.0 or higher
+			//v6.0 or higher
 			current = true;
 		}
-		if (spiraImportExport.getProductVersionPrimary() == 3 &&
-				spiraImportExport.getProductVersionSecondary() >= 1)
+		if (spiraImportExport.getProductVersionPrimary() == 6 &&
+				spiraImportExport.getProductVersionSecondary() >= 0)
 		{
-			//v3.1 or higher
+			//v6.0 or higher
 			current = true;
 		}
-		if (spiraImportExport.getProductVersionPrimary() == 3 &&
+		if (spiraImportExport.getProductVersionPrimary() == 6 &&
 				spiraImportExport.getProductVersionSecondary() == 0 &&
 				spiraImportExport.getProductVersionTertiary() == 0 &&
-				spiraImportExport.getPatchNumber() >= 9)
+				spiraImportExport.getPatchNumber() >= 0)
 		{
-			//v3.0 Patch 9 or higher
+			//v6.0 Patch 0 or higher
 			current = true;
 		}
 		return current;
@@ -131,156 +130,32 @@ public class SpiraTeamUtil
 		return null;
 	}
 	
-	public static Date convertDatesXml2Java(XMLGregorianCalendar xmlCal)
+	public static Date convertDatesToUtc(Date localDate)
 	{
-		if (xmlCal == null)
+		if (localDate == null)
 		{
 			return null;
 		}
-		GregorianCalendar calendar = xmlCal.toGregorianCalendar();
-		//We need to specify that these dates are really in UTC - Spira 4.0 and later APIs
-		TimeZone utc = TimeZone.getTimeZone("UTC");
-		calendar.setTimeZone(utc);
-		Date date = calendar.getTime();
-		return date;
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+	    Date utcDate = new Date(sdf.format(localDate));
+	    return utcDate;
 	}
-	
-	public static XMLGregorianCalendar convertDatesJava2Xml(Date date)
+	public static Date convertDatesToLocal(Date utcDate)
 	{
-		if (date == null)
+		return utcDate;
+		/*
+		 * The following code was not needed. Eclipse can handle UTC already
+		 * 
+		if (utcDate == null)
 		{
 			return null;
 		}
-		try
-		{
-			GregorianCalendar calendar = new GregorianCalendar();
-			calendar.setTime(date);
-			//We need to specify that these dates are really in UTC - Spira 4.0 and later APIs
-			TimeZone utc = TimeZone.getTimeZone("UTC");
-			calendar.setTimeZone(utc);
-			DatatypeFactory datatypeFactory = DatatypeFactory.newInstance();
-			XMLGregorianCalendar xmlCal = datatypeFactory.newXMLGregorianCalendar(calendar);
-			//We need to unset the timezone from the XML because SpiraTeam is not expecting it
-			//and it will break concurrency
-			xmlCal.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
-			return xmlCal;
-		}
-		catch (DatatypeConfigurationException ex)
-		{
-			return null;
-		}
-	}
-	
-	public static SpiraException convertSoapFaults(SOAPFaultException ex)
-	{
-		//See if we have the authentication or authorization exceptions
-		//unfortunately SpiraTeam doesn't use special exception types for them
-		//so we have to look for the exception message name
-		if (ex.getMessage().contains("Session Not Authenticated"))	//$NON-NLS-1$
-		{
-			return new SpiraAuthenticationException(ex.getMessage());
-		}
-		if (ex.getMessage().contains("Not Connected to a Project"))	//$NON-NLS-1$
-		{
-			return new SpiraAuthorizationException(ex.getMessage());
-		}
+	    String timeZone = Calendar.getInstance().getTimeZone().getID();
+	    Date localDate = new Date(utcDate.getTime() + TimeZone.getTimeZone(timeZone).getOffset(utcDate.getTime()));
+	    return localDate;*/
+	}	
 		
-		//See if we have data validation exceptions or data concurrency exceptions
-		//as those need to be handled separately
-		SOAPFault fault = ex.getFault();
-		if (fault == null)
-		{
-			return new SpiraException(ex.getMessage());				
-		}
-		Detail faultDetail = fault.getDetail();
-		if (faultDetail == null)
-		{
-			return new SpiraException(ex.getMessage());				
-		}
-		Node exceptionTypeNode = faultDetail.getFirstChild();
-		if (exceptionTypeNode == null)
-		{
-			return new SpiraException(ex.getMessage());				
-		}
-		Node exceptionMessageNode = exceptionTypeNode.getFirstChild();
-		if (exceptionTypeNode == null)
-		{
-			return new SpiraException(ex.getMessage());				
-		}
-		String exceptionType = exceptionTypeNode.getLocalName();
-		String exceptionMessage = exceptionMessageNode.getTextContent();
-		
-		//See if we have a known exception type
-		if (exceptionMessage == null || exceptionMessage.equals(""))
-		{
-			return new SpiraException(ex.getMessage());		
-		}
-		if (exceptionType.equals("DataAccessConcurrencyException"))	//$NON-NLS-1$
-		{
-			return new SpiraDataConcurrencyException(Messages.SpiraTeamCorePlugin_DataConcurrencyError);
-		}
-		if (exceptionType.equals("DataValidationException"))	//$NON-NLS-1$
-		{
-			return new SpiraDataValidationException(exceptionMessage);
-		}
-		return new SpiraException(exceptionMessage);
-	}
-
-	public static SpiraException convertFaultException(Exception ex)
-	{
-		//See if we have the authentication or authorization exceptions
-		//unfortunately SpiraTeam doesn't use special exception types for them
-		//so we have to look for the exception message name
-		if (ex.getMessage().contains("Session Not Authenticated"))	//$NON-NLS-1$
-		{
-			return new SpiraAuthenticationException(ex.getMessage());
-		}
-		if (ex.getMessage().contains("Not Connected to a Project"))	//$NON-NLS-1$
-		{
-			return new SpiraAuthorizationException(ex.getMessage());
-		}
-		
-		//See if we have data validation exceptions or data concurrency exceptions
-		//as those need to be handled separately
-		//Need to use reflection because the various fault messages don't have a shared super class
-		ServiceFaultMessage faultInfo = null;
-		try
-		{
-			Class noparams[] = {};
-			Class cls = ex.getClass();
-			Method getFaultInfo = cls.getDeclaredMethod("getFaultInfo", noparams);
-			faultInfo = (ServiceFaultMessage)getFaultInfo.invoke(ex, null);
-		}
-		catch (Exception ex2)
-		{
-			//Not able to access by reflection so just return the message
-			return new SpiraException(ex.getMessage());
-		}
-		if (faultInfo == null)
-		{
-			return new SpiraException(ex.getMessage());				
-		}
-		
-		String exceptionType = faultInfo.getType().getValue();
-		String exceptionMessage = faultInfo.getMessage().getValue();
-		
-		//See if we have a known exception type
-		if (exceptionMessage == null || exceptionMessage.equals(""))
-		{
-			return new SpiraException(ex.getMessage());		
-		}
-		if (exceptionType.equals("DataAccessConcurrencyException"))	//$NON-NLS-1$
-		{
-			return new SpiraDataConcurrencyException(Messages.SpiraTeamCorePlugin_DataConcurrencyError);
-		}
-		if (exceptionType.equals("DataValidationException"))	//$NON-NLS-1$
-		{
-			return new SpiraDataValidationException(exceptionMessage);
-		}
-		return new SpiraException(exceptionMessage);
-	}
-
-	
 	public static Date parseDate(String time)
 		throws NumberFormatException
 	{
@@ -318,6 +193,42 @@ public class SpiraTeamUtil
 		{
 			boolean boolValue = bool.booleanValue();
 			return (boolValue) ? "true" : "false"; //$NON-NLS-1$
+		}
+	}
+	
+	public static String doubleToString(Double val)
+	{
+		if (val == null)
+		{
+			return ""; //$NON-NLS-1$
+		}
+		else
+		{
+			return val.toString();
+		}
+	}
+	
+	public static String integerListValuesToString(ArrayList<Integer> intList)
+	{
+		if (intList == null)
+		{
+			return ""; //$NON-NLS-1$
+		}
+		else			
+		{
+			String csv = ""; //$NON-NLS-1$
+			for (Integer i : intList)
+			{
+				if (csv.equals(""))
+				{
+					csv += i;
+				}
+				else
+				{
+					csv += "," + i;
+				}
+			}
+			return csv;
 		}
 	}
 	

@@ -2,12 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: SpiraTeam Mylyn Connector Tests
 Bundle-SymbolicName: com.inflectra.spirateam.mylyn.tests
-Bundle-Version: 2.3.1.qualifier
+Bundle-Version: 6.0.0.qualifier
 Bundle-Activator: com.inflectra.spirateam.mylyn.tests.internal.SpiraTeamTestsPlugin
 Bundle-Vendor: Inflectra Corporation
 Require-Bundle: org.junit;bundle-version="3.8.2",
  org.eclipse.core.runtime;bundle-version="3.5.0",
  org.eclipse.mylyn.tasks.core;bundle-version="3.3.2",
  com.inflectra.spirateam.mylyn.core;bundle-version="2.3.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Eclipse-AutoStart: true

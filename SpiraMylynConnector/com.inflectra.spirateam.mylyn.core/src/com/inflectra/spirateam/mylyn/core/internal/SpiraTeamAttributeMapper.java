@@ -83,6 +83,19 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 					//Do Nothing
 				}
 			}
+			metaDataValue = metaData.getValue(SpiraTeamTaskDataHandler.ATTRIBUTE_PROJECT_TEMPLATE_ID);
+			if (metaDataValue != null)
+			{
+				try
+				{
+					int projectTemplateId = Integer.parseInt(metaDataValue);
+					client.setStoredProjectTemplateId(projectTemplateId);
+				}
+				catch (NumberFormatException ex)
+				{
+					//Do Nothing
+				}
+			}
 		}
 		Map<String, String> options = getRepositoryOptions(client, attribute.getId());
 		if (options == null)
@@ -102,9 +115,17 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 		{
 			return getOptions(client.requirementGetStatus(), false);
 		}
+		else if (ArtifactAttribute.REQUIREMENT_TYPE.getArtifactKey().equals(artifactAttributeKey))
+		{
+			return getOptions(client.requirementGetType(), false);
+		}
 		else if (ArtifactAttribute.REQUIREMENT_IMPORTANCE_ID.getArtifactKey().equals(artifactAttributeKey))
 		{
 			return getOptions(client.requirementGetImportance(), true);
+		}
+		else if (ArtifactAttribute.REQUIREMENT_COMPONENT_ID.getArtifactKey().equals(artifactAttributeKey))
+		{
+			return getOptions(client.componentGet(), true);
 		}
 		else if (ArtifactAttribute.REQUIREMENT_RELEASE_ID.getArtifactKey().equals(artifactAttributeKey))
 		{
@@ -113,6 +134,10 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 		else if (ArtifactAttribute.TASK_STATUS_ID.getArtifactKey().equals(artifactAttributeKey))
 		{
 			return getOptions(client.taskGetStatus(), false);
+		}
+		else if (ArtifactAttribute.TASK_TYPE.getArtifactKey().equals(artifactAttributeKey))
+		{
+			return getOptions(client.taskGetType(), false);
 		}
 		else if (ArtifactAttribute.TASK_CREATOR_ID.getArtifactKey().equals(artifactAttributeKey))
 		{
@@ -154,6 +179,10 @@ public class SpiraTeamAttributeMapper extends TaskAttributeMapper
 		else if (ArtifactAttribute.INCIDENT_SEVERITY_ID.getArtifactKey().equals(artifactAttributeKey))
 		{
 			return getOptions(client.incidentGetSeverity(), true);
+		}
+		else if (ArtifactAttribute.INCIDENT_COMPONENT_IDS.getArtifactKey().equals(artifactAttributeKey))
+		{
+			return getOptions(client.componentGet(), true);
 		}
 		return null;
 	}

@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/gson-2.8.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpclient-4.5.9.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry excluding="**/_svn/*" kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Git/spira-ide-eclipse/SpiraMylynConnector/com.inflectra.spirateam.mylyn.core/lib/gson-2.8.6.jar"/>
+	<classpathentry kind="lib" path="C:/Git/spira-ide-eclipse/SpiraMylynConnector/com.inflectra.spirateam.mylyn.core/lib/httpclient-4.5.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -451,7 +451,7 @@ or its licensors’ names or any of their respective trademarks.
       <import plugin="org.eclipse.ui.forms" version="3.4.1" match="greaterOrEqual"/>
       <import plugin="org.eclipse.mylyn.context.core" version="3.8.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.mylyn.tasks.ui" version="3.8.0" match="greaterOrEqual"/>
-      <import plugin="com.inflectra.spirateam.mylyn.core" version="4.0.0" match="greaterOrEqual"/>
+      <import plugin="com.inflectra.spirateam.mylyn.core" version="6.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.mylyn.commons.core" version="3.8.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.mylyn.commons.net" version="3.8.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.mylyn.commons.ui" version="3.8.0" match="greaterOrEqual"/>

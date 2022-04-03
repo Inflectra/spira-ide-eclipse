@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
  
-import javax.xml.parsers.ParserConfigurationException;
+//import javax.xml.parsers.ParserConfigurationException;
  
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CaretListener;
@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Caret;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
-import org.xml.sax.SAXException;
+//import org.xml.sax.SAXException;
 
 import com.inflectra.spirateam.mylyn.ui.internal.SpiraTeamImages;
 
@@ -169,11 +169,12 @@ public class RichText extends Composite
 		return builder.toString();
 	}
 
-	public void setFormattedText(String text) throws ParserConfigurationException, SAXException, IOException
+	public void setFormattedText(String text) throws Exception, IOException
 	{
-		RichTextParser parser = RichTextParser.parse(text);
-		styledText.setText(parser.getText());
-		styledText.setStyleRanges(parser.getStyleRanges());
+		//RichTextParser parser = RichTextParser.parse(text);
+		//styledText.setText(parser.getText());
+		//styledText.setStyleRanges(parser.getStyleRanges());
+		styledText.setText(text);
 	}
 
 	public int getLineAtOffset(int offset)

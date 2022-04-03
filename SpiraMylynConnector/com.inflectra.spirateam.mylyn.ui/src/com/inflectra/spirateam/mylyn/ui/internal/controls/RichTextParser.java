@@ -6,21 +6,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+//import javax.xml.parsers.ParserConfigurationException;
+//import javax.xml.parsers.SAXParser;
+//import javax.xml.parsers.SAXParserFactory;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+//import org.xml.sax.Attributes;
+//import org.xml.sax.InputSource;
+//import org.xml.sax.SAXException;
+//import org.xml.sax.helpers.DefaultHandler;
 
 public final class RichTextParser
 {
 
-	public static RichTextParser parse(String formattedText) throws ParserConfigurationException, SAXException, IOException
+	public static RichTextParser parse(String formattedText) throws Exception, IOException
 	{
 		return new RichTextParser(formattedText);
 	}
@@ -29,13 +29,13 @@ public final class RichTextParser
 
 	private List<StyleRange> styleRanges = new ArrayList<StyleRange>();
 
-	private RichTextParser(String formattedText) throws ParserConfigurationException, SAXException, IOException
+	private RichTextParser(String formattedText) throws Exception, IOException
 	{
 		StringReader reader = new StringReader(formattedText);
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser = factory.newSAXParser();
-		DefaultHandler handler = new RichTextContentHandler();
-		parser.parse(new InputSource(reader), handler);
+		//SAXParserFactory factory = SAXParserFactory.newInstance();
+		//SAXParser parser = factory.newSAXParser();
+		//DefaultHandler handler = new RichTextContentHandler();
+		//parser.parse(new InputSource(reader), handler);
 	}
 
 	public String getText()
@@ -48,6 +48,7 @@ public final class RichTextParser
 		return styleRanges.toArray(new StyleRange[styleRanges.size()]);
 	}
 
+	/*
 	private class RichTextContentHandler extends DefaultHandler
 	{
 
@@ -55,13 +56,13 @@ public final class RichTextParser
 		private String lastTextChunk = null;
 
 		@Override
-		public void characters(char[] ch, int start, int length) throws SAXException
+		public void characters(char[] ch, int start, int length) throws Exception
 		{
 			lastTextChunk = new String(ch, start, length);
 		}
 
 		@Override
-		public void endElement(String uri, String localName, String qName) throws SAXException
+		public void endElement(String uri, String localName, String qName) throws Exception
 		{
 			// If there is not any previous text chunk parsed then return
 			if (lastTextChunk == null)
@@ -184,6 +185,6 @@ public final class RichTextParser
 			return text.length() - 1;
 		}
 
-	}
+	}*/
 
 }

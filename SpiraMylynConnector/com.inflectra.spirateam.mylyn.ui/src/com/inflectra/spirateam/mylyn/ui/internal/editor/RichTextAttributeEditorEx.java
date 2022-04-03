@@ -2,7 +2,7 @@ package com.inflectra.spirateam.mylyn.ui.internal.editor;
 
 import java.io.IOException;
 
-import javax.xml.parsers.ParserConfigurationException;
+//import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.mylyn.internal.tasks.ui.editors.RichTextAttributeEditor;
@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.contexts.IContextService;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.xml.sax.SAXException;
+//import org.xml.sax.SAXException;
 
 import com.inflectra.spirateam.mylyn.core.internal.services.SpiraException;
 import com.inflectra.spirateam.mylyn.ui.internal.controls.RichText;
